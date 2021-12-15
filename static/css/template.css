@@ -151,3 +151,8 @@ body {
   margin: 0px;
   padding: 0px;
 }
+
+#page-content-wrapper {
+    width: 100%;
+    padding-top: 70px;
+}
