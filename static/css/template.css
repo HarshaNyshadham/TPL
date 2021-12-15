@@ -7,18 +7,18 @@ header[role="banner"] {
 
 #navbar-primary.navbar-default {
   background: transparent;
-  border: none;
-  .navbar-nav {
+  border: none}
+.navbar-nav {
     width: 100%;
     text-align: center;
-    > li {
-      display: inline-block;
-      float: none;
-      > a {
-        padding-left: 30px;
-        padding-right: 30px;
-        }
-    }
+
+    display: inline-block;
+    float: none;
+
+    padding-left: 30px;
+    padding-right: 30px;
+
+
   }
-}
+
 
