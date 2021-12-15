@@ -9,3 +9,14 @@ app = Flask(__name__)
 def index():
     return render_template('home.html')
 
+@app.route('/pointtable')
+def pointtable():
+    return render_template('pointtable.html')
+
+@app.route('/schedule')
+def schedule():
+    return render_template('schedule.html')
+
+@app.route('/playoffs')
+def playoffs():
+    return render_template('playoffs.html')
