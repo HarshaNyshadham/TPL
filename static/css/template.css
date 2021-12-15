@@ -150,6 +150,8 @@
 body {
   margin: 0px;
   padding: 0px;
+  position: relative;
+  overflow-x: hidden;
 }
 
 #page-content-wrapper {
@@ -159,9 +161,8 @@ body {
 }
 
 .container{
-  text-align: center !important;
+
   border: 3px solid green;
   background-color:red;
-  padding-left: 20px;
-  margin-left: 20px;
+
 }
