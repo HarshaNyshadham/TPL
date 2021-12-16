@@ -24,6 +24,10 @@ def index():
         temp.append(cell.value)
       data.append(temp)
     print(data)
+
+    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl')
+    print(df)
+
     return render_template('home.html',data=data)
 
 @app.route('/pointtable')
