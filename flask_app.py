@@ -25,7 +25,7 @@ def index():
       data.append(temp)
     print(data)
 
-    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl')
+    df=pd.read_excel(TPL_leaderboard,index_col=0, engine ='openpyxl')
     print(df)
 
     return render_template('home.html',data=data)
