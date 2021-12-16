@@ -14,7 +14,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-    df=pd.read_excel(TPL_leaderboard,sheet_name='Leaderboad')
+    df=pd.read_excel(TPL_leaderboard,engine='openpyxl',sheet_name='Leaderboad')
 
 
     return render_template('home.html')
