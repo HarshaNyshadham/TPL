@@ -17,7 +17,11 @@ def index():
 
     wb = load_workbook(filename = TPL_leaderboard)
     ws = wb.get_sheet_by_name(name='Leaderboard')
-    print(ws)
+    data=[]
+    for row in ws.iter_rows(min_col=1):
+      for cell in row:
+        data.append(cell.value)
+    print(data)
     return render_template('home.html')
 
 @app.route('/pointtable')
