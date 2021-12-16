@@ -18,14 +18,14 @@
          </thead>
 
          <tbody>
-
+            {% for entry in data %}
                <tr>
                   <td></td>
-                  <td></td>
-                  <td></td>
+                  <td>{{ entry[0] }}</td>
+                  <td>{{ entry[1] }}</td>
 
                </tr>
-
+            {% endfor %}
          </tbody>
 </table>
 
