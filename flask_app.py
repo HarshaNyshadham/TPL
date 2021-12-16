@@ -18,13 +18,13 @@ def index():
     wb = load_workbook(filename = TPL_leaderboard)
     ws = wb.get_sheet_by_name(name='Leaderboard')
     data=[]
-    for row in ws.iter_rows(min_col=1):
+    for row in ws.iter_rows(max_col=2):
       temp=[]
       for cell in row:
         temp.append(cell.value)
       data.append(temp)
     print(data)
-    return render_template('home.html')
+    return render_template('home.html',data=data)
 
 @app.route('/pointtable')
 def pointtable():
