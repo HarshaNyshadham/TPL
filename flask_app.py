@@ -7,14 +7,14 @@ from pandas import ExcelWriter,DataFrame,ExcelFile
 
 #File path
 
-TPL_leaderboard=""
+TPL_leaderboard="/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx"
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
 
-#     df=pd.read_excel(FVL_fileName,sheet_name='Schedule')
+     df=pd.read_excel(TPL_leaderboard,sheet_name='Leaderboad')
 
 
     return render_template('home.html')
