@@ -30,7 +30,7 @@ def index():
     data=[]
     counter=0
     for index,row in df.iterrows():
-                   data.append([counter=counter+1,row['Player'],row['Current Rating']])
+                   data.append([counter+=1,row['Player'],row['Current Rating']])
 
 
 
