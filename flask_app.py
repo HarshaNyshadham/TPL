@@ -19,8 +19,10 @@ def index():
     ws = wb.get_sheet_by_name(name='Leaderboard')
     data=[]
     for row in ws.iter_rows(min_col=1):
+      temp=[]
       for cell in row:
-        data.append(cell.value)
+        temp.append(cell.value)
+      data.append(temp)
     print(data)
     return render_template('home.html')
 
