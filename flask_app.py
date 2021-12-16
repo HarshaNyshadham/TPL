@@ -7,7 +7,7 @@ from pandas import ExcelWriter,DataFrame,ExcelFile
 
 #File path
 
-TPL_leaderboard="/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx"
+TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
 
 app = Flask(__name__)
 
