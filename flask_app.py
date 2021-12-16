@@ -29,7 +29,8 @@ def index():
     df.sort_values(by=['Current Rating']
 
     for index,row in df.iterrows():
-      print(row)
+                   print(row['Player'])
+
 
 
 
