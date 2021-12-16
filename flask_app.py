@@ -4,6 +4,7 @@
 from flask import Flask,render_template
 import pandas as pd
 from pandas import ExcelWriter,DataFrame,ExcelFile
+from openpyxl import load_workbook
 
 #File path
 
@@ -14,9 +15,9 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-    df=pd.read_excel(TPL_leaderboard,engine='openpyxl',sheet_name='Leaderboad')
-
-
+    wb = load_workbook(filename = TPL_leaderboard)
+    ws = wb.get_sheet_by_name(name='Leaderboard')
+    print(ws)
     return render_template('home.html')
 
 @app.route('/pointtable')
