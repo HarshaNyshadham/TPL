@@ -18,7 +18,7 @@ def index():
     wb = load_workbook(filename = TPL_leaderboard)
     ws = wb.get_sheet_by_name(name='Leaderboard')
     data=[]
-    for row in ws.iter_rows(max_col=2):
+    for row in ws.iter_rows(min_row=2,max_col=2):
       temp=[]
       for cell in row:
         temp.append(cell.value)
