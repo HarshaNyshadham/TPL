@@ -2,11 +2,21 @@
 # A very simple Flask Hello World app for you to get started with...
 
 from flask import Flask,render_template
+import pandas as pd
+from pandas import ExcelWriter,DataFrame,ExcelFile
+
+#File path
+
+TPL_leaderboard=""
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
+
+    df=pd.read_excel(FVL_fileName,sheet_name='Schedule')
+
+
     return render_template('home.html')
 
 @app.route('/pointtable')
