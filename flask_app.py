@@ -29,7 +29,7 @@ def index():
     df.sort_values(by=['Current Rating'],inplace =True,ascending=False)
     data=[]
     for index,row in df.iterrows():
-                   data.append(row['Index'],row['Player'],row['Current Rating'])
+                   data.append([row['Index'],row['Player'],row['Current Rating']])
 
 
 
