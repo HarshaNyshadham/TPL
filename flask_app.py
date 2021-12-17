@@ -28,9 +28,9 @@ def index():
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl')
     df.sort_values(by=['Current Rating'],inplace =True,ascending=False)
     data=[]
-    counter=0
+
     for index,row in df.iterrows():
-                   data.append([counter+=1,row['Player'],row['Current Rating']])
+                   data.append([row['Player'],row['Current Rating']])
 
 
 
