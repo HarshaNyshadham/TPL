@@ -15,24 +15,12 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-#     wb = load_workbook(filename = TPL_leaderboard)
-#     ws = wb.get_sheet_by_name(name='Leaderboard')
-#     data=[]
-#     for row in ws.iter_rows(min_row=2,max_col=2):
-#       temp=[]
-#       for cell in row:
-#         temp.append(cell.value)
-#       data.append(temp)
-#     print(data)
-
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl')
     df.sort_values(by=['Current Rating'],inplace =True,ascending=False)
     data=[]
 
     for index,row in df.iterrows():
-                   data.append([row['Player'],row['Current Rating']])
-
-
+                   data.append([row['Player'],row['Matches'],row['Win'],row['Loss']row['Current Rating']])
 
 
     return render_template('home.html',data=data)
