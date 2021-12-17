@@ -20,7 +20,7 @@ def index():
     data=[]
 
     for index,row in df.iterrows():
-                   data.append([row['Player'],row['Matches'],row['Win'],row['Loss']row['Current Rating']])
+                   data.append([row['Player'],row['Matches'],row['Win'],row['Loss'],row['Current Rating']])
 
 
     return render_template('home.html',data=data)
