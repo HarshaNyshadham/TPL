@@ -36,3 +36,7 @@ def schedule():
 @app.route('/playoffs')
 def playoffs():
     return render_template('playoffs.html')
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
