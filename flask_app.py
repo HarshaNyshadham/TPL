@@ -43,5 +43,5 @@ def admin():
   if request.method == "POST":
     pwd=request.form.get("pwd")
     if pwd == "tpl":
-    return render_template('admin.html')
+      return render_template('admin.html')
   return redirect(url_for('login'))
