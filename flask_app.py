@@ -37,6 +37,11 @@ def schedule():
 def playoffs():
     return render_template('playoffs.html')
 
-@app.route('/admin')
+@app.route('/admin',methods=['GET', 'POST'])
 def admin():
+
+  if request.method == "POST":
+    pwd=request.form.get("pwd")
+    print(pwd)
     return render_template('admin.html')
+  return redirect(url_for('login'))
