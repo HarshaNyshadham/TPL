@@ -13,6 +13,7 @@ TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
 app = Flask(__name__)
 
 @app.route('/')
+@app.route('/index')
 def index():
 
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl')
@@ -45,4 +46,4 @@ def admin():
     if pwd == "tpl":
       return render_template('admin.html')
 
-  return redirect(url_for('login'))
+  return redirect(url_for('index'))
