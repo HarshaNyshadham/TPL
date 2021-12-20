@@ -55,6 +55,9 @@
                 <li>
                     <a href="{{ url_for('playoffs') }}">Playoffs</a>
                 </li>
+                <li>
+                    <a href="">Rules</a>
+                </li>
             </ul>
 
 
@@ -76,7 +79,7 @@
 
                    <div class="h4 mx-auto" style="margin-left: 20px;">Tennis Premier League</div>
 <!--                     <a class="nav-link" href="{{ url_for('admin') }}">Admin</a> -->
-                    <form action="{{ url_for("admin")}}" method="post">
+                    <form action="{{ url_for("admin")}}" method="post" class="fas fa-align-justify">
                       <label for="Admin">Admin:</label>
                       <input type="text" id="pwd" name="pwd" placeholder="password">
                       <button type="submit">submit</button>
