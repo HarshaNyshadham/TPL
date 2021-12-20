@@ -9,7 +9,7 @@ from openpyxl import load_workbook
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
-TPL_currentSeason
+TPL_currentSeason=''
 
 app = Flask(__name__)
 
@@ -34,7 +34,6 @@ def pointtable():
 @app.route('/schedule')
 def schedule():
     print(TPL_currentSeason)
-
     return render_template('schedule.html')
 
 @app.route('/playoffs')
