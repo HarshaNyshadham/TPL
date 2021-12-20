@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container">
-  <form action="" method="post" >
+  <form action="{{ url_for("upload")}}" method="post" >
   <label for="upload">Create new season:</label>
   <input type="text" id="sheet" name="sheet" placeholder="upload excel">
   <button type="submit">upload</button>

@@ -48,3 +48,7 @@ def admin():
       return render_template('admin.html')
 
   return redirect(url_for('index'))
+
+@app.route('/upload',methods=['GET', 'POST'])
+def upload():
+  print("ready")
