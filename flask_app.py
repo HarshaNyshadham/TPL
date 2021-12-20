@@ -9,6 +9,7 @@ from openpyxl import load_workbook
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
+TPL_currentSeason='/home/tpl/mysite/uploads/TPL_Season_1.xlsx'
 
 app = Flask(__name__)
 
