@@ -9,7 +9,7 @@ from openpyxl import load_workbook
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
-TPL_currentSeason=''
+TPL_currentSeason='/home/tpl/mysite/uploads/'
 
 app = Flask(__name__)
 
@@ -52,6 +52,6 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  TPL_currentSeason=request.form.get("sheet")
+  TPL_currentSeason+=request.form.get("sheet")
 
   return render_template('admin.html')
