@@ -51,5 +51,6 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  print('ready')
+  file=request.form.get("sheet")
+  print('file')
   return render_template('admin.html')
