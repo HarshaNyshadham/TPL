@@ -51,4 +51,4 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  print("ready")
+  return print('ready')
