@@ -90,7 +90,7 @@ a:focus {
 }
 
 #sidebar ul li a:hover {
-    color: #ccffff;
+    color: #6d7fcc;
     background: #FDFEFE;
 }
 
@@ -115,7 +115,7 @@ a[data-toggle="collapse"] {
 ul ul a {
     font-size: 0.5em !important;
     padding-left: 30px !important;
-    background: #ccffff;
+    background: #6d7fcc;
 }
 
 ul.CTAs {
