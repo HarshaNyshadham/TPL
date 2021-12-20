@@ -10,7 +10,7 @@ body {
 
 p {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
+    font-size: .9em;
     font-weight: 300;
     line-height: 1.7em;
     color: #999;
@@ -85,7 +85,7 @@ a:focus {
 
 #sidebar ul li a {
     padding: 10px;
-    font-size: 1.1em;
+    font-size: .9em;
     display: block;
 }
 
@@ -113,7 +113,7 @@ a[data-toggle="collapse"] {
 }
 
 ul ul a {
-    font-size: 0.9em !important;
+    font-size: 0.5em !important;
     padding-left: 30px !important;
     background: #6d7fcc;
 }
