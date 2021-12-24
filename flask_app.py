@@ -53,7 +53,8 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  filename=secure_filename(request.form.get("sheet"))
+  #filename=secure_filename(request.form.get("sheet"))
   file = request.files['file']
+  print(file)
   file.save(TPL_currentSeason+filename)
   return render_template('admin.html')

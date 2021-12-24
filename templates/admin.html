@@ -3,9 +3,9 @@
 {% block content %}
 
 <div class="container">
-  <form action="{{ url_for("upload")}}" method="post" nctype="multipart/form-data">
+  <form action="{{ url_for("upload")}}" method="post" enctype="multipart/form-data">
   <label for="upload">Create new season:</label>
-  <input type="file" id="sheet" name="file" placeholder="upload excel">
+  <input type="file" name="file" placeholder="upload excel">
   <button type="submit">upload</button>
   </form>
 </div>
