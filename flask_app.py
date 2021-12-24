@@ -5,6 +5,7 @@ from flask import Flask,render_template,request,redirect,url_for
 import pandas as pd
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
+from werkzeug import secure_filename
 
 #File path
 
@@ -52,6 +53,6 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  uploadSheet=request.form.get("sheet")
-  global TPL_currentSeason.append(uploadSheet)
+  filename=secure_filename(request.form.get("sheet"))
+  file.save(TPL_currentSeason+filename)
   return render_template('admin.html')
