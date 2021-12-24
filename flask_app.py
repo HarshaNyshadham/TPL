@@ -5,7 +5,7 @@ from flask import Flask,render_template,request,redirect,url_for
 import pandas as pd
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 #File path
 
