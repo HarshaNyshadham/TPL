@@ -52,6 +52,6 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  global TPL_currentSeason+=request.form.get("sheet")
-
+  uploadSheet=request.form.get("sheet")
+  global TPL_currentSeason+=uploadSheet
   return render_template('admin.html')
