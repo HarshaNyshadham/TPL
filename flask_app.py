@@ -13,7 +13,7 @@ import os
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
-TPL_currentSeason='/home/tpl/mysite/uploads/'
+TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
 
 #global variable to hold current season
 SeasonSchedule=pd.DataFrame()
