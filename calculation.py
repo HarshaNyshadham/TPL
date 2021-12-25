@@ -17,7 +17,11 @@ def create_new_season(filename):
     grpdata[df.columns[i]]=df.iloc[:,i]
  for i in range(num_of_groups):
     schedule_data.append(generate_sch_from_list(df.iloc[:,i]))
+
+ writer=pd.DataFrame(schedule_data)
+ writer.to_excel(filename,sheet_name='Schedule')
  print(schedule_data)
+ print(len(schedule_data))
  return grpdata
 
 
