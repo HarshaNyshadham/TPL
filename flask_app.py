@@ -41,7 +41,7 @@ def pointtable():
 
 @app.route('/schedule')
 def schedule():
-    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet='Schedule')
+    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
     data=[]
     for index,row in df.iterrows():
       data.append([row['Player1'],row['Player2'],row['Score']])
@@ -64,8 +64,5 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  filename=request.form.get("sheet")
-  global SeasonSchedule
-  SeasonSchedule=create_new_season()
-  print(SeasonSchedule)
+
   return render_template('admin.html')
