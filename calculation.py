@@ -19,9 +19,9 @@ def create_new_season(filename):
     schedule_data.append(generate_sch_from_list(df.iloc[:,i]))
 
  writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
- writer.to_excel(filename,sheet_name='Schedule')
- print(schedule_data)
- print(len(schedule_data))
+ #writer.to_excel(filename,sheet_name='Schedule')
+
+ print(writer)
  return grpdata
 
 
