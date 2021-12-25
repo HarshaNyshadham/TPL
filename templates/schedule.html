@@ -6,30 +6,9 @@
   Schedule
 </h3>
 
-<table class="table table-striped table-hover table-sm">
-         <thead class="thead-dark">
-            <tr>
-
-               <th>Player1</th>
-               <th>Player2</th>
-               <th>Score</th>
-
-            </tr>
-         </thead>
-
-         <tbody>
-
-            {% for entry in data %}
-               <tr>
-                  <td>{{ entry[0] }}</td>
-                  <td>{{ entry[1] }}</td>
-                  <td>{{ entry[2] }}</td>
-
-
-               </tr>
-            {% endfor %}
-
-         </tbody>
-</table>
+{% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+{% endfor %}
 
 {% endblock %}

@@ -3,6 +3,7 @@
 
 from flask import Flask,render_template,request,redirect,url_for
 import pandas as pd
+import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
@@ -40,8 +41,8 @@ def pointtable():
 
 @app.route('/schedule')
 def schedule():
-    print(SeasonSchedule)
-    return render_template('schedule.html',data=SeasonSchedule)
+
+    return render_template('schedule.html',tables=[SeasonSchedule.to_html(classes='data')], titles=SeasonSchedule.columns.values)
 
 @app.route('/playoffs')
 def playoffs():
