@@ -12,6 +12,10 @@ import os
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
 TPL_currentSeason='/home/tpl/mysite/uploads/'
 
+#global variable to hold current season
+SeasonSchedule=pd.DataFrame()
+SeasonPointtable=pd.DataFrame()
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -34,7 +38,7 @@ def pointtable():
 
 @app.route('/schedule')
 def schedule():
-    print(TPL_currentSeason)
+    print(SeasonSchedule)
     return render_template('schedule.html')
 
 @app.route('/playoffs')
@@ -53,9 +57,7 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  #filename=secure_filename(request.form.get("sheet"))
-  print(request.files['file'])
-  uploadfile = request.files['file']
-  print(uploadfile.filename)
-  uploadfile.save(TPL_currentSeason+uploadfile.filename)
+  filename=request.form.get("sheet")
+  SeasonSchedule=create_new_season()
+  print(SeasonSchedule)
   return render_template('admin.html')
