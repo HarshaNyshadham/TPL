@@ -20,7 +20,7 @@ def create_new_season(filename):
 
  writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
  #writer.to_excel(filename,sheet_name='Schedule')
- with pd.ExcelWriter(filename,mode='a') as wr:
+ with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='Schedule')
  print(writer)
  return grpdata
