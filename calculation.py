@@ -12,10 +12,11 @@ def create_new_season(filename):
  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
  grpdata=pd.DataFrame()
  num_of_groups= len(df.columns)
+ schedule_data=[]
  for i in range(num_of_groups):
     grpdata[df.columns[i]]=df.iloc[:,i]
-
- schedule_data=generate_sch_from_list(df.iloc[:,0])
+ for i in range(num_of_groups):
+    schedule_data.append(generate_sch_from_list(df.iloc[:,i]))
  print(schedule_data)
  return grpdata
 
