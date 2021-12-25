@@ -41,8 +41,12 @@ def pointtable():
 
 @app.route('/schedule')
 def schedule():
+    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet='Schedule')
+    data=[]
+    for index,row in df.iterrows():
+      data.append([row['Player1'],row['Player2'],row['Score']])
 
-    return render_template('schedule.html',tables=[SeasonSchedule.to_html(classes='data')], titles=SeasonSchedule.columns.values)
+    return render_template('schedule.html',data=data)
 
 @app.route('/playoffs')
 def playoffs():
