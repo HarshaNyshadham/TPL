@@ -5,7 +5,7 @@ def create_new_season(filename):
  schedule=pd.DataFrame()
  num_of_groups= len(df.columns)
  for i in range(num_of_groups):
-    schedule[df.column[i]]=df.iloc[:,i]
+    schedule[df.columns[i]]=df.iloc[:,i]
 
  print(schedule)
  return schedule
