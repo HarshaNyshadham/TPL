@@ -1,9 +1,11 @@
 import pandas as pd
 
-def create_new_season():
+def create_new_season(filename):
+ df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
+ schedule=pd.DataFrame()
+ num_of_groups= len(df.columns)
+ for i in num_of_groups:
+    schedule[df.column[i]]=df.iloc[:,i]
 
-  sch=pd.DataFrame()
-  sch['Player1'] = ['Anand','Ganesh','Mohana']
-  sch['Player2'] = ['Bhargav','Anil','Alok']
-  sch['Score'] = ['','','']
-  return sch
+ print(schedule)
+ return schedule
