@@ -41,7 +41,7 @@ def pointtable():
 @app.route('/schedule')
 def schedule():
     print(SeasonSchedule)
-    return render_template('schedule.html')
+    return render_template('schedule.html',data=SeasonSchedule)
 
 @app.route('/playoffs')
 def playoffs():
