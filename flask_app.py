@@ -60,6 +60,6 @@ def admin():
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
   filename=request.form.get("sheet")
-  SeasonSchedule=create_new_season()
+  global SeasonSchedule=create_new_season()
   print(SeasonSchedule)
   return render_template('admin.html')
