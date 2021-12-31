@@ -13,6 +13,7 @@ def create_new_season(filename):
  grpdata=pd.DataFrame()
  num_of_groups= len(df.columns)
  schedule_data=[]
+ pointtable_data=[]
  player_list=[]
 
  for i in range(num_of_groups):
@@ -21,13 +22,18 @@ def create_new_season(filename):
  for i in range(num_of_groups):
     schedule_data.extend(generate_sch_from_list(df.iloc[:,i]))
 
+    #writer for schedule
  writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='Schedule')
 
-
- print(player_list)
+  #writer for pointtable
+ pointtable_data=[]
+ for i in range(num_of_groups):
+    for j in range(1,len(df.rows)):
+      pointtable_data.extend([df.iloc[j,i],'0','0','0','0',i])
+ print(pointtable_data)
 
  print(writer)
  return num_of_groups
