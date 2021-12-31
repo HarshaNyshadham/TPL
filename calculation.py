@@ -13,7 +13,7 @@ def create_new_season(filename):
  grpdata=pd.DataFrame()
  num_of_groups= len(df.columns)
  schedule_data=[]
- pointtable_data=[]
+
  player_list=[]
 
  for i in range(num_of_groups):
