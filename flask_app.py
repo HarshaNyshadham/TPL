@@ -65,5 +65,6 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
+  global groups_currentseason
   groups_currentseason = create_new_season(TPL_currentSeason)
   return render_template('admin.html')
