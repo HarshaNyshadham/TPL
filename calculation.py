@@ -23,7 +23,7 @@ def create_new_season(filename):
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='Schedule')
  print(writer)
- return grpdata
+ return num_of_groups
 
 
 

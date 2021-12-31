@@ -14,6 +14,7 @@ import os
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
 TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
+groups_currentseason=0
 
 #global variable to hold current season
 SeasonSchedule=pd.DataFrame()
@@ -37,7 +38,7 @@ def index():
 
 @app.route('/pointtable')
 def pointtable():
-    return render_template('pointtable.html',data=2)
+    return render_template('pointtable.html',groups_currentseason)
 
 @app.route('/schedule')
 def schedule():
@@ -64,5 +65,5 @@ def admin():
 
 @app.route('/upload',methods=['GET', 'POST'])
 def upload():
-  create_new_season(TPL_currentSeason)
+  groups_currentseason = create_new_season(TPL_currentSeason)
   return render_template('admin.html')
