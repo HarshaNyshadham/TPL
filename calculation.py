@@ -31,7 +31,7 @@ def create_new_season(filename):
   #writer for pointtable
  pointtable_data=[]
  for i in range(num_of_groups):
-    for j in range(1,len(df.rows)):
+    for j in range(len(df.index)):
       pointtable_data.extend([df.iloc[j,i],'0','0','0','0',i])
  print(pointtable_data)
 
