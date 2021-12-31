@@ -38,6 +38,7 @@ def index():
 
 @app.route('/pointtable')
 def pointtable():
+    print(groups_currentseason)
     return render_template('pointtable.html',data=groups_currentseason)
 
 @app.route('/schedule')
