@@ -32,11 +32,11 @@ def create_new_season(filename):
  pointtable_data=[]
  for i in range(num_of_groups):
     for j in range(len(df.index)):
-      pointtable_data.extend([df.iloc[j,i],'0','0','0','0',i+1])
+      pointtable_data.extend([[df.iloc[j,i],'0','0','0','0',i+1]])
 
- writer=pd.DataFrame(pointtable_data,columns=['Player','Matches','Won','Loss','Bonus','Group'])
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     writer.to_excel(wr,sheet_name='PointTable')
+#  writer=pd.DataFrame(pointtable_data,columns=['Player','Matches','Won','Loss','Bonus','Group'])
+#  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+#                      writer.to_excel(wr,sheet_name='PointTable')
  print(pointtable_data)
 
  print(writer)
