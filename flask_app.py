@@ -39,7 +39,8 @@ def index():
 @app.route('/pointtable')
 def pointtable():
     print(groups_currentseason)
-    return render_template('pointtable.html',data=groups_currentseason)
+    pt_dict={1:['a','0','0','0','0','100'],2:['a','0','0','0','0','200'],3:['a','0','0','0','0','140']}
+    return render_template('pointtable.html',data=groups_currentseason,pt_data=pt_dict)
 
 @app.route('/schedule')
 def schedule():
