@@ -101,7 +101,11 @@ def submitScore():
       p1forefeit=request.form.get("p1forefeit")
       p2forefeit=request.form.get("p2forefeit")
       row_index=request.args.get('row_id')
-      print(row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
+      player1=request.args.get('player1')
+      player2=request.args.get('player2')
+
+
+      print(row_index,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
 
       #check score
 

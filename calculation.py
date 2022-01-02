@@ -63,10 +63,16 @@ def create_new_season(filename):
 
  return num_of_groups
 
+def update_points(filename,p1,p1points,p2,p2points):
+  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable')
+  df.at[row[p1],'Points']=df.at[row[p1],'Points']+p1points
+  df.at[row[p2],'Points']=df.at[row[p2],'Points']+p2points
+  PointTable_writer(df,filename)
 
-def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
+def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
   #update leaderboard rating and past matches
   # update Score in Schedule and pointable
+  update_points(filename,player1,20,player2,30)
   score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
   df_sch.at[int(row_id),'Score']= score
