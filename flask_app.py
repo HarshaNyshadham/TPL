@@ -62,7 +62,7 @@ def schedule():
     for index,row in df_pt.iterrows():
       player_list.append(row['Player'])
 
-    print(player_list)
+
     if request.method == "POST":
       select_value=request.form.get("comp_select")
       print(select_value)
