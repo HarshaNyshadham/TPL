@@ -73,11 +73,5 @@ def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
     if(int(row_id)==index):
       row['Score']=score
 
-  workbook=openpyxl.load_workbook(filename)
-  if 'Schedule' in workbook.sheetnames:
-     del workbook['Schedule']
-     workbook.save(filename)
-  #writer.to_excel(filename,sheet_name='Schedule')
-  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     df_sch.to_excel(wr,sheet_name='Schedule')
+
   return True
