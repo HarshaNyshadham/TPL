@@ -9,7 +9,7 @@
 
 <div class="container mx-auto mb-3 py-3 bg-dark text-white text-center" style="width: 600px;">
   <form action="{{ url_for("enterScore")}}" method="post" >
-  <h4 class='text-center'>
+  <h4 class='text-center mb-2 py-2'>
     {{p1}}
   </h4>
 
@@ -37,7 +37,7 @@
 
 
 
-  <h4 class='text-center'>
+  <h4 class='text-center mb-2 py-2'>
     {{p2}}
   </h4>
 
@@ -62,7 +62,7 @@
   {% endfor %}
   </select>
   <br>
-  <button type="submit">Submit</button>
+  <button type="submit" class="mb-1 py-1">Submit</button>
   </form>
 </div>
 
