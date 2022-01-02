@@ -65,8 +65,17 @@ def create_new_season(filename):
 
 def update_points(filename,p1,p1points,p2,p2points):
   df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable')
-  df.at[row[p1],'Points']=df.at[row[p1],'Points']+p1points
-  df.at[row[p2],'Points']=df.at[row[p2],'Points']+p2points
+  p1index=0
+  p2index=0
+  for index,row in df.iterrows():
+    if(row['Player']==str(p1)):
+      p1index=index
+    if(row['Player']==str(p2)):
+      p2index=index
+
+
+  df.at[p1index,'Points']=df.at[p1index,'Points']+p1points
+  df.at[p2index,'Points']=df.at[p2index,'Points']+p2points
   PointTable_writer(df,filename)
 
 def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
