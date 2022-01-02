@@ -79,6 +79,11 @@ def schedule():
 def playoffs():
     return render_template('playoffs.html')
 
+
+@app.route('/enterScore',methods=['GET', 'POST'])
+def enterScore():
+    return render_template('enterScore.html')
+
 @app.route('/admin',methods=['GET', 'POST'])
 def admin():
 

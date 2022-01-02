@@ -33,8 +33,13 @@
                <tr>
                   <td>{{ entry[0] }}</td>
                   <td>{{ entry[1] }}</td>
+                  {% if entry[2] == 'x' %}
+                  <form action="{{ url_for("enterScore")}}" method="post" >
+                    <button type="submit">Enter Score</button>
+                  </form>
+                  {% else %}
                   <td class="bg-info">{{ entry[2] }}</td>
-
+                  {% endif %}
                </tr>
             {% endfor %}
          </tbody>
