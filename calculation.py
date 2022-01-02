@@ -9,6 +9,31 @@ def generate_sch_from_list(lst):
 
   return temp
 
+def Schedule_writer(schedule_data,filename):
+   #writer for schedule
+ writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
+ #delete the sheet if already exist
+
+ workbook=openpyxl.load_workbook(filename)
+ if 'Schedule' in workbook.sheetnames:
+     del workbook['Schedule']
+     workbook.save(filename)
+ #writer.to_excel(filename,sheet_name='Schedule')
+ with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+                     writer.to_excel(wr,sheet_name='Schedule')
+ return True
+
+
+def PointTable_writer(PT_data,filename):
+ writer=pd.DataFrame(PT_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
+
+ workbook=openpyxl.load_workbook(filename)
+ if 'PointTable' in workbook.sheetnames:
+     del workbook['PointTable']
+     workbook.save(filename)
+ with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+                     writer.to_excel(wr,sheet_name='PointTable')
+
 def create_new_season(filename):
  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
  grpdata=pd.DataFrame()
@@ -23,17 +48,7 @@ def create_new_season(filename):
  for i in range(num_of_groups):
     schedule_data.extend(generate_sch_from_list(df.iloc[:,i]))
 
-    #writer for schedule
- writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
- #delete the sheet if already exist
-
- workbook=openpyxl.load_workbook(filename)
- if 'Schedule' in workbook.sheetnames:
-     del workbook['Schedule']
-     workbook.save(filename)
- #writer.to_excel(filename,sheet_name='Schedule')
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     writer.to_excel(wr,sheet_name='Schedule')
+ Schedule_writer(schedule_data,filename)
 
   #writer for pointtable
  pointtable_data=[]
@@ -41,14 +56,7 @@ def create_new_season(filename):
     for j in range(len(df.index)):
       pointtable_data.extend([[df.iloc[j,i],'0','0','0','0','0',i+1]])
 
- writer=pd.DataFrame(pointtable_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
-
- workbook=openpyxl.load_workbook(filename)
- if 'PointTable' in workbook.sheetnames:
-     del workbook['PointTable']
-     workbook.save(filename)
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     writer.to_excel(wr,sheet_name='PointTable')
+ PointTable_writer(pointtable_data,filename)
 
 
 
@@ -71,5 +79,5 @@ def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
      workbook.save(filename)
   #writer.to_excel(filename,sheet_name='Schedule')
   with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     writer.to_excel(wr,sheet_name='Schedule')
+                     df_sch.to_excel(wr,sheet_name='Schedule')
   return True
