@@ -52,7 +52,7 @@ def pointtable():
 #     pt_dict={1:[['a','0','0','0','0','100'],['z','0','0','0','0','1000']],2:[['a','0','0','0','0','200']],3:[['a','0','0','0','0','140']]}
 #     return render_template('pointtable.html',data=3,pt_data=pt_dict)
 
-@app.route('/schedule')
+@app.route('/schedule',methods=['GET', 'POST'])
 def schedule():
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
     data=[]
