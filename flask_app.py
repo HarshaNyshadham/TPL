@@ -84,6 +84,7 @@ def playoffs():
 def enterScore():
     player1=request.args.get('player1')
     player2=request.args.get('player2')
+    print(player1,player2)
     return render_template('enterScore.html',player1=player1,player2=player2)
 
 @app.route('/admin',methods=['GET', 'POST'])
