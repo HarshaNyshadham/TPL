@@ -11,7 +11,16 @@
   <h4 class='text-center'>
     {{p1}}
   </h4>
+  <div>
+  <form action="{{ url_for("enterScore")}}" method="post" >
+  <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  {% for i in range(6) %}
+  <option value=i+1>i+1</option>
+  {% endfor %}
+  </select>
 
+  </form>
+  </div>
   <h4 class='text-center'>
     {{p2}}
   </h4>
