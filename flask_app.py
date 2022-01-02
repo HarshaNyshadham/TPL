@@ -85,21 +85,26 @@ def enterScore():
     player1=request.args.get('player1')
     player2=request.args.get('player2')
     row_index=request.args.get('id')
-    if request.method == "POST":
+    print(row_index,player1,player2)
+
+    return render_template('enterScore.html',p1=player1,p2=player2,row_index=row_index)
+
+@app.route('/submitScore',methods=['GET', 'POST'])
+def submitScore():
+  if request.method == "POST":
       p1s1=request.form.get("p1set1")
       p1s2=request.form.get("p1set2")
       p1s3=request.form.get("p1set3")
       p2s1=request.form.get("p2set1")
       p2s2=request.form.get("p2set2")
       p2s3=request.form.get("p2set3")
+      row_index=request.args.get('row_id')
       print(row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
 
       #check score
 
       #update score
       update_score(TPL_currentSeason,row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
-
-    return render_template('enterScore.html',p1=player1,p2=player2)
 
 @app.route('/admin',methods=['GET', 'POST'])
 def admin():
