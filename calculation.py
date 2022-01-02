@@ -27,7 +27,7 @@ def create_new_season(filename):
  writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
  #delete the sheet if already exist
 
-  workbook=openpyxl.load_workbook(filename)
+ workbook=openpyxl.load_workbook(filename)
   if(workbook['Schedule']):
      del workbook['Schedule']
  #writer.to_excel(filename,sheet_name='Schedule')
