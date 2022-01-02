@@ -69,12 +69,13 @@ def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   # update Score in Schedule and pointable
   score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
+  df_sch.at[int(row_id),'Score']
 
-  for index,row in df_sch.iterrows():
-    if(int(row_id)==index):
-      print(index,score)
-      row['Score']=score
-  print(df_sch)
+#   for index,row in df_sch.iterrows():
+#     if(int(row_id)==index):
+#       print(index,score)
+#       row['Score']=score
+#   print(df_sch)
   Schedule_writer(df_sch,filename)
 
   return True
