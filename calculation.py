@@ -28,7 +28,7 @@ def create_new_season(filename):
  #delete the sheet if already exist
 
  workbook=openpyxl.load_workbook(filename)
-  if(workbook['Schedule']):
+ if(workbook['Schedule']):
      del workbook['Schedule']
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
