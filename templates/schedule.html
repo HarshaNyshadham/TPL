@@ -29,7 +29,7 @@
          </thead>
 
          <tbody>
-            {% for index,entry in data %}
+            {% for index,entry in enumerate(data) %}
                <tr>
                   <td>{{ entry[0] }}</td>
                   <td>{{ entry[1] }}</td>
