@@ -110,7 +110,7 @@ def submitScore():
       #check score
 
       #update score
-      update_score(TPL_currentSeason,row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+      update_score(TPL_currentSeason,row_index,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
       return redirect(url_for('schedule'))
   return redirect(url_for('enterScore'))
 
