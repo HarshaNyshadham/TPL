@@ -72,7 +72,9 @@ def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   for index,row in df_sch.iterrows():
 
     if(int(row_id)==index):
+      print(index,score)
       row['Score']=score
+  print(df_sch)
   Schedule_writer(df_sch,filename)
 
   return True
