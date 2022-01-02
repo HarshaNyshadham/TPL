@@ -23,7 +23,7 @@
 
          <tbody>
                 {% for item in pt_data %}
-                   {% if entry==item[6] %}
+                   {% if (entry+1)==item[6] %}
                <tr>
                   <td>{{item[0]}}</td>
                   <td>{{item[1]}}</td>
