@@ -98,8 +98,10 @@ def submitScore():
       p2s1=request.form.get("p2set1")
       p2s2=request.form.get("p2set2")
       p2s3=request.form.get("p2set3")
+      p1forefeit=request.form.get("p1forefeit")
+      p2forefeit=request.form.get("p1forefeit")
       row_index=request.args.get('row_id')
-      print(row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+      print(row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
 
       #check score
 
