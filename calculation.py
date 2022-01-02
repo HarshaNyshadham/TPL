@@ -56,7 +56,7 @@ def create_new_season(filename):
  for i in range(num_of_groups):
     for j in range(len(df.index)):
       pointtable_data.extend([[df.iloc[j,i],'0','0','0','0','0',i+1]])
- writer=pd.DataFrame(PT_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
+ writer=pd.DataFrame(pointtable_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
  PointTable_writer(writer,filename)
 
 
