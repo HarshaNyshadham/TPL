@@ -66,7 +66,7 @@ def schedule():
     if request.method == "POST":
       select_value=request.form.get("comp_select")
       for index,row in df.iterrows():
-        if(select_value==row['Player1'] or select_value==row['Player1']):
+        if(select_value==row['Player1'] or select_value==row['Player2']):
           data.append([row['Player1'],row['Player2'],row['Score']])
       return render_template('schedule.html',data=data,players=player_list)
 
