@@ -28,9 +28,8 @@ def create_new_season(filename):
  #delete the sheet if already exist
 
  workbook=openpyxl.load_workbook(filename)
- if(workbook['Schedule']):
+ if 'Schedule' in workbook.sheetnames:
      del workbook['Schedule']
-     print('delted')
      workbook.save(filename)
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
@@ -45,8 +44,9 @@ def create_new_season(filename):
  writer=pd.DataFrame(pointtable_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
 
  workbook=openpyxl.load_workbook(filename)
- if(workbook['PointTable']):
+ if 'PointTable' in workbook.sheetnames:
      del workbook['PointTable']
+     workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='PointTable')
 
