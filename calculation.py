@@ -58,7 +58,7 @@ def create_new_season(filename):
 def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   #update leaderboard rating and past matches
   # update Score in Schedule and pointable
-  score= p1s1.str()+'-'+p2s1
+  score= str(p1s1)+'-'+str(p2s1)
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
   for index,row in df_sch.iterrows():
     if[row_id==index]:
