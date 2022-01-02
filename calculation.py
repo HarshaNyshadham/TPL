@@ -61,7 +61,7 @@ def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   score= str(p1s1)+'-'+str(p2s1)
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
   for index,row in df_sch.iterrows():
-    if[row_id==index]:
+    if(row_id==index):
       print(index,score)
 
   return True
