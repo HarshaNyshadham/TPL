@@ -7,7 +7,7 @@ import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
-from calculation import create_new_season
+from calculation import create_new_season,update_score
 
 import os
 #File path
@@ -93,6 +93,12 @@ def enterScore():
       p2s2=request.form.get("p2set2")
       p2s3=request.form.get("p2set3")
       print(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+
+      #check score
+
+      #update score
+      update_score(player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+
     return render_template('enterScore.html',p1=player1,p2=player2)
 
 @app.route('/admin',methods=['GET', 'POST'])

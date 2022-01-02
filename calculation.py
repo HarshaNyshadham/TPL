@@ -1,4 +1,5 @@
 import pandas as pd
+import openpyxl
 
 def generate_sch_from_list(lst):
   temp=[]
@@ -26,6 +27,9 @@ def create_new_season(filename):
  writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
  #delete the sheet if already exist
 
+  workbook=openpyxl.load_workbook(filename)
+  if(workbook['Schedule']):
+     del workbook['Schedule']
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='Schedule')
@@ -37,6 +41,10 @@ def create_new_season(filename):
       pointtable_data.extend([[df.iloc[j,i],'0','0','0','0','0',i+1]])
 
  writer=pd.DataFrame(pointtable_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
+
+ workbook=openpyxl.load_workbook(filename)
+ if(workbook['PointTable']):
+     del workbook['PointTable']
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='PointTable')
  print(pointtable_data)
@@ -45,4 +53,5 @@ def create_new_season(filename):
  return num_of_groups
 
 
-
+def update_score(p1,p2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
+  return True
