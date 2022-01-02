@@ -56,6 +56,11 @@ def pointtable():
 def schedule():
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
     data=[]
+
+    if request.method == "POST":
+      select_value=request.form.get("comp_select")
+      print(select_value)
+
     for index,row in df.iterrows():
       data.append([row['Player1'],row['Player2'],row['Score']])
 
