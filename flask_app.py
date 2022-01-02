@@ -56,6 +56,11 @@ def pointtable():
 def schedule():
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
     data=[]
+    df_pt=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
+    player_list=[]
+
+    for index,row in df_pt.iterrows():
+      player_list.append(row['Player'])
 
     if request.method == "POST":
       select_value=request.form.get("comp_select")
@@ -64,7 +69,7 @@ def schedule():
     for index,row in df.iterrows():
       data.append([row['Player1'],row['Player2'],row['Score']])
 
-    return render_template('schedule.html',data=data)
+    return render_template('schedule.html',data=data,players=player_list)
 
 @app.route('/playoffs')
 def playoffs():
