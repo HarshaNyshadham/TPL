@@ -31,7 +31,7 @@ def create_new_season(filename):
  if(workbook['Schedule']):
      del workbook['Schedule']
      print('delted')
-     workbook1.save(filename)
+     workbook.save(filename)
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      writer.to_excel(wr,sheet_name='Schedule')
