@@ -87,10 +87,10 @@ def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p
   if(p1forefeit or p2forefeit):
    if(p1forefeit):
      update_points(filename,player1,0,player2,40)
-     score='Forefeit by'+ p1
+     score='Forefeit by'+ str(player1)
    elif(p2forefeit):
      update_points(filename,player1,40,player2,0)
-     score='Forefeit by'+ p2
+     score='Forefeit by'+ str(player2)
 
 
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
