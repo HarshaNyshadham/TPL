@@ -81,7 +81,11 @@ def update_points(filename,p1,p1points,p2,p2points):
 def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
   #update leaderboard rating and past matches
   # update Score in Schedule and pointable
-  update_points(filename,player1,20,player2,30)
+  if(p1forefeit==1):
+    update_points(filename,player1,0,player2,40)
+  elif(p2forefeit==2):
+    update_points(filename,player1,40,player2,0)
+
   score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
   df_sch.at[int(row_id),'Score']= score
