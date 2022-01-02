@@ -84,7 +84,7 @@ def playoffs():
 def enterScore():
     player1=request.args.get('player1')
     player2=request.args.get('player2')
-
+    row_index=request.args.get('id')
     if request.method == "POST":
       p1s1=request.form.get("p1set1")
       p1s2=request.form.get("p1set2")
@@ -92,12 +92,12 @@ def enterScore():
       p2s1=request.form.get("p2set1")
       p2s2=request.form.get("p2set2")
       p2s3=request.form.get("p2set3")
-      print(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+      print(row_index,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
 
       #check score
 
       #update score
-      update_score(player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+      update_score(TPL_currentSeason,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
 
     return render_template('enterScore.html',p1=player1,p2=player2)
 
