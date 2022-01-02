@@ -9,9 +9,9 @@ def generate_sch_from_list(lst):
 
   return temp
 
-def Schedule_writer(schedule_data,filename):
+def Schedule_writer(schedule_dataframe,filename):
    #writer for schedule
- writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
+
  #delete the sheet if already exist
 
  workbook=openpyxl.load_workbook(filename)
@@ -20,19 +20,19 @@ def Schedule_writer(schedule_data,filename):
      workbook.save(filename)
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     writer.to_excel(wr,sheet_name='Schedule')
+                     schedule_dataframe.to_excel(wr,sheet_name='Schedule')
  return True
 
 
-def PointTable_writer(PT_data,filename):
- writer=pd.DataFrame(PT_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
+def PointTable_writer(PT_dataframe,filename):
+
 
  workbook=openpyxl.load_workbook(filename)
  if 'PointTable' in workbook.sheetnames:
      del workbook['PointTable']
      workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
-                     writer.to_excel(wr,sheet_name='PointTable')
+                     PT_dataframe.to_excel(wr,sheet_name='PointTable')
 
 def create_new_season(filename):
  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
@@ -48,15 +48,16 @@ def create_new_season(filename):
  for i in range(num_of_groups):
     schedule_data.extend(generate_sch_from_list(df.iloc[:,i]))
 
- Schedule_writer(schedule_data,filename)
+ writer=pd.DataFrame(schedule_data,columns=['Player1','Player2','Score'])
+ Schedule_writer(writer,filename)
 
   #writer for pointtable
  pointtable_data=[]
  for i in range(num_of_groups):
     for j in range(len(df.index)):
       pointtable_data.extend([[df.iloc[j,i],'0','0','0','0','0',i+1]])
-
- PointTable_writer(pointtable_data,filename)
+ writer=pd.DataFrame(PT_data,columns=['Player','Matches','Won','Loss','Bonus','Points','Group'])
+ PointTable_writer(writer,filename)
 
 
 
@@ -72,6 +73,6 @@ def update_score(filename,row_id,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
 
     if(int(row_id)==index):
       row['Score']=score
-
+  Schedule_writer(df_sch,filename)
 
   return True
