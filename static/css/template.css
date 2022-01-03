@@ -132,13 +132,13 @@ ul.CTAs a {
 
 a.download {
     background: #fff;
-    color: #7386D5;
+    color: WHITE;
 }
 
 a.article,
 a.article:hover {
     background: Blue !important;
-    color: #FDFEFE !important;
+    color: WHITE !important;
 }
 
 /* ---------------------------------------------------
