@@ -137,7 +137,7 @@ def clearLB():
   df.at[index,'Current Rating']=1000
   df.at[index,'Prev Rating']=1000
   df.at[index,'Matches']=0
-  df.at[index,'Won']=0
+  df.at[index,'Win']=0
   df.at[index,'Loss']=0
  Leaderboard_writer(df,TPL_leaderboard)
  return render_template('admin.html')
