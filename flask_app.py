@@ -26,7 +26,7 @@ app = Flask(__name__)
 @app.route('/index')
 def index():
 
-    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl')
+    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard')
     df.sort_values(by=['Current Rating'],inplace =True,ascending=False)
     data=[]
 
