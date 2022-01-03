@@ -34,6 +34,16 @@ def PointTable_writer(PT_dataframe,filename):
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      PT_dataframe.to_excel(wr,sheet_name='PointTable')
 
+def Leaderboard_writer(LB_dataframe,filename):
+
+
+ workbook=openpyxl.load_workbook(filename)
+ if 'Leaderboard' in workbook.sheetnames:
+     del workbook['PointTable']
+     workbook.save(filename)
+ with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+                     LB_dataframe.to_excel(wr,sheet_name='Leaderboard')
+
 def create_new_season(filename):
  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
  grpdata=pd.DataFrame()
@@ -120,7 +130,25 @@ def calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
 
   return ([p1points,p2points,winner,bonusplayer])
 
-def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
+
+def calc_xrating(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,current_p1_xrating,current_p2_xrating):
+
+    p1sum=p1s1+p1s2+p1s3
+    p2sum=p2s1+p2s2+p2s3
+
+    prob_p1_before=round(current_p1_xrating/(current_p1_xrating+current_p2_xrating),3)
+    prob_p2_before=round(current_p2_xrating/(current_p1_xrating+current_p2_xrating),3)
+
+    prob_p1_after=round(p1sum/(p1sum+p2sum),3)
+    prob_p2_after=round(p2sum/(p1sum+p2sum),3)
+
+    Xchange_p1=(prob_p1_after-prob_p1_before)*1000
+    Xchange_p2=(prob_p2_after-prob_p2_before)*1000
+
+
+    return([new_xrating_p1,new_xrating_p2])
+
+def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
   #update leaderboard rating and past matches
   # update Score in Schedule and pointable
 
@@ -141,4 +169,17 @@ def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p
   df_sch.at[int(row_id),'Score']= score
   Schedule_writer(df_sch,filename)
 
+  #update leaderboard
+  df_LB=pd.read_excel(leaderboard_filename, engine ='openpyxl')
+  p1index=0
+  p2index=0
+  for index,row in df_LB.iterrows():
+    if(row['Player']==str(player1)):
+      p1index=index
+    if(row['Player']==str(player2)):
+      p2index=index
+  new_rating=calc_xrating(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,df_LB.at[p1index,'Current Rating'],df_LB.at[p2index,'Current Rating'])
+  df_LB.at[p1index,'Current Rating']=df_LB.at[p1index,'Current Rating']+new_rating[0]
+  df_LB.at[p2index,'Current Rating']=df_LB.at[p2index,'Current Rating']+new_rating[1]
+  Leaderboard_writer(df_LB,leaderboard_filename)
   return True
