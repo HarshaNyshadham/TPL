@@ -84,8 +84,8 @@ def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
     df.at[p1index,'Won']=df.at[p1index,'Won']+1
     df.at[p2index,'Loss']=df.at[p2index,'Loss']+1
   elif(winner=='p2'):
-    df.at[p1index,'Won']=df.at[p1index,'Loss']+1
-    df.at[p2index,'Loss']=df.at[p2index,'Won']+1
+    df.at[p1index,'Loss']=df.at[p1index,'Loss']+1
+    df.at[p2index,'Won']=df.at[p2index,'Won']+1
   #bonus
   if(bonusplayer=='p1'):
     df.at[p1index,'Bonus']=df.at[p1index,'Bonus']+10
