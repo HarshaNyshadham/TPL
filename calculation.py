@@ -63,7 +63,7 @@ def create_new_season(filename):
 
  return num_of_groups
 
-def update_points(filename,p1,p1points,p2,p2points):
+def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
   df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable')
   p1index=0
   p2index=0
@@ -73,29 +73,52 @@ def update_points(filename,p1,p1points,p2,p2points):
     if(row['Player']==str(p2)):
       p2index=index
 
-
+  #points
   df.at[p1index,'Points']=df.at[p1index,'Points']+p1points
   df.at[p2index,'Points']=df.at[p2index,'Points']+p2points
+  #matches
+  df.at[p1index,'Matches']=df.at[p1index,'Matches']+1
+  df.at[p2index,'Matches']=df.at[p2index,'Matches']+1
+  #win and loss
+  if(winner=='p1'):
+    df.at[p1index,'Won']=df.at[p1index,'Won']+1
+    df.at[p2index,'Loss']=df.at[p2index,'Loss']+1
+  elif(winner=='p2'):
+    df.at[p1index,'Won']=df.at[p1index,'Loss']+1
+    df.at[p2index,'Loss']=df.at[p2index,'Won']+1
+  #bonus
+  if(bonusplayer=='p1'):
+    df.at[p1index,'Bonus']=df.at[p1index,'Bonus']+10
+  elif(bonusplayer=='p2'):
+    df.at[p2index,'Bonus']=df.at[p2index,'Bonus']+10
+
   PointTable_writer(df,filename)
 
 def calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   p1points=0
   p2points=0
   bonus=0
-
+  winner=''
+  bonusplayer=''
   if(p1s3 or p2s3):
     bonus=10
 
   if((p1s1+p1s2+p1s3)>(p2s1+p2s2+p2s3)):
     p1points=40
     p2points=10+bonus
+    winner='p1'
+    if(bonus):
+      bonusplayer='p2'
   else:
     p1points=10+bonus
     p2points=40
+    winner='p2'
+    if(bonus):
+      bonusplayer='p1'
 
 
 
-  return ([p1points,p2points])
+  return ([p1points,p2points,winner,bonusplayer])
 
 def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
   #update leaderboard rating and past matches
@@ -105,15 +128,15 @@ def update_score(filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p
 
   if(p1forefeit or p2forefeit):
    if(p1forefeit):
-     update_points(filename,player1,0,player2,40)
+     update_points(filename,player1,0,player2,40,'p2','')
      score='Forefeit by '+ str(player1)
    elif(p2forefeit):
-     update_points(filename,player1,40,player2,0)
+     update_points(filename,player1,40,player2,0,'p1','')
      score='Forefeit by '+ str(player2)
 
   get_points=calc_points(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3))
 
-  update_points(filename,player1,get_points[0],player2,get_points[1])
+  update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]))
   df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
   df_sch.at[int(row_id),'Score']= score
   Schedule_writer(df_sch,filename)
