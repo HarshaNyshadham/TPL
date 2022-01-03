@@ -153,6 +153,8 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
   # update Score in Schedule and pointable
 
   score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
+  df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
+
   #update pointable
   if(p1forefeit or p2forefeit):
    if(p1forefeit):
@@ -161,11 +163,14 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
    elif(p2forefeit):
      update_points(filename,player1,40,player2,0,'p1','')
      score='Forefeit by '+ str(player2)
-  else:
-     get_points=calc_points(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3))
-     update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]))
+   df_sch.at[int(row_id),'Score']= score
+   Schedule_writer(df_sch,filename)
+   return True
+
+  get_points=calc_points(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3))
+  update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]))
   #update Schedule
-  df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
+
   df_sch.at[int(row_id),'Score']= score
   Schedule_writer(df_sch,filename)
 
