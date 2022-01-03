@@ -7,7 +7,7 @@ import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
-from calculation import create_new_season,update_score
+from calculation import create_new_season,update_score,Leaderboard_writer
 
 import os
 #File path
@@ -129,3 +129,15 @@ def upload():
   global groups_currentseason
   groups_currentseason = create_new_season(TPL_currentSeason)
   return render_template('admin.html')
+
+@app.route('/clearLB',methods=['GET', 'POST'])
+def clearLB():
+df=pd.read_excel(TPL_Leaderboard, engine ='openpyxl',sheet_name ='Leaderboard')
+for index,row in df.iterrows():
+  df.at[index,'Current Rating']=1000
+  df.at[index,'Prev Rating']=1000
+  df.at[index,'Matches']=0
+  df.at[index,'Won']=0
+  df.at[index,'Loss']=0
+Leaderboard_writer(df,leaderboard_filename)
+return True
