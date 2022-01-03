@@ -178,7 +178,7 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
       p1index=index
     if(row['Player']==str(player2)):
       p2index=index
-  new_rating=calc_xrating(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,df_LB.at[p1index,'Current Rating'],df_LB.at[p2index,'Current Rating'])
+  new_rating=calc_xrating(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3),df_LB.at[p1index,'Current Rating'],df_LB.at[p2index,'Current Rating'])
   df_LB.at[p1index,'Current Rating']=df_LB.at[p1index,'Current Rating']+new_rating[0]
   df_LB.at[p2index,'Current Rating']=df_LB.at[p2index,'Current Rating']+new_rating[1]
   Leaderboard_writer(df_LB,leaderboard_filename)
