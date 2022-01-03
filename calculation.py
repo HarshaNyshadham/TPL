@@ -170,7 +170,7 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
   Schedule_writer(df_sch,filename)
 
   #update leaderboard
-  df_LB=pd.read_excel(leaderboard_filename, engine ='openpyxl')
+  df_LB=pd.read_excel(leaderboard_filename, engine ='openpyxl',sheet_name ='Leaderboard')
   p1index=0
   p2index=0
   for index,row in df_LB.iterrows():
