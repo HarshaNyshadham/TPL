@@ -89,7 +89,7 @@ def calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   if((p1s1+p1s2+p1s3)>(p2s1+p2s2+p2s3)):
     p1points=40
     p2points=10+bonus
-  elif:
+  else:
     p1points=10+bonus
     p2points=40
 
