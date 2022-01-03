@@ -146,7 +146,7 @@ def calc_xrating(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,current_p1_xrating,current_p2_xra
     Xchange_p2=(prob_p2_after-prob_p2_before)*1000
 
 
-    return([new_xrating_p1,new_xrating_p2])
+    return([Xchange_p1,Xchange_p2])
 
 def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
   #update leaderboard rating and past matches
