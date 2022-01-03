@@ -39,7 +39,7 @@ def Leaderboard_writer(LB_dataframe,filename):
 
  workbook=openpyxl.load_workbook(filename)
  if 'Leaderboard' in workbook.sheetnames:
-     del workbook['PointTable']
+     del workbook['Leaderboard']
      workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
                      LB_dataframe.to_excel(wr,sheet_name='Leaderboard')
