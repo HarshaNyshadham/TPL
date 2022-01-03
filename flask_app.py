@@ -140,4 +140,4 @@ def clearLB():
   df.at[index,'Won']=0
   df.at[index,'Loss']=0
  Leaderboard_writer(df,TPL_leaderboard)
- return True
+ return render_template('admin.html')
