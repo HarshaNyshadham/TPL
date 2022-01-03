@@ -132,12 +132,12 @@ def upload():
 
 @app.route('/clearLB',methods=['GET', 'POST'])
 def clearLB():
-df=pd.read_excel(TPL_Leaderboard, engine ='openpyxl',sheet_name ='Leaderboard')
-for index,row in df.iterrows():
+ df=pd.read_excel(TPL_Leaderboard, engine ='openpyxl',sheet_name ='Leaderboard')
+ for index,row in df.iterrows():
   df.at[index,'Current Rating']=1000
   df.at[index,'Prev Rating']=1000
   df.at[index,'Matches']=0
   df.at[index,'Won']=0
   df.at[index,'Loss']=0
-Leaderboard_writer(df,leaderboard_filename)
-return True
+ Leaderboard_writer(df,leaderboard_filename)
+ return True
