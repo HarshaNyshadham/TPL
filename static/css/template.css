@@ -96,7 +96,7 @@ a:focus {
 
 #sidebar ul li.active>a,
 a[aria-expanded="true"] {
-    color: #FDFEFE;
+    color: WHITE;
     background: Red;
 }
 
