@@ -78,7 +78,7 @@ def schedule():
 
 @app.route('/playoffs')
 def playoffs():
-    return render_template('modal.html')
+    return render_template('playoffs.html')
 
 
 @app.route('/enterScore',methods=['GET', 'POST'])
@@ -149,3 +149,7 @@ def clearLB():
 @app.route('/modal',methods=['GET', 'POST'])
 def modal():
   return render_template('modal.html')
+
+@app.route('/rules')
+def rules():
+  return render_template('rules.html')
