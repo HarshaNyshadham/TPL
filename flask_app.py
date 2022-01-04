@@ -144,4 +144,4 @@ def clearLB():
 
 @app.route('/modal',methods=['GET', 'POST'])
 def modal():
-  return render_template('modal.html' + '#myModal')
+  return render_template('modal.html')
