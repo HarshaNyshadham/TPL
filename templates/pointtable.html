@@ -27,7 +27,7 @@
                 {% for item in pt_data %}
                    {% if (entry+1)==item[6] %}
                <tr>
-                  <td>{{item[0]}}</td>
+                 <td><a href="{{ url_for('modal') }}">{{item[0]}}</a></td>
                   <td>{{item[1]}}</td>
                   <td>{{item[2]}}</td>
                   <td>{{item[3]}}</td>
