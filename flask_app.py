@@ -40,6 +40,7 @@ def index():
 def pointtable():
 
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
+    df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
     for index,row in df.iterrows():
       data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group']])
