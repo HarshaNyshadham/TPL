@@ -141,3 +141,7 @@ def clearLB():
   df.at[index,'Loss']=0
  Leaderboard_writer(df,TPL_leaderboard)
  return render_template('admin.html')
+
+@app.route('/modal',methods=['GET', 'POST'])
+def modal():
+  return render_template('modal.html' + '#myModal')
