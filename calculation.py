@@ -167,6 +167,9 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
    Schedule_writer(df_sch,filename)
    return True
 
+  if((int(p1s1) and int(p2s2))<6):
+    return False
+
   get_points=calc_points(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3))
   update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]))
   #update Schedule
