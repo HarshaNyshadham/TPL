@@ -77,7 +77,7 @@ def schedule():
 
 @app.route('/playoffs')
 def playoffs():
-    return render_template('playoffs.html')
+    return render_template('modal.html')
 
 
 @app.route('/enterScore',methods=['GET', 'POST'])
