@@ -27,7 +27,7 @@
                 {% for item in pt_data %}
                    {% if (entry+1)==item[6] %}
                <tr>
-                 <td><a data-toggle="modal" href="#myModal">{{item[0]}}</a></td>
+                 <td><a href="https://www.w3schools.com" target="iframe_a">{{item[0]}}</a></td>
                   <td>{{item[1]}}</td>
                   <td>{{item[2]}}</td>
                   <td>{{item[3]}}</td>
@@ -41,6 +41,10 @@
          </tbody>
 </table>
 </div>
+
+<iframe src="demo_iframe.htm" name="iframe_a" height="300px" width="100%" title="Iframe Example"></iframe>
+
+
 
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
@@ -58,14 +62,9 @@
 
           <thead class="table-info ">
             <tr>
-
-               <th>Player</th>
-               <th>Matches</th>
-               <th>Won</th>
-               <th>Loss</th>
-               <th>Bonus</th>
-               <th>Points</th>
-
+               <th>Player1</th>
+               <th>Player2</th>
+               <th>Score</th>
             </tr>
          </thead>
 
@@ -75,10 +74,6 @@
                  <td></td>
                   <td></td>
                   <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-
                </tr>
 
          </tbody>
