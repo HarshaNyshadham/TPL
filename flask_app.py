@@ -157,4 +157,10 @@ def rules():
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
   playername=request.args.get('player')
-  return render_template('playerprofile.html',playername=playername)
+  df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
+  data=[]
+
+  for index,row in df.iterrows():
+      if(select_value==row['Player1'] or select_value==row['Player2']):
+        data.append([row['Player1'],row['Player2'],row['Score']])
+  return render_template('playerprofile.html',playername=playername,data=data)
