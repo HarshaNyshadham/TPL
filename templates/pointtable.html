@@ -27,7 +27,7 @@
                 {% for item in pt_data %}
                    {% if (entry+1)==item[6] %}
                <tr>
-                 <td><a id="playername" data-toggle="modal" href="#myModal" onclick="myFunction()">{{item[0]}}</a></td>
+                 <td><a id="playername" >{{item[0]}}</a></td>
                   <td>{{item[1]}}</td>
                   <td>{{item[2]}}</td>
                   <td>{{item[3]}}</td>
@@ -43,13 +43,7 @@
 </div>
 {% endfor %}
 
-<script>
-function myFunction() {
-  var name= document.getElementById("playername").value
-  {{ data }} = 10
-  $('#myModal').modal('show');
-}
-</script>
+
 
 
   <!-- Modal -->
@@ -92,5 +86,18 @@ function myFunction() {
 
     </div>
   </div>
+
+
+<script>
+
+var modal = document.getElementById('myModal');
+var btn = document.getElementById('playername');
+
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+//   $('#myModal').modal('show');
+}
+</script>
 
 {% endblock %}
