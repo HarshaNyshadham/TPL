@@ -153,3 +153,8 @@ def modal():
 @app.route('/rules')
 def rules():
   return render_template('rules.html')
+
+@app.route('/playerprofile',methods=['GET', 'POST'])
+def playerprofile():
+  playername=request.args.get('player')
+  return render_template('playerprofile.html',playername=playername)
