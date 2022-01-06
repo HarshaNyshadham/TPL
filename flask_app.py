@@ -36,9 +36,9 @@ def index():
 
     return render_template('home.html',data=data)
 
-@app.route('/pointtable',message='')
+@app.route('/pointtable')
 def pointtable():
-
+    message=request.args.get('message')
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
     df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
