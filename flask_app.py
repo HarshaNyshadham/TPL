@@ -41,6 +41,8 @@ def pointtable():
     message=request.args.get('message')
     if(message):
       message='Winner is '+ str(message)
+    else:
+      messsage=''
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
     df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
