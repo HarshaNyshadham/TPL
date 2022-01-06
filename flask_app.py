@@ -39,6 +39,8 @@ def index():
 @app.route('/pointtable')
 def pointtable():
     message=request.args.get('message')
+    if(message):
+      message='Winner is'+ str(message)
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
     df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
@@ -113,7 +115,11 @@ def submitScore():
       #update score
       message=update_score(TPL_currentSeason,TPL_leaderboard,row_index,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
       if(message):
-        return redirect(url_for('pointtable',message=message))
+        if(message=='p1'):
+           name=player1
+        elif(message=='p2'):
+          name=player2
+        return redirect(url_for('pointtable',message=name))
       else:
         error="incorrect score"
         return render_template('enterScore.html',p1=player1,p2=player2,row_index=row_index,error=error)
