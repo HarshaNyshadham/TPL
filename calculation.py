@@ -200,4 +200,4 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
   df_LB.at[p1index,'Current Rating']=df_LB.at[p1index,'Current Rating']+new_rating[0]
   df_LB.at[p2index,'Current Rating']=df_LB.at[p2index,'Current Rating']+new_rating[1]
   Leaderboard_writer(df_LB,leaderboard_filename)
-  return True
+  return get_points[2]

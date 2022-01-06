@@ -36,7 +36,7 @@ def index():
 
     return render_template('home.html',data=data)
 
-@app.route('/pointtable')
+@app.route('/pointtable',message)
 def pointtable():
 
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
@@ -44,7 +44,7 @@ def pointtable():
     data=[]
     for index,row in df.iterrows():
       data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group']])
-    return render_template('pointtable.html',data=3,pt_data=data)
+    return render_template('pointtable.html',data=3,pt_data=data,message=message)
 
 #     pt_dict={}
 
@@ -111,8 +111,9 @@ def submitScore():
       #check score
 
       #update score
-      if(update_score(TPL_currentSeason,TPL_leaderboard,row_index,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)):
-        return redirect(url_for('schedule'))
+      message=update_score(TPL_currentSeason,TPL_leaderboard,row_index,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
+      if(message)
+        return redirect(url_for('pointable',message=message))
       else:
         error="incorrect score"
         return render_template('enterScore.html',p1=player1,p2=player2,row_index=row_index,error=error)
