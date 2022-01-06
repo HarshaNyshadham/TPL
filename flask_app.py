@@ -36,7 +36,7 @@ def index():
 
     return render_template('home.html',data=data)
 
-@app.route('/pointtable',message)
+@app.route('/pointtable',message='')
 def pointtable():
 
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
