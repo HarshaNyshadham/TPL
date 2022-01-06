@@ -179,7 +179,7 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
   update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]))
   #update Schedule
   for index,row in df_sch.iterrows():
-    if((row['Player1']==str(player1)) and  (row['Player2']==str(player2)))
+    if((row['Player1']==str(player1)) and  (row['Player2']==str(player2))):
      df_sch.at[index,'Score']= score
      Schedule_writer(df_sch,filename)
 
