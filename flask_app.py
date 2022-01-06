@@ -116,6 +116,7 @@ def submitScore():
 
       #update score
       message=update_score(TPL_currentSeason,TPL_leaderboard,row_index,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
+      name=''
       if(message):
         if(message=='p1'):
            name=player1
