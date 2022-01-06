@@ -174,9 +174,9 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
     return False
   elif((int(p1s1)<int(p2s1)) and (int(p1s2)<int(p2s2)) and (int(p1s3)>0 or int(p2s3)>0)):
     return False
-  elif((int(p1s1)<int(p2s1)) and (int(p1s2)>int(p2s2)) and (int(p1s3)<6 or int(p2s3)<6)):
+  elif((int(p1s1)<int(p2s1)) and (int(p1s2)>int(p2s2)) and (int(p1s3)<6 and int(p2s3)<6)):
     return False
-  elif((int(p1s1)>int(p2s1)) and (int(p1s2)<int(p2s2)) and (int(p1s3)<6 or int(p2s3)<6)):
+  elif((int(p1s1)>int(p2s1)) and (int(p1s2)<int(p2s2)) and (int(p1s3)<6 and int(p2s3)<6)):
     return False
 
   get_points=calc_points(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3))
