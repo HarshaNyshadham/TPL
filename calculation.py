@@ -113,7 +113,7 @@ def calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   if(p1s3 or p2s3):
     bonus=10
 
-  if((p1s1+p1s2+p1s3)>(p2s1+p2s2+p2s3)):
+  if((p1s1>p2s1 and p1s2>p2s2) or (p1s1>p2s1 and p1s3>p2s3) or (p1s2>p2s2 and p1s3>p2s3)):
     p1points=40
     p2points=10+bonus
     winner='p1'
