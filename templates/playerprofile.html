@@ -50,10 +50,10 @@ a:hover {
 <p id="demo" style="color:black;">test</p>
 
 <script>
-  var x = document.getElementById("score");
+
   var table = document.getElementById('mytable');
-  document.write(x.rows);
-  for (var i = 1, row; row = table.rows[i]; i++){
+
+  for (var i = 1, i< table.rows.length; i++){
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     document.getElementById("demo").innerHTML+=y;
