@@ -53,8 +53,10 @@ a:hover {
   var x = document.getElementById("score");
 
   document.write(x.rows);
-  var y = document.getElementById("mytable").rows[2].cells[2].innerHTML;
-  document.getElementById("demo").innerHTML=y;
+  for (var i = 0, row; row = table.rows[i]; i++){
+    var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
+    document.getElementById("demo").innerHTML+=y;
+  }
 
 </script>
 
