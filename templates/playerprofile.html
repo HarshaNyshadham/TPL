@@ -52,8 +52,8 @@ a:hover {
 <script>
 
   var table = document.getElementById('mytable');
-  document.write(table.rows.length);
-  for (let i = 1, i< table.rows.length; i++){
+
+  for (var i = 1, row; row = table.rows[i]; i++){
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     document.getElementById("demo").innerHTML+=y;
