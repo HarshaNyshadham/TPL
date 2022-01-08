@@ -24,7 +24,7 @@ a:hover {
   {{playername}}
 </h3>
 <div class="container" style="width: 600px;">
-<table class="table table-striped table-hover table-sm">
+<table class="table table-striped table-hover table-sm" id="mytable">
 
           <thead class="table-info ">
             <tr>
@@ -53,6 +53,7 @@ a:hover {
   var x = document.getElementById("score")
   document.getElementById("demo").innerHTML=x
   document.write(x.rows)
+  document.write(getElementById("myTable").rows[0].cells.length)
 </script>
 
 {% endblock %}
