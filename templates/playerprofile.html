@@ -19,7 +19,7 @@ a:hover {
 
 </style>
 
-<a href="{{ url_for('pointtable') }}" class="previous">&laquo; Back</a>
+<a href="{{ url_for('pointtable') }}" class="previous" style="color:white;">&laquo; Back</a>
 <h3 class = 'text-center'>
   {{playername}}
 </h3>
@@ -47,12 +47,12 @@ a:hover {
 </table>
 </div>
 
-<!-- <p id="demo">test</p>
+<p id="demo">test</p>
 
 <script>
   var x = document.getElementById("score")
   document.getElementById("demo").innerHTML=x
-  document.write(x.row[2].cells)
-</script> -->
+  document.write(x.rows)
+</script>
 
 {% endblock %}
