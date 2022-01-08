@@ -50,10 +50,11 @@ a:hover {
 <p id="demo">test</p>
 
 <script>
-  var x = document.getElementById("score")
-  document.getElementById("demo").innerHTML=x
-  document.write(x.rows)
-  document.write(getElementById("myTable").rows[0].cells.length)
+  var x = document.getElementById("score");
+  document.getElementById("demo").innerHTML=x;
+  document.write(x.rows);
+  var y = getElementById("myTable").rows[0].cells.length;
+  document.write(y);
 </script>
 
 {% endblock %}
