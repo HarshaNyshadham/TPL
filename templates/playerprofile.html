@@ -56,8 +56,12 @@ a:hover {
   for (var i = 1, row; row = table.rows[i]; i++){
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
-    document.write(y.indexOf(",");
-    document.getElementById("demo").innerHTML+=y;
+    if(y != "x")
+    {
+      var arry= y.split(",");
+    }
+
+    document.getElementById("demo").innerHTML+=arry;
   }
 
 </script>
