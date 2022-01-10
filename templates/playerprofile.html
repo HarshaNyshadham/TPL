@@ -61,8 +61,10 @@ a:hover {
     {
       arry= y.split(",");
     }
-
-    document.getElementById("demo").innerHTML+=arry[0];
+    var set1=arry[0].split("-")
+    var set2=arry[1].split("-")
+    var set3=arry[2].split("-")
+    document.getElementById("demo").innerHTML+=set1+set2+set3;
   }
 
 </script>
