@@ -64,7 +64,10 @@ a:hover {
       var set2=arry[1].split("-");
       var set3=arry[2].split("-");
       if((set1[0]>set1[1] && set2[0]>set2[1]) || (set1[0]>set1[1] && set3[0]>set3[1]) || (set2[0]>set2[1] && set3[0]>set3[1])){
-        document.getElementById("mytable").rows[i].cells[0].innerHTML+="*";
+        document.getElementById("mytable").rows[i].cells[0].innerHTML="<b>"+document.getElementById("mytable").rows[i].cells[0].innerHTML+"</b>";
+      }
+      else{
+        document.getElementById("mytable").rows[i].cells[1].innerHTML+="*";
       }
       document.getElementById("demo").innerHTML+=set1+set2+set3;
     }
