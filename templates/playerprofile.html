@@ -48,6 +48,7 @@ a:hover {
 </div>
 
 <p id="demo" style="color:black;">test</p>
+<p id="message" style="color:black;">message</p>
 
 <script>
 
@@ -57,22 +58,27 @@ a:hover {
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     var arry=[];
+    try{
     if(y != "x" || y.match(/Forefeit.*/))
-    {
-      arry= y.split(",");
-      var set1=arry[0].split("-");
-      var set2=arry[1].split("-");
-      var set3=arry[2].split("-");
-      if((set1[0]>set1[1] && set2[0]>set2[1]) || (set1[0]>set1[1] && set3[0]>set3[1]) || (set2[0]>set2[1] && set3[0]>set3[1])){
-        document.getElementById("mytable").rows[i].cells[0].innerHTML="<b>"+document.getElementById("mytable").rows[i].cells[0].innerHTML+"</b>";
+      {
+        arry= y.split(",");
+        var set1=arry[0].split("-");
+        var set2=arry[1].split("-");
+        var set3=arry[2].split("-");
+        if((set1[0]>set1[1] && set2[0]>set2[1]) || (set1[0]>set1[1] && set3[0]>set3[1]) || (set2[0]>set2[1] && set3[0]>set3[1])){
+          document.getElementById("mytable").rows[i].cells[0].innerHTML="<b>"+document.getElementById("mytable").rows[i].cells[0].innerHTML+"</b>";
+        }
+        else{
+          document.getElementById("mytable").rows[i].cells[1].innerHTML="<b>"+document.getElementById("mytable").rows[i].cells[1].innerHTML+"</b>";
+        }
+        document.getElementById("demo").innerHTML+=set1+" "+set2+" "+set3[0]+" " +set[1];
       }
-      else{
-        document.getElementById("mytable").rows[i].cells[1].innerHTML="<b>"+document.getElementById("mytable").rows[i].cells[1].innerHTML+"</b>";
-      }
-      document.getElementById("demo").innerHTML+=set1+" "+set2+" "+set3[0]+" " +set[1];
+
+
     }
-
-
+    catch {
+      document.getElementById("message").innerHTML = "Error: " + err + ".";
+      }
   }
 
 </script>
