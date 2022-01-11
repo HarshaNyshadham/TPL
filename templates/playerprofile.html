@@ -57,7 +57,7 @@ a:hover {
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     var arry=[];
-    if(y != "x")
+    if(y != "x" || y.match(/Forefeit.*/))
     {
       arry= y.split(",");
       var set1=arry[0].split("-");
