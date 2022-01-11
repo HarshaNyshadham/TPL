@@ -41,7 +41,7 @@ def Leaderboard_writer(LB_dataframe,filename):
  if 'Leaderboard' in workbook.sheetnames:
      del workbook['Leaderboard']
      workbook.save(filename)
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+ with pd.ExcelWriter(filename,engine='openpyxl',mode='a',index = False) as wr:
                      LB_dataframe.to_excel(wr,sheet_name='Leaderboard')
 
 def create_new_season(filename):
