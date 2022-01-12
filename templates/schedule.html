@@ -65,7 +65,8 @@
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     var arry=[];
     var txt = y.textContent || y.innerText;
-    alert(txt);
+    //alert(txt);
+    document.getElementById("demo").innerHTML=y+txt
     try{
     if(txt != "Enter Score")
       {
