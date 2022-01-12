@@ -64,12 +64,12 @@
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     var arry=[];
-    document.getElementById("demo").innerHTML+=y.indexOf("Enter")
+    document.getElementById("demo").innerHTML+=y.indexOf("Enter")+" "
     //var txt = y.textContent || y.innerText;
     //alert(txt);
 
     try{
-    if(!y.indexOf("Enter"))
+    if(y.indexOf("Enter") <1)
       {
         arry= y.split("");
         var set1=arry[0].split("-");
