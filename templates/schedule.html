@@ -64,9 +64,10 @@
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     var arry=[];
+    document.getElementById("demo").innerHTML=string(y)
     var txt = y.textContent || y.innerText;
     //alert(txt);
-    document.getElementById("demo").innerHTML=string(y)
+
     try{
     if(txt != "Enter Score")
       {
