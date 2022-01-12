@@ -64,10 +64,11 @@
 
     var y = document.getElementById("mytable").rows[i].cells[2].innerHTML;
     var arry=[];
+    var txt = y.textContent || y.innerText;
     try{
-    if(y != "Enter Score")
+    if(txt != "Enter Score")
       {
-        arry= y.split("");
+        arry= txt.split("");
         var set1=arry[0].split("-");
         var set2=arry[1].split("-");
         var set3=parseInt(arry[2].split("-"));
@@ -77,7 +78,7 @@
         else{
           document.getElementById("mytable").rows[i].cells[1].innerHTML="<b>"+document.getElementById("mytable").rows[i].cells[1].innerHTML+"</b>";
         }
-         document.getElementById("demo").innerHTML+=y+set1+" "+set2+" "+set3+" " +(set1[0]>set1[1] && set2[0]>set2[1]) +(set1[0]>set1[1] && set3[0]>set3[1])+(set1[0]>set1[1] && set3[0]>set3[1]);
+         document.getElementById("demo").innerHTML+=txt+set1+" "+set2+" "+set3+" " +(set1[0]>set1[1] && set2[0]>set2[1]) +(set1[0]>set1[1] && set3[0]>set3[1])+(set1[0]>set1[1] && set3[0]>set3[1]);
       }
 
 
