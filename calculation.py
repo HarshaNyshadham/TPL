@@ -163,8 +163,10 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
    elif(p2forefeit):
      update_points(filename,player1,40,player2,0,'p1','')
      score='Forefeit by '+ str(player2)
-   df_sch.at[int(row_id),'Score']= score
-   Schedule_writer(df_sch,filename)
+   for index,row in df_sch.iterrows():
+     if((row['Player1']==str(player1)) and  (row['Player2']==str(player2))):
+       df_sch.at[index,'Score']= score
+       Schedule_writer(df_sch,filename)
    return True
 
   if((int(p1s1)<6 and int(p2s1)<6) or (int(p1s2)<6 and int(p2s2)<6)):
