@@ -133,7 +133,7 @@ def admin():
 
   if request.method == "POST":
     pwd=request.form.get("pwd")
-    if pwd == "tpl":
+    if pwd == "tpl22":
       return render_template('admin.html')
 
   return redirect(url_for('index'))
