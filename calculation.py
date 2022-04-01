@@ -19,7 +19,7 @@ def Schedule_writer(schedule_dataframe,filename):
      del workbook['Schedule']
      workbook.save(filename)
  #writer.to_excel(filename,sheet_name='Schedule')
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+ with pd.ExcelWriter(filename,engine='openpyxl') as wr:
                      schedule_dataframe.to_excel(wr,sheet_name='Schedule')
  return True
 
@@ -31,7 +31,7 @@ def PointTable_writer(PT_dataframe,filename):
  if 'PointTable' in workbook.sheetnames:
      del workbook['PointTable']
      workbook.save(filename)
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a') as wr:
+ with pd.ExcelWriter(filename,engine='openpyxl') as wr:
                      PT_dataframe.to_excel(wr,sheet_name='PointTable')
 
 def Leaderboard_writer(LB_dataframe,filename):
@@ -41,7 +41,7 @@ def Leaderboard_writer(LB_dataframe,filename):
  if 'Leaderboard' in workbook.sheetnames:
      del workbook['Leaderboard']
      workbook.save(filename)
- with pd.ExcelWriter(filename,engine='openpyxl',mode='a',index = False) as wr:
+ with pd.ExcelWriter(filename,engine='openpyxl',index = False) as wr:
                      LB_dataframe.to_excel(wr,sheet_name='Leaderboard')
 
 def create_new_season(filename):
