@@ -6,7 +6,7 @@ def generate_sch_from_list(lst):
   for i in range(len(lst)):
     for j in range(i+1,len(lst)):
       temp.append([lst[i],lst[j],'x'])
-
+  print(temp)
   return temp
 
 def Schedule_writer(schedule_dataframe,filename):
@@ -20,7 +20,7 @@ def Schedule_writer(schedule_dataframe,filename):
      workbook.save(filename)
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl') as wr:
-                     schedule_dataframe.to_excel(wr,sheet_name='Schedule')
+                     schedule_dataframe.to_excel(wr,sheet_name='Schedule',mode='a')
  return True
 
 
@@ -32,7 +32,7 @@ def PointTable_writer(PT_dataframe,filename):
      del workbook['PointTable']
      workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl') as wr:
-                     PT_dataframe.to_excel(wr,sheet_name='PointTable')
+                     PT_dataframe.to_excel(wr,sheet_name='PointTable',mode='a')
 
 def Leaderboard_writer(LB_dataframe,filename):
 
@@ -42,7 +42,7 @@ def Leaderboard_writer(LB_dataframe,filename):
      del workbook['Leaderboard']
      workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl',index = False) as wr:
-                     LB_dataframe.to_excel(wr,sheet_name='Leaderboard')
+                     LB_dataframe.to_excel(wr,sheet_name='Leaderboard',mode='a')
 
 def create_new_season(filename):
  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
