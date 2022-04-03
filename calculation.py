@@ -51,7 +51,8 @@ def create_new_season(filename):
  schedule_data=[]
 
  player_list=[]
-
+ print(num_of_groups)
+ print(df.iloc[:,i])
  for i in range(num_of_groups):
     grpdata[df.columns[i]]=df.iloc[:,i]
     player_list.extend(df.iloc[:,i])
