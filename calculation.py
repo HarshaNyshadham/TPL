@@ -20,7 +20,7 @@ def Schedule_writer(schedule_dataframe,filename):
      workbook.save(filename)
  #writer.to_excel(filename,sheet_name='Schedule')
  with pd.ExcelWriter(filename,engine='openpyxl') as wr:
-                     schedule_dataframe.to_excel(wr,sheet_name='Schedule',mode='a')
+                     schedule_dataframe.to_excel(wr,sheet_name='Schedule')
  return True
 
 
@@ -32,7 +32,7 @@ def PointTable_writer(PT_dataframe,filename):
      del workbook['PointTable']
      workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl') as wr:
-                     PT_dataframe.to_excel(wr,sheet_name='PointTable',mode='a')
+                     PT_dataframe.to_excel(wr,sheet_name='PointTable')
 
 def Leaderboard_writer(LB_dataframe,filename):
 
@@ -42,16 +42,17 @@ def Leaderboard_writer(LB_dataframe,filename):
      del workbook['Leaderboard']
      workbook.save(filename)
  with pd.ExcelWriter(filename,engine='openpyxl',index = False) as wr:
-                     LB_dataframe.to_excel(wr,sheet_name='Leaderboard',mode='a')
+                     LB_dataframe.to_excel(wr,sheet_name='Leaderboard')
 
 def create_new_season(filename):
- df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups')
+ df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups',keep_default_na=False)
  grpdata=pd.DataFrame()
  num_of_groups= len(df.columns)
  schedule_data=[]
 
  player_list=[]
  print(num_of_groups)
+ print(len(df.rows))
  print(df.iloc[:,0])
  for i in range(num_of_groups):
     grpdata[df.columns[i]]=df.iloc[:,i]
