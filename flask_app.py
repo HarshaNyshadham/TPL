@@ -48,7 +48,7 @@ def pointtable():
     data=[]
     for index,row in df.iterrows():
       data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group']])
-    return render_template('pointtable.html',data=3,pt_data=data,message=message)
+    return render_template('pointtable.html',data=4,pt_data=data,message=message)
 
 #     pt_dict={}
 
