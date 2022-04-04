@@ -72,11 +72,18 @@
     Forefeit
   </label>
   <br>
-  <button type="submit" class="btn btn-success">Submit</button>
+  <button onclick="myFunction()" id="myBtn" type="submit" class="btn btn-success">Submit</button>
   </form>
 </div>
 
 {% if error %}
          <p class='text-center' style="color:red;"><strong>Error:</strong> {{ error }}
 {% endif %}
+
+<script>
+function myFunction() {
+  document.getElementById("myBtn").disabled = true;
+}
+</script>
+
 {% endblock %}
