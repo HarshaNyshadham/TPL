@@ -27,7 +27,7 @@ app = Flask(__name__)
 def index():
 
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
-    df.sort_values(by=['Current Rating'],inplace =True,ascending=False)
+    df.sort_values(by=['Active','Current Rating'],inplace =True,ascending=False)
     data=[]
 
     for index,row in df.iterrows():
