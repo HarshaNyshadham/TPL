@@ -76,7 +76,7 @@ def create_new_season(filename):
  return num_of_groups
 
 def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
-  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable')
+  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   p1index=0
   p2index=0
   for index,row in df.iterrows():
@@ -155,7 +155,7 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
   # update Score in Schedule and pointable
 
   score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
-  df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule')
+  df_sch=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
   #update pointable
   if(p1forefeit or p2forefeit):
@@ -192,7 +192,7 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
      Schedule_writer(df_sch,filename)
 
   #update leaderboard
-  df_LB=pd.read_excel(leaderboard_filename, engine ='openpyxl',sheet_name ='Leaderboard')
+  df_LB=pd.read_excel(leaderboard_filename, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
   p1index=0
   p2index=0
   for index,row in df_LB.iterrows():

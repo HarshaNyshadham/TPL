@@ -26,7 +26,7 @@ app = Flask(__name__)
 @app.route('/index')
 def index():
 
-    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard')
+    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
     df.sort_values(by=['Current Rating'],inplace =True,ascending=False)
     data=[]
 
@@ -43,7 +43,7 @@ def pointtable():
       message='Winner is '+ str(message)
     else:
       message=''
-    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
+    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
     for index,row in df.iterrows():
@@ -59,9 +59,9 @@ def pointtable():
 
 @app.route('/schedule',methods=['GET', 'POST'])
 def schedule():
-    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
+    df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
     data=[]
-    df_pt=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable')
+    df_pt=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     player_list=[]
 
     for index,row in df_pt.iterrows():
@@ -146,7 +146,7 @@ def upload():
 
 @app.route('/clearLB',methods=['GET', 'POST'])
 def clearLB():
- df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard')
+ df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
  for index,row in df.iterrows():
   df.at[index,'Current Rating']=1000
   df.at[index,'Prev Rating']=1000
@@ -167,7 +167,7 @@ def rules():
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
   playername=request.args.get('player')
-  df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule')
+  df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
   data=[]
 
   for index,row in df.iterrows():
