@@ -6,7 +6,7 @@
   Schedule
 </h3>
 <div class="container mx-auto mb-3 text-center" style="width: 550px;">
-<form action="{{ url_for("schedule")}}" method="post" class="bg-secondary">
+<form action="{{ url_for("schedule")}}" method="post" class="bg-light ">
 <select name="comp_select" class="selectpicker " data-live-search="true" aria-label="Default select example">
   <option selected>Select Player</option>
   {% for p in players %}
@@ -15,6 +15,7 @@
 </select>
 <button type="submit">Submit</button>
   </form>
+  <br>
 <h5 class = 'text-center' >
    Start Date: April 11  -  End Date: May 16
   <h6 class = 'text-center' style = "color:red;">
