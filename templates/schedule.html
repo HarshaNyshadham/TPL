@@ -6,8 +6,8 @@
   Schedule
 </h3>
 <div class="container mx-auto mb-3 text-center" style="width: 550px;">
-<form action="{{ url_for("schedule")}}" method="post" >
-<select name="comp_select" class="selectpicker bg-secondary" data-live-search="true" aria-label="Default select example">
+<form action="{{ url_for("schedule")}}" method="post" class="bg-secondary">
+<select name="comp_select" class="selectpicker " data-live-search="true" aria-label="Default select example">
   <option selected>Select Player</option>
   {% for p in players %}
   <option value="{{p}}">{{p}}</option>
