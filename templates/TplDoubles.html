@@ -2,12 +2,12 @@
 
 {% block content %}
 
-<h3 class = 'text-center'>
+<h4 class = 'text-center'>
   Point Table
   <h6 class = 'text-center' style = "color:red;">
     Win-40, Loss-10, Bonus-10(loss but win a set), Forefeit-0
   </h6>
-</h3>
+</h4>
 
 <div class="container" style="width: 1000px; font-size: 12px;">
 <table class="table table-striped table-hover table-sm">
@@ -28,7 +28,7 @@
          </thead>
 
          <tbody>
-                {% for item in data %}
+                {% for item in pt_data %}
 
                <tr>
                  <td><b>{{item[0]}}</b></td>
@@ -50,5 +50,57 @@
 </table>
 </div>
 
+#************ schedule *********
+
+<h4 class = 'text-center'>
+  Schedule
+</h4>
+<div class="container mx-auto mb-3 text-center" style="width: 550px;">
+<form action="{{ url_for("schedule")}}" method="post">
+<select name="comp_select" class="selectpicker bg-light" data-live-search="true" aria-label="Default select example">
+  <option selected>Select Player</option>
+  {% for p in players %}
+  <option value="{{p}}">{{p}}</option>
+  {% endfor %}
+</select>
+<button type="submit">Submit</button>
+  </form>
+  <br>
+<h5 class = 'text-center' >
+   Start Date: April 11  -  End Date: May 16
+  <h6 class = 'text-center' style = "color:red;">
+    *Play in any order but all league games must be completed by May16*
+  </h6>
+  </h5>
+</div>
+<div class="container mx-auto mb-3" style="width: 600px; font-size: 12px;">
+<table class="table table-striped table-hover table-sm" id="mytable">
+         <thead class="thead-dark">
+            <tr>
+               <th>Team1</th>
+               <th>Team2</th>
+               <th>Score</th>
+
+
+            </tr>
+         </thead>
+
+         <tbody>
+            {% for entry in sch_data %}
+               <tr>
+                  <td>{{ entry[0] }}</td>
+                  <td>{{ entry[1] }}</td>
+                  {% if entry[2] == 'x' %}
+                  <td> <form action="{{ url_for("enterScore",player1=entry[0],player2=entry[1],id=loop.index0) }}" method="post" >
+                    <button type="submit" class="btn btn-success">Enter Score</button>
+                  </form></td>
+                  {% else %}
+                  <td>{{ entry[2] }}</td>
+                  {% endif %}
+               </tr>
+            {% endfor %}
+         </tbody>
+</table>
+</div>
 
 {% endblock %}

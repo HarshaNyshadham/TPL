@@ -167,13 +167,13 @@ def rules():
 @app.route('/TplDoubles')
 def TplDoubles():
 
-  df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-  data=[]
+  pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+  pt_data=[]
 
-  for index,row in df.iterrows():
+  for index,row in pt_df.iterrows():
     data.append([row['Team'],row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
 
-  return render_template('TplDoubles.html',data=data)
+  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=[],players=[])
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
