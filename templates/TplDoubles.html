@@ -91,7 +91,7 @@
                   <td>{{ entry[0] }}</td>
                   <td>{{ entry[1] }}</td>
                   {% if entry[2] == 'x' %}
-                  <td> <form action="{{ url_for("#",team1=entry[0],team2=entry[1]) }}" method="post" >
+                  <td> <form action="{{ url_for("doublescore",team1=entry[0],team2=entry[1]) }}" method="post" >
                     <button type="submit" class="btn btn-success">Enter Score</button>
                   </form></td>
                   {% else %}
