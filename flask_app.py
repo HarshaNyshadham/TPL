@@ -167,7 +167,7 @@ def rules():
 @app.route('/TplDoubles')
 def TplDoubles():
 
-  df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
+  df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   data=[]
 
   for index,row in df.iterrows():
