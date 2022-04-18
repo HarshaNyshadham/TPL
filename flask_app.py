@@ -171,7 +171,7 @@ def TplDoubles():
   pt_data=[]
 
   for index,row in pt_df.iterrows():
-    data.append([row['Team'],row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
+    pt_data.append([row['Team'],row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
 
   return render_template('TplDoubles.html',pt_data=pt_data,sch_data=[],players=[])
 
