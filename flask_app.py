@@ -164,7 +164,7 @@ def modal():
 def rules():
   return render_template('rules.html')
 
-@app.route('/TplDoubles')
+@app.route('/TplDoubles',methods=['GET', 'POST'])
 def TplDoubles():
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
@@ -180,6 +180,13 @@ def TplDoubles():
 
   for index,row in sch_df.iterrows():
     sch_data.append([row['Team1'],row['Team2'],row['Score']])
+
+  if request.method == "POST":
+      select_value=request.form.get("comp_select")
+      for index,row in sch_df.iterrows():
+        if(select_value==row['Team1'] or select_value==row['Team2']):
+          sch_data.append([row['Team1'],row['Team2'],row['Score']])
+      return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
 
   return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
 
