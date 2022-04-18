@@ -169,13 +169,19 @@ def TplDoubles():
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_data=[]
+  sch_data=[]
 
   players=pt_df.iloc[:,0]
 
   for index,row in pt_df.iterrows():
     pt_data.append([row['Team'],row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
 
-  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=[],players=players)
+  sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
+
+  for index,row in pt_df.iterrows():
+    sch_data.append([row['Team1'],row['Team2'],row['Score']])
+
+  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
