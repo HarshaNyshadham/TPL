@@ -164,6 +164,17 @@ def modal():
 def rules():
   return render_template('rules.html')
 
+@app.route('/TplDoubles')
+def TplDoubles():
+
+  df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
+  data=[]
+
+    for index,row in df.iterrows():
+                   data.append([row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
+
+  return render_template('TplDoubles.html',data=data)
+
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
   playername=request.args.get('player')
