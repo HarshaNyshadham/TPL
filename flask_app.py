@@ -199,7 +199,7 @@ def doublescore():
 
 
     error=''
-    return render_template('doubleScore.html',t1=t1,t2=t2,error=error)
+    return render_template('doublesScore.html',t1=t1,t2=t2,error=error)
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
