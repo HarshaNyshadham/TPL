@@ -91,9 +91,32 @@
                   <td>{{ entry[0] }}</td>
                   <td>{{ entry[1] }}</td>
                   {% if entry[2] == 'x' %}
-                  <td> <form action="{{ url_for("doublescore",team1=entry[0],team2=entry[1]) }}" method="post" >
-                    <button type="submit" class="btn btn-success">Enter Score</button>
-                  </form></td>
+                  <td>
+                    <div>
+                      <form id="myForm" action="{}" method="post" >
+                        <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
+                        <option selected>0</option>
+                        {% for i in range(1,8) %}
+                        <option value={{i}}>{{i}}</option>
+                        {% endfor %}
+                        </select>
+
+                        <select name="p1set2" class="selectpicker" data-live-search="true" aria-label="Default select example">
+                        <option selected>0</option>
+                        {% for i in range(1,8) %}
+                        <option value={{i}}>{{i}}</option>
+                        {% endfor %}
+                        </select>
+
+                        <select name="p1set3" class="selectpicker" data-live-search="true" aria-label="Default select example">
+                        <option selected>0</option>
+                        {% for i in range(1,11) %}
+                        <option value={{i}}>{{i}}</option>
+                        {% endfor %}
+                        </select>
+                      </form>
+                    </div>
+                  </td>
                   {% else %}
                   <td>{{ entry[2] }}</td>
                   {% endif %}

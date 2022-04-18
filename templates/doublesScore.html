@@ -10,7 +10,7 @@
 <div class="container mx-auto mb-3 py-3 bg-dark text-white text-center" style="width: 600px;">
   <form id="myForm" action="{{ url_for("submitScore",row_id=row_index,player1=p1,player2=p2)}}" method="post" >
   <h4 class='text-center mb-2 py-2'>
-    {{p1}}
+    {{t1}}
   </h4>
 
 
@@ -42,7 +42,7 @@
 
 
   <h4 class='text-center mb-2 py-2'>
-    {{p2}}
+    {{t2}}
   </h4>
 
   <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
