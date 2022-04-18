@@ -1,0 +1,90 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container text-center mb-3">
+<h3>
+  Enter Score
+</h3>
+</div>
+
+<div class="container mx-auto mb-3 py-3 bg-dark text-white text-center" style="width: 600px;">
+  <form id="myForm" action="{{ url_for("submitScore",row_id=row_index,player1=p1,player2=p2)}}" method="post" >
+  <h4 class='text-center mb-2 py-2'>
+    {{p1}}
+  </h4>
+
+
+  <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  <option selected>0</option>
+  {% for i in range(1,8) %}
+  <option value={{i}}>{{i}}</option>
+  {% endfor %}
+  </select>
+
+  <select name="p1set2" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  <option selected>0</option>
+  {% for i in range(1,8) %}
+  <option value={{i}}>{{i}}</option>
+  {% endfor %}
+  </select>
+
+  <select name="p1set3" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  <option selected>0</option>
+  {% for i in range(1,11) %}
+  <option value={{i}}>{{i}}</option>
+  {% endfor %}
+  </select>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+
+  <input name="p1forefeit" class="form-check-input" type="checkbox" value="1" >
+  <label class="form-check-label" for="flexCheckDefault">
+    Forefeit
+  </label>
+
+
+  <h4 class='text-center mb-2 py-2'>
+    {{p2}}
+  </h4>
+
+  <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  <option selected>0</option>
+  {% for i in range(1,8) %}
+  <option value={{i}}>{{i}}</option>
+  {% endfor %}
+  </select>
+
+  <select name="p2set2" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  <option selected>0</option>
+  {% for i in range(1,8) %}
+  <option value={{i}}>{{i}}</option>
+  {% endfor %}
+  </select>
+
+  <select name="p2set3" class="selectpicker" data-live-search="true" aria-label="Default select example">
+  <option selected>0</option>
+  {% for i in range(1,11) %}
+  <option value={{i}}>{{i}}</option>
+  {% endfor %}
+  </select>
+    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+
+  <input name="p2forefeit" class="form-check-input" type="checkbox" value="2" >
+  <label class="form-check-label" for="flexCheckDefault">
+    Forefeit
+  </label>
+  <br>
+  <button onclick="myFunction()" id="myBtn" type="submit" class="btn btn-success">Submit</button>
+  </form>
+</div>
+
+{% if error %}
+         <p class='text-center' style="color:red;"><strong>Error:</strong> {{ error }}
+{% endif %}
+
+<script>
+function myFunction() {
+  document.getElementById("myBtn").disabled = true;
+  document.getElementById("myForm").submit();
+}
+</script>
+
+{% endblock %}
