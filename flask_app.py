@@ -170,7 +170,7 @@ def TplDoubles():
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_data=[]
 
-  players=df.pt_df[:,0]
+  players=pt_df.iloc[:,0]
 
   for index,row in pt_df.iterrows():
     pt_data.append([row['Team'],row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
