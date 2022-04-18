@@ -178,7 +178,7 @@ def TplDoubles():
 
   sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
-  for index,row in pt_df.iterrows():
+  for index,row in sch_df.iterrows():
     sch_data.append([row['Team1'],row['Team2'],row['Score']])
 
   return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
