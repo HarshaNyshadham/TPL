@@ -207,8 +207,8 @@ def doublesubmitscore():
     p2s1=int(request.form.get("p2set1"))
     p2s2=int(request.form.get("p2set2"))
     p2s3=int(request.form.get("p2set3"))
-    p1forefeit=request.form.get("p1forefeit")
-    p2forefeit=request.form.get("p2forefeit")
+    p1forefeit=bool(request.form.get("p1forefeit"))
+    p2forefeit=bool(request.form.get("p2forefeit"))
     print(t1,t2)
     error=''
     message=''
