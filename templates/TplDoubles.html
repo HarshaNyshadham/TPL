@@ -119,37 +119,7 @@
                           Forefeit
                         </label>
                   </td>
-                  <td>{{ entry[1] }}</td>
-                  {% if entry[2] == 'x' %}
-                  <td>
-                    <div>
-                      <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
-                        <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
-                        <option selected>set1</option>
-                        {% for i in range(0,8) %}
-                        <option value={{i}}>{{i}}</option>
-                        {% endfor %}
-                        </select>
-
-                        <select name="p1set2" class="selectpicker" data-live-search="true" aria-label="Default select example">
-                        <option selected>set2</option>
-                        {% for i in range(0,8) %}
-                        <option value={{i}}>{{i}}</option>
-                        {% endfor %}
-                        </select>
-
-                        <select name="p1set3" class="selectpicker" data-live-search="true" aria-label="Default select example">
-                        <option selected>set3</option>
-                        {% for i in range(0,11) %}
-                        <option value={{i}}>{{i}}</option>
-                        {% endfor %}
-                        </select>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                        <input name="p1forefeit" class="form-check-input" type="checkbox" value="1" >
-                        <label class="form-check-label" for="flexCheckDefault">
-                          Forefeit
-                        </label>
-                        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-
+                  <td>{{ entry[1] }}
                         <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
                         <option selected>set1</option>
                         {% for i in range(0,8) %}
@@ -174,6 +144,14 @@
                         <label class="form-check-label" for="flexCheckDefault">
                           Forefeit
                         </label>
+                   </td>
+
+                  {% if entry[2] == 'x' %}
+                  <td>
+                    <div>
+                      <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
+
+
                         <button onclick="myFunction()" id="myBtn" type="submit" class="btn btn-success btn-sm">Submit</button>
                       </form>
                     </div>
