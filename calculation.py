@@ -106,6 +106,45 @@ def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
 
   PointTable_writer(df,filename)
 
+def update_points_doubles(filename,p1,p1points,p2,p2points,winner,bonusplayer,gamest1,gamest2):
+  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+  p1index=0
+  p2index=0
+  for index,row in df.iterrows():
+    if(row['Team']==str(p1)):
+      p1index=index
+    if(row['Team']==str(p2)):
+      p2index=index
+
+  #points
+  df.at[p1index,'Points']=df.at[p1index,'Points']+p1points
+  df.at[p2index,'Points']=df.at[p2index,'Points']+p2points
+  #matches
+  df.at[p1index,'Matches']=df.at[p1index,'Matches']+1
+  df.at[p2index,'Matches']=df.at[p2index,'Matches']+1
+  #win and loss
+  if(winner=='p1'):
+    df.at[p1index,'Won']=df.at[p1index,'Won']+1
+    df.at[p2index,'Loss']=df.at[p2index,'Loss']+1
+  elif(winner=='p2'):
+    df.at[p1index,'Loss']=df.at[p1index,'Loss']+1
+    df.at[p2index,'Won']=df.at[p2index,'Won']+1
+  #bonus
+  if(bonusplayer=='p1'):
+    df.at[p1index,'Bonus']=df.at[p1index,'Bonus']+10
+  elif(bonusplayer=='p2'):
+    df.at[p2index,'Bonus']=df.at[p2index,'Bonus']+10
+  #percentage games
+  df.at[p1index,'GamesWon']=df.at[p1index,'GamesWon']+gamest1
+  df.at[p1index,'GamesTotal']=df.at[p1index,'GamesTotal']+gamest1
+  df.at[p2index,'GamesWon']=df.at[p2index,'GamesWon']+gamest2
+  df.at[p2index,'GamesTotal']=df.at[p1index,'GamesTotal']+gamest2
+
+  df.at[p1index,'%games']=(df.at[p1index,'GamesWon']/df.at[p1index,'GamesTotal'])*100
+  df.at[p2index,'%games']=(df.at[p2index,'GamesWon']/df.at[p2index,'GamesTotal'])*100
+
+  PointTable_writer(df,filename)
+
 def calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
   p1points=0
   p2points=0

@@ -177,7 +177,7 @@ def TplDoubles():
   players=pt_df.iloc[:,0]
 
   for index,row in pt_df.iterrows():
-    pt_data.append([row['Team'],row['Matches'],row['Win'],row['Loss'],row['Bonus'],row['Points'],row['Games win'],row['Games loss'],row['%games']])
+    pt_data.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games']])
 
   sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
@@ -233,6 +233,7 @@ def doublesubmitscore():
        Schedule_writer(df_sch,'/home/tpl/mysite/uploads/TPL_Doubles.xlsx')
 
     [t1points,t2points,winner,bonusteam]=calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+    update_points_doubles('/home/tpl/mysite/uploads/TPL_Doubles.xlsx',t1,t1points,t2,t2points,winner,bonusteam,(p1s1+p1s2+p1s3),(p2s1+p2s2+p2s3))
     print(t1points,t2points,winner,bonusteam)
 
     return redirect(url_for('TplDoubles',error=error,message=message))
