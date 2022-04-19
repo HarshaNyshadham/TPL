@@ -231,9 +231,9 @@ def doublesubmitscore():
         message='Winner is '+str(t1)
         update_points_doubles(doubles_filename,t1,40,t2,0,'p1',0,0,0)
       for index,row in df_sch.iterrows():
-      if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
-       df_sch.at[index,'Score']= score
-       Schedule_writer(df_sch,doubles_filename)
+        if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
+         df_sch.at[index,'Score']= score
+         Schedule_writer(df_sch,doubles_filename)
       return redirect(url_for('TplDoubles',error=error,message=message))
 
     #update Schedule
