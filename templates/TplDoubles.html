@@ -94,6 +94,9 @@
             {% for entry in sch_data %}
                <tr>
                   <td>{{ entry[0] }}
+                       <form>
+
+
                        <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
                         <option selected>set1</option>
                         {% for i in range(0,8) %}
@@ -118,6 +121,7 @@
                         <label class="form-check-label" for="flexCheckDefault">
                           Forefeit
                         </label>
+                         </form>
                   </td>
                   <td>{{ entry[1] }}
                         <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
