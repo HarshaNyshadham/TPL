@@ -246,9 +246,9 @@ def doublesubmitscore():
     [t1points,t2points,winner,bonusteam]=calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
     update_points_doubles(doubles_filename,t1,t1points,t2,t2points,winner,bonusteam,(p1s1+p1s2+p1s3),(p2s1+p2s2+p2s3))
     print(t1points,t2points,winner,bonusteam)
-    if(winner=='t1'):
+    if(winner=='p1'):
       message='Winner is '+str(t1)
-    elif(winner=='t2'):
+    elif(winner=='p2'):
       message='Winner is '+str(t2)
     return redirect(url_for('TplDoubles',error=error,message=message))
 
