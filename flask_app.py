@@ -222,11 +222,11 @@ def doublesubmitscore():
 
     if(p1forefeit or p2forefeit):
       if(p1forefeit):
-        score='Forefeit by '+str(t2)
+        score='Forefeit by '+str(t1)
         update_points_doubles(doubles_filename,t1,0,t2,40,'p2',0,0,0)
         message='Winner is '+str(t2)
       elif(p2forefeit):
-        score='Forefeit by '+str(t1)
+        score='Forefeit by '+str(t2)
         update_points_doubles()
         message='Winner is '+str(t1)
         update_points_doubles(doubles_filename,t1,40,t2,0,'p1',0,0,0)
