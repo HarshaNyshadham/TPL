@@ -106,7 +106,7 @@ def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
 
   PointTable_writer(df,filename)
 
-def update_points_doubles(filename,p1,p1points,p2,p2points,winner,bonusplayer,gamest1,gamest2):
+def update_points_doubles(filename,p1,p1points,p2,p2points,winner,bonusplayer,int(gamest1),int(gamest2)):
   df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   p1index=0
   p2index=0
