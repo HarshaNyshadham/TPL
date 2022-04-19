@@ -7,7 +7,7 @@ import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
-from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck
+from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck,Schedule_writer
 
 import os
 #File path
@@ -215,6 +215,22 @@ def doublesubmitscore():
       error='Invalid Score!!!'
       return redirect(url_for('TplDoubles',error=error,message=message))
 
+
+    score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
+
+    if(p1forefeit):
+      score='Forefeit by '+str(t2)
+    elif(p2forefeit):
+      score='Forefeit by '+str(t1)
+
+
+    #update Schedule
+    df_sch=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
+
+    for index,row in df_sch.iterrows():
+      if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
+       df_sch.at[index,'Score']= score
+       Schedule_writer(df_sch,'/home/tpl/mysite/uploads/TPL_Doubles.xlsx')
 
     return redirect(url_for('TplDoubles',error=error,message=message))
 
