@@ -203,8 +203,8 @@ def ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
       return False
     elif((int(p1s1)>int(p2s1)) and (int(p1s2)<int(p2s2)) and (int(p1s3)<6 and int(p2s3)<6)):
       return False
-    elif(p1forefeit and p2forefeit):
-      return False
+#     elif(p1forefeit and p2forefeit):
+#       return False
     return True
   # ******* End Doubles *********
 
