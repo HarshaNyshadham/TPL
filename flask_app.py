@@ -212,7 +212,7 @@ def doublesubmitscore():
     print(t1,t2)
     error=''
     message=''
-    print(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+    print(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
     if not (ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)):
       error='Invalid Score!!!'
       return redirect(url_for('TplDoubles',error=error,message=message))
