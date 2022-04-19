@@ -151,7 +151,7 @@ def calc_xrating(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,current_p1_xrating,current_p2_xra
     return([Xchange_p1,Xchange_p2])
 
 
-def ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
+def ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
     if((int(p1s1)<6 and int(p2s1)<6) or (int(p1s2)<6 and int(p2s2)<6)):
     #print(p1s1,p2s1)
       return False
@@ -163,7 +163,8 @@ def ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3):
       return False
     elif((int(p1s1)>int(p2s1)) and (int(p1s2)<int(p2s2)) and (int(p1s3)<6 and int(p2s3)<6)):
       return False
-
+    elif(p1forefeit and p2forefeit):
+      return False
     return True
 
 def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit):
