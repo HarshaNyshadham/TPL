@@ -8,7 +8,9 @@
     Win-40, Loss-10, Bonus-10(loss but win a set), Forefeit-0
   </h6>
 </h5>
-
+{% if message %}
+         <p class='text-center' style="color:red;"><strong>Winner is: </strong> {{ message }}
+{% endif %}
 <div class="container" style="width: 1000px; font-size: 12px;">
 <table class="table table-striped table-hover table-sm text-center">
          <thead class="table-info ">

@@ -206,9 +206,10 @@ def doublesubmitscore():
     p1forefeit=request.form.get("p1forefeit")
     p2forefeit=request.form.get("p2forefeit")
     print(t1,t2)
+    error='test'
+    message='test'
 
-
-    return redirect(url_for('TplDoubles',error='test',message=''))
+    return redirect(url_for('TplDoubles',error=errpr,message=message))
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
