@@ -165,13 +165,13 @@ def rules():
   return render_template('rules.html')
 
 @app.route('/TplDoubles',methods=['GET', 'POST'])
-def TplDoubles(error='',message=''):
+def TplDoubles():
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_data=[]
   sch_data=[]
-#   error=''
-#   message=''
+  error=request.args.get('error')
+  message=request.args.get('message')
   players=pt_df.iloc[:,0]
 
   for index,row in pt_df.iterrows():
@@ -208,7 +208,7 @@ def doublesubmitscore():
     print(t1,t2)
 
 
-    return redirect(url_for('TplDoubles'),error='test',message='')
+    return redirect(url_for('TplDoubles',error='test',message=''))
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
