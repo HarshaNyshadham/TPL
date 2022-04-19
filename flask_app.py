@@ -217,7 +217,7 @@ def doublesubmitscore():
       error='Invalid Score!!!'
       return redirect(url_for('TplDoubles',error=error,message=message))
 
-
+    df_sch=pd.read_excel(doubles_filename, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
     score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
 
     if(p1forefeit or p2forefeit):
@@ -237,7 +237,7 @@ def doublesubmitscore():
       return redirect(url_for('TplDoubles',error=error,message=message))
 
     #update Schedule
-    df_sch=pd.read_excel(doubles_filename, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
+
 
     for index,row in df_sch.iterrows():
       if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
