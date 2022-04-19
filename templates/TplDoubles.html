@@ -92,9 +92,12 @@
 
          <tbody class = "text-center">
             {% for entry in sch_data %}
+           <div>
+                      <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
+
                <tr>
                   <td>{{ entry[0] }}
-                       <form>
+
 
 
                        <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
@@ -121,7 +124,7 @@
                         <label class="form-check-label" for="flexCheckDefault">
                           Forefeit
                         </label>
-                         </form>
+
                   </td>
                   <td>{{ entry[1] }}
                         <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
@@ -152,18 +155,17 @@
 
                   {% if entry[2] == 'x' %}
                   <td>
-                    <div>
-                      <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
 
 
                         <button onclick="myFunction()" id="myBtn" type="submit" class="btn btn-success btn-sm">Submit</button>
-                      </form>
-                    </div>
+
                   </td>
                   {% else %}
                   <td>{{ entry[2] }}</td>
                   {% endif %}
                </tr>
+                            </form>
+                    </div>
             {% endfor %}
          </tbody>
 </table>
