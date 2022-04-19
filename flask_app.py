@@ -164,13 +164,14 @@ def modal():
 def rules():
   return render_template('rules.html')
 
-@app.route('/TplDoubles',methods=['GET', 'POST'])
+@app.route('/TplDoubles',methods=['GET', 'POST'],error='',message='')
 def TplDoubles():
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_data=[]
   sch_data=[]
-
+  error=''
+  message=''
   players=pt_df.iloc[:,0]
 
   for index,row in pt_df.iterrows():
@@ -190,16 +191,24 @@ def TplDoubles():
   for index,row in sch_df.iterrows():
     sch_data.append([row['Team1'],row['Team2'],row['Score']])
 
-  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
+  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
 
 @app.route('/doublescore',methods=['GET', 'POST'])
 def doublesubmitscore():
     t1=request.args.get('team1')
     t2=request.args.get('team2')
+    p1s1=request.form.get("p1set1")
+    p1s2=request.form.get("p1set2")
+    p1s3=request.form.get("p1set3")
+    p2s1=request.form.get("p2set1")
+    p2s2=request.form.get("p2set2")
+    p2s3=request.form.get("p2set3")
+    p1forefeit=request.form.get("p1forefeit")
+    p2forefeit=request.form.get("p2forefeit")
     print(t1,t2)
 
     error=''
-    return redirect(url_for('TplDoubles'))
+    return redirect(url_for('TplDoubles'),error='test',message='')
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
