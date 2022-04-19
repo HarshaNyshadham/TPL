@@ -164,14 +164,14 @@ def modal():
 def rules():
   return render_template('rules.html')
 
-@app.route('/TplDoubles',methods=['GET', 'POST'],error='',message='')
-def TplDoubles():
+@app.route('/TplDoubles',methods=['GET', 'POST'])
+def TplDoubles(error='',message=''):
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_data=[]
   sch_data=[]
-  error=''
-  message=''
+#   error=''
+#   message=''
   players=pt_df.iloc[:,0]
 
   for index,row in pt_df.iterrows():
@@ -186,7 +186,7 @@ def TplDoubles():
       for index,row in sch_df.iterrows():
         if(select_value==row['Team1'] or select_value==row['Team2']):
           sch_data.append([row['Team1'],row['Team2'],row['Score']])
-      return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
+      return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
 
   for index,row in sch_df.iterrows():
     sch_data.append([row['Team1'],row['Team2'],row['Score']])
@@ -207,7 +207,7 @@ def doublesubmitscore():
     p2forefeit=request.form.get("p2forefeit")
     print(t1,t2)
 
-    error=''
+
     return redirect(url_for('TplDoubles'),error='test',message='')
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
