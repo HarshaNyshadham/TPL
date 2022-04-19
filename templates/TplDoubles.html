@@ -4,8 +4,8 @@
 <h4 class = 'text-center'> TPL Doubles </h4>
 <h5 class = 'text-center'>
   Point Table
-  <h6 class = 'text-center' style = "color:red;">
-    Win-40, Loss-10, Bonus-10(loss but win a set), Forefeit-0
+  <h6 class = 'text-center' style = "color:black;font-size: 12px;">
+    <b>Win-40, Loss-10, Bonus-10(loss but win a set), Forefeit-0</b>
   </h6>
 </h5>
 {% if message %}
@@ -38,10 +38,10 @@
                   <td>{{item[2]}}</td>
                   <td>{{item[3]}}</td>
                   <td>{{item[4]}}</td>
-                  <td>{{item[5]}}</td>
+                  <td><b>{{item[5]}}</b></td>
                   <td>{{item[6]}}</td>
                   <td>{{item[7]}}</td>
-                  <td>{{item[8]}}</td>
+                 <td><b>{{item[8]}}</b></td>
 
 
                </tr>
@@ -70,7 +70,7 @@
   <br>
 <h5 class = 'text-center' >
    Start Date: April 11  -  End Date: May 16
-  <h6 class = 'text-center' style = "color:red;">
+  <h6 class = 'text-center' style = "color:green;font-size: 14px;">
     *Play in any order but all league games must be completed by May16*
   </h6>
   </h5>
@@ -96,7 +96,7 @@
               <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
 
                <tr>
-                  <td>{{ entry[0] }}&nbsp&nbsp
+                  <td>{{ entry[0] }}&nbsp &nbsp &nbsp
 
 
                         {% if entry[2] == 'x' %}
@@ -126,7 +126,7 @@
                           </label>
                         {% endif %}
                   </td>
-                  <td>{{ entry[1] }}&nbsp&nbsp
+                  <td>{{ entry[1] }}&nbsp &nbsp &nbsp
                         {% if entry[2] == 'x' %}
                           <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
                           <option selected>0</option>

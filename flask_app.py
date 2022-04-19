@@ -170,6 +170,7 @@ def rules():
 def TplDoubles():
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+  pt_df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
   pt_data=[]
   sch_data=[]
   error=request.args.get('error')
@@ -197,6 +198,7 @@ def TplDoubles():
 
 @app.route('/doublescore',methods=['GET', 'POST'])
 def doublesubmitscore():
+    doubles_filename='/home/tpl/mysite/uploads/TPL_Doubles.xlsx'
     t1=request.args.get('team1')
     t2=request.args.get('team2')
     p1s1=int(request.form.get("p1set1"))
@@ -218,24 +220,34 @@ def doublesubmitscore():
 
     score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
 
-    if(p1forefeit):
-      score='Forefeit by '+str(t2)
-    elif(p2forefeit):
-      score='Forefeit by '+str(t1)
-
+    if(p1forefeit or p2forefeit):
+      if(p1forefeit):
+        score='Forefeit by '+str(t2)
+        update_points_doubles(doubles_filename,t1,0,t2,40,'p2',0,0,0)
+        message='Winner is '+str(t2)
+      elif(p2forefeit):
+        score='Forefeit by '+str(t1)
+        update_points_doubles()
+        message='Winner is '+str(t1)
+        update_points_doubles(doubles_filename,t1,40,t2,0,'p1',0,0,0)
+      for index,row in df_sch.iterrows():
+      if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
+       df_sch.at[index,'Score']= score
+       Schedule_writer(df_sch,doubles_filename)
+      return redirect(url_for('TplDoubles',error=error,message=message))
 
     #update Schedule
-    df_sch=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
+    df_sch=pd.read_excel(doubles_filename, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
     for index,row in df_sch.iterrows():
       if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
        df_sch.at[index,'Score']= score
-       Schedule_writer(df_sch,'/home/tpl/mysite/uploads/TPL_Doubles.xlsx')
+       Schedule_writer(df_sch,doubles_filename)
 
     [t1points,t2points,winner,bonusteam]=calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
-    update_points_doubles('/home/tpl/mysite/uploads/TPL_Doubles.xlsx',t1,t1points,t2,t2points,winner,bonusteam,(p1s1+p1s2+p1s3),(p2s1+p2s2+p2s3))
+    update_points_doubles(doubles_filename,t1,t1points,t2,t2points,winner,bonusteam,(p1s1+p1s2+p1s3),(p2s1+p2s2+p2s3))
     print(t1points,t2points,winner,bonusteam)
-
+    message='Winner is '+winner
     return redirect(url_for('TplDoubles',error=error,message=message))
 
 
