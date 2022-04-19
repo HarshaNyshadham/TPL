@@ -7,7 +7,7 @@ import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
-from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck,Schedule_writer
+from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck,Schedule_writer,calc_points
 
 import os
 #File path
@@ -199,12 +199,12 @@ def TplDoubles():
 def doublesubmitscore():
     t1=request.args.get('team1')
     t2=request.args.get('team2')
-    p1s1=request.form.get("p1set1")
-    p1s2=request.form.get("p1set2")
-    p1s3=request.form.get("p1set3")
-    p2s1=request.form.get("p2set1")
-    p2s2=request.form.get("p2set2")
-    p2s3=request.form.get("p2set3")
+    p1s1=int(request.form.get("p1set1"))
+    p1s2=int(request.form.get("p1set2"))
+    p1s3=int(request.form.get("p1set3"))
+    p2s1=int(request.form.get("p2set1"))
+    p2s2=int(request.form.get("p2set2"))
+    p2s3=int(request.form.get("p2set3"))
     p1forefeit=request.form.get("p1forefeit")
     p2forefeit=request.form.get("p2forefeit")
     print(t1,t2)
@@ -231,6 +231,9 @@ def doublesubmitscore():
       if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
        df_sch.at[index,'Score']= score
        Schedule_writer(df_sch,'/home/tpl/mysite/uploads/TPL_Doubles.xlsx')
+
+    [t1points,t2points,winner,bonusteam]=calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+    print(t1points,t2points,winner,bonusteam)
 
     return redirect(url_for('TplDoubles',error=error,message=message))
 
