@@ -199,7 +199,7 @@ def doublesubmitscore():
     print(t1,t2)
 
     error=''
-    return True
+    return redirect(url_for('TplDoubles'))
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
