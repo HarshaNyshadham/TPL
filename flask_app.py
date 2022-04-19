@@ -7,7 +7,7 @@ import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
-from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck,Schedule_writer,calc_points
+from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck,Schedule_writer,calc_points,update_points_doubles
 
 import os
 #File path
