@@ -7,7 +7,7 @@ import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
-from calculation import create_new_season,update_score,Leaderboard_writer
+from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck
 
 import os
 #File path
@@ -164,6 +164,8 @@ def modal():
 def rules():
   return render_template('rules.html')
 
+# ************** Doubles ****************
+
 @app.route('/TplDoubles',methods=['GET', 'POST'])
 def TplDoubles():
 
@@ -206,10 +208,18 @@ def doublesubmitscore():
     p1forefeit=request.form.get("p1forefeit")
     p2forefeit=request.form.get("p2forefeit")
     print(t1,t2)
-    error='test'
+    error=''
     message='test'
 
-    return redirect(url_for('TplDoubles',error=errpr,message=message))
+    if(ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)):
+      error='Invalid Score!!!'
+      return redirect(url_for('TplDoubles',error=error,message=message))
+
+
+    return redirect(url_for('TplDoubles',error=error,message=message))
+
+
+# ************** End Doubles ****************
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
