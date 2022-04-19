@@ -60,7 +60,7 @@
 <div class="container mx-auto mb-3 text-center" style="width: 1000px; font-size: 14px;">
 <form action="{{ url_for("TplDoubles")}}" method="post">
 <select name="comp_select" class="selectpicker bg-light" data-live-search="true" aria-label="Default select example">
-  <option selected>Select Player</option>
+  <option selected>Select Team</option>
   {% for p in players %}
   <option value="{{p}}">{{p}}</option>
   {% endfor %}
