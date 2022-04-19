@@ -93,7 +93,7 @@
                   {% if entry[2] == 'x' %}
                   <td>
                     <div>
-                      <form id="myForm" action="{}" method="post" >
+                      <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
                         <select name="p1set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
                         <option selected>set1</option>
                         {% for i in range(0,8) %}

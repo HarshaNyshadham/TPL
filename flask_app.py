@@ -193,13 +193,13 @@ def TplDoubles():
   return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players)
 
 @app.route('/doublescore',methods=['GET', 'POST'])
-def doublescore():
+def doublesubmitscore():
     t1=request.args.get('team1')
     t2=request.args.get('team2')
-
+    print(t1,t2)
 
     error=''
-    return render_template('doublesScore.html',t1=t1,t2=t2,error=error)
+    return True
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
 def playerprofile():
