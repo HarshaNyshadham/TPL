@@ -227,7 +227,6 @@ def doublesubmitscore():
         message='Winner is '+str(t2)
       elif(p2forefeit):
         score='Forefeit by '+str(t2)
-        update_points_doubles()
         message='Winner is '+str(t1)
         update_points_doubles(doubles_filename,t1,40,t2,0,'p1',0,0,0)
       for index,row in df_sch.iterrows():
