@@ -249,7 +249,7 @@ def doublesubmitscore():
     print(t1points,t2points,winner,bonusteam)
     if(winner=='t1'):
       message='Winner is '+str(t1)
-    elif(winner=='t2')
+    elif(winner=='t2'):
       message='Winner is '+str(t2)
     return redirect(url_for('TplDoubles',error=error,message=message))
 
