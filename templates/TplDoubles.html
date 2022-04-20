@@ -96,7 +96,7 @@
               <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
 
                <tr>
-                  <td>{{ entry[0] }}&nbsp &nbsp &nbsp
+                  <td><b>{{ entry[0] }}</b>&nbsp &nbsp &nbsp
 
 
                         {% if entry[2] == 'x' %}
@@ -126,7 +126,7 @@
                           </label>
                         {% endif %}
                   </td>
-                  <td>{{ entry[1] }}&nbsp &nbsp &nbsp
+                  <td><b>{{ entry[1] }}</b>&nbsp &nbsp &nbsp
                         {% if entry[2] == 'x' %}
                           <select name="p2set1" class="selectpicker" data-live-search="true" aria-label="Default select example">
                           <option selected>0</option>
