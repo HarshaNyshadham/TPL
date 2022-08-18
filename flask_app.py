@@ -40,12 +40,13 @@ def index():
 def test():
 
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
-    df.sort_values(by=['Active','Current Rating'],inplace =True,ascending=[True,False])
+    
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
     df_new=df_new.fillna(0)
     df_new['Points']=df_new['Points'].astype(int)
+    df.sort_values(by=['Points','Current Rating'],inplace =True,ascending=[True,False])
     print(df_new)
     data=[]
 
