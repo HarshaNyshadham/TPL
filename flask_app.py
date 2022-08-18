@@ -43,7 +43,7 @@ def test():
     df.sort_values(by=['Active','Current Rating'],inplace =True,ascending=[True,False])
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-    df.merge(df_PT([['Player','Points']]))
+    df.merge(df_PT[['Player','Points']],on = 'Player')
     print(df)
     data=[]
 
