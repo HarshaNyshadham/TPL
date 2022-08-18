@@ -34,6 +34,7 @@
             <tr>
                <th>Rank</th>
                <th>Player</th>
+               <th>Points</th>
                <th>Rating<a data-toggle="modal" href="#myModal" style="color:white;">?</a></th>
 
             </tr>
@@ -44,10 +45,11 @@
                <tr>
                   <td>{{loop.index0 +1}}</td>
                   <td>{{ entry[0] }}</td>
+                  <td>{{ entry[2] }}</td>
                  {% if entry[1]=='I' %}
-                  <td class="bg-danger">{{ entry[4] }}</td>
+                  <td class="bg-danger">{{ entry[3] }}</td>
                  {% else %}
-                  <td class="bg-info">{{ entry[4] }}</td>
+                  <td class="bg-info">{{ entry[3] }}</td>
                  {% endif %}
 
                </tr>

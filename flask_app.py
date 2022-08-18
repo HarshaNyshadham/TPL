@@ -27,12 +27,21 @@ app = Flask(__name__)
 def index():
 
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
-    df.sort_values(by=['Active','Current Rating'],inplace =True,ascending=[True,False])
+    
+
+    df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df['Player']=df['Player'].astype(str)
+    df_PT['Player']=df_PT['Player'].astype(str)
+
+    df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
+    df_new=df_new.fillna(0)
+    df_new['Points']=df_new['Points'].astype(int)
+    df_new.sort_values(by=['Points','Current Rating'],inplace =True,ascending=[False,False])
+    print(df_new)
     data=[]
 
-    for index,row in df.iterrows():
-                   data.append([row['Player'],row['Active'],row['Win'],row['Loss'],row['Current Rating']])
-
+    for index,row in df_new.iterrows():
+                   data.append([row['Player'],row['Active'],row['Points'],row['Current Rating']])
 
     return render_template('home.html',data=data)
 
