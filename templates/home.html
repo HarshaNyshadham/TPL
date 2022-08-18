@@ -45,7 +45,11 @@
                <tr>
                   <td>{{loop.index0 +1}}</td>
                   <td>{{ entry[0] }}</td>
-                  <td class = "bg-success">{{ entry[2] }}</td>
+                 {% if loop.index0 < 16 %}
+                  <td class = "bg-success"><b>{{ entry[2] }}</b></td>
+                 {% else %}
+                 <td class = "bg-light">{{ entry[2] }}</td>
+                 {% endif %}
                  {% if entry[1]=='I' %}
                   <td class="bg-danger">{{ entry[3] }}</td>
                  {% else %}
