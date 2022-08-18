@@ -36,6 +36,19 @@ def index():
 
     return render_template('home.html',data=data)
 
+@app.route('/test')
+def test():
+
+    df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
+    df.sort_values(by=['Active','Current Rating'],inplace =True,ascending=[True,False])
+    data=[]
+
+    for index,row in df.iterrows():
+                   data.append([row['Player'],row['Active'],row['Win'],row['Loss'],row['Current Rating']])
+
+
+    return render_template('test.html',data=data)
+
 @app.route('/pointtable')
 def pointtable():
     message=request.args.get('message')
