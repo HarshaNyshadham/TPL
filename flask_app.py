@@ -44,11 +44,13 @@ def test():
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
+    df_new=df_new.fillna(0)
+    df_new['Points']=df_new['Points'].astype(int)
     print(df_new)
     data=[]
 
     for index,row in df_new.iterrows():
-                   data.append([row['Player'],row['Active'],int(row['Points']),row['Current Rating']])
+                   data.append([row['Player'],row['Active'],row['Points'],row['Current Rating']])
 
 
     return render_template('test.html',data=data)
