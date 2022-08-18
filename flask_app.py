@@ -48,7 +48,7 @@ def test():
     data=[]
 
     for index,row in df_new.iterrows():
-                   data.append([row['Player'],row['Active'],row['Points'],row['Current Rating']])
+                   data.append([row['Player'],row['Active'],int(row['Points']),row['Current Rating']])
 
 
     return render_template('test.html',data=data)
