@@ -41,6 +41,10 @@ def test():
 
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
     df.sort_values(by=['Active','Current Rating'],inplace =True,ascending=[True,False])
+
+    df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df.merge(df_PT([['Player','Points']]))
+    print(df)
     data=[]
 
     for index,row in df.iterrows():
