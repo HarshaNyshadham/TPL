@@ -148,10 +148,10 @@ def playoffs():
             worksheet['B'+str(index+18)]=score_write[index]
         worksheet['D2']=title_write
         workbook.save(Playoff_filename)
-        return redirect(url_for('playoff'))
+        return redirect(url_for('playoffs'))
 
 
-    return render_template("playoff.html",data=data,score_data=score_data,title=title)
+    return render_template("playoffs.html",data=data,score_data=score_data,title=title)
 
 
 @app.route('/enterScore',methods=['GET', 'POST'])
