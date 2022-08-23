@@ -113,7 +113,7 @@ def schedule():
 
     return render_template('schedule.html',data=data,players=player_list)
 
-@app.route('/playoffs')
+@app.route('/playoffs',methods=['GET', 'POST'])
 def playoffs():
     # read data from excel
     df=pd.read_excel(Playoff_filename, engine ='openpyxl',sheet_name ='Playoff',keep_default_na=False)
