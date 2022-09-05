@@ -6,7 +6,7 @@ def generate_sch_from_list(lst):
   for i in range(len(lst)):
     for j in range(i+1,len(lst)):
       temp.append([lst[i],lst[j],'x'])
-  #print(temp)
+  print(temp)
   return temp
 
 def Schedule_writer(schedule_dataframe,filename):
