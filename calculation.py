@@ -51,7 +51,7 @@ def create_new_season(filename):
  schedule_data=[]
 
  player_list=[]
- print('orups')
+
  print(num_of_groups)
 
 
