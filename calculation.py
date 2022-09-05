@@ -51,7 +51,8 @@ def create_new_season(filename):
  schedule_data=[]
 
  player_list=[]
- print("gorups",num_of_groups)
+ print("gorups")
+ print(num_of_groups)
 
 
  for i in range(num_of_groups):
