@@ -60,7 +60,7 @@ def test():
     df_new=df_new.fillna(0)
     df_new['Points']=df_new['Points'].astype(int)
     df_new.sort_values(by=['Active','Points','Current Rating'],inplace =True,ascending=[True,False,False])
-    print(df['Player'])
+    print(len(df),len(df_PT))
     data=[]
 
     for index,row in df_new.iterrows():
