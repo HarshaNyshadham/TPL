@@ -52,7 +52,7 @@ def create_new_season(filename):
 
  player_list=[]
  
- print(num_of_groups)
+ #print(num_of_groups)
 
 
  for i in range(num_of_groups):
