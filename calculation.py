@@ -49,7 +49,7 @@ def create_new_season(filename):
  grpdata=pd.DataFrame()
  num_of_groups= len(df.columns)
  schedule_data=[]
-
+ print("test")
  player_list=[]
  
  #print(num_of_groups)
