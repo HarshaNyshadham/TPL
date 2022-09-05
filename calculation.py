@@ -46,6 +46,7 @@ def Leaderboard_writer(LB_dataframe,filename):
 
 def create_new_season(filename):
  df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='Groups',keep_default_na=False)
+ df.dropna(inplace = True)
  grpdata=pd.DataFrame()
  num_of_groups= len(df.columns)
  schedule_data=[]
