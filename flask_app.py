@@ -239,6 +239,7 @@ def rules():
 def TplDoubles():
 
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+  pt_df['%games']=pt_df['%games'].astype(int)
   pt_df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
   pt_data=[]
   sch_data=[]
