@@ -12,6 +12,8 @@ import openpyxl
 import os
 from plots import playerDistribution,playerBagelPlot,PlayerWinPlot,playerMacthesPlot
 import json
+import plotly
+import plotly.express as px
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
