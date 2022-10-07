@@ -22,7 +22,7 @@ def playerDistribution(df):
     fig.update_xaxes(type='category',categoryorder='category ascending')
     fig.update_traces(textposition='top center',textfont_size=10)
     fig.update_layout(xaxis=dict(
-            minor=dict(showgrid=True),
+            # minor=dict(showgrid=True),
             rangeselector=dict(activecolor='#ff0000'),
             rangeslider=dict(visible=True,autorange=True,bgcolor="aliceblue",bordercolor="hotpink",borderwidth=1),
             type="category",
