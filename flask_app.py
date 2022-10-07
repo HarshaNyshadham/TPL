@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from calculation import create_new_season,update_score,Leaderboard_writer,ScoreCheck,Schedule_writer,calc_points,update_points_doubles
 import openpyxl
 import os
+from plots import playerDistribution,playerBagelPlot,PlayerWinPlot,playerMacthesPlot
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
