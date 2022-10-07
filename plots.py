@@ -177,7 +177,7 @@ def PlayerWinPlot(df,player):
 
 
 def playerMacthesPlot(player):
-    df=pd.read_excel(r'rawdata.xlsx', engine ='openpyxl',keep_default_na=False)
+    df=pd.read_excel('/home/tpl/mysite/uploads/rawdata.xlsx', engine ='openpyxl',keep_default_na=False)
     playerDF=df[df['Player1']==player].append(df[df['Player2']==player])
     #print(playerDF)
 
