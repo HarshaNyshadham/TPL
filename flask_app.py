@@ -335,3 +335,39 @@ def playerprofile():
       if(playername==row['Player1'] or playername==row['Player2']):
         data.append([row['Player1'],row['Player2'],row['Score']])
   return render_template('playerprofile.html',playername=playername,data=data)
+
+
+#*************** Plot *****************************
+@app.route("/plot",methods=['GET', 'POST'])
+def plot():
+
+    
+    df=pd.read_excel('/home/tpl/mysite/uploads/plotdata.xlsx', engine ='openpyxl',keep_default_na=False)
+    #table data
+    
+    df=df.sort_values(by=['%Win','%Games'],ascending=[False,False])
+    data=[]
+    for index,row in df.iterrows():
+                   data.append([row['Player'],row['%Win'],row['%Games']])
+    playername=data[0][0]
+    
+    if(request.args.get('player')):
+        playername=request.args.get('player')
+  
+    fig=playerDistribution(df)
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+   
+    fig=playerBagelPlot(df,playername)
+    graphJSON2 = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    fig=PlayerWinPlot(df,playername)
+    graphJSON3 = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    fig=playerMacthesPlot(playername)
+    graphJSON4 = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    
+        
+    
+    return render_template('plot.html', graphJSON=graphJSON,graphJSON2=graphJSON2,graphJSON3=graphJSON3,graphJSON4=graphJSON4,player=playername,data=data)
