@@ -352,7 +352,7 @@ def plot():
     df=df.sort_values(by=['%Win','%Games'],ascending=[False,False])
     data=[]
     for index,row in df.iterrows():
-                   data.append([row['Player'],row['%Win'],row['%Games']])
+                   data.append([row['Player'],row['%Win'],row['%Games'],(row['Win']+row['Loss'])])
     playername=data[0][0]
     
     if(request.args.get('player')):
