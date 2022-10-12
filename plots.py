@@ -113,14 +113,14 @@ def playerBagelPlot(df,player):
 
     fig =go.Figure(go.Sunburst(
         
-        labels=[ "Bagels","taken","given"]+taken+given,
-        parents=["","Bagels","Bagels"]+temp_parent,
+        labels=[ "Bagels 🥯","taken","given"]+taken+given,
+        parents=["","Bagels 🥯","Bagels 🥯"]+temp_parent,
         values=count,
     ))
     # print([ "Bagels","taken","given"]+taken+given)
     # print(["","Bagels","Bagels"]+temp_parent)
     # print(count)
-    fig.update_layout(title=str(player)+' Bagel stat')
+    # fig.update_layout(title=str(player)+' Bagel stat')
     return fig
 
 def PlayerWinPlot(df,player):
@@ -158,7 +158,7 @@ def PlayerWinPlot(df,player):
 
     
 
-    Parent=['Win%' for value in range(0,len(Player))]
+    Parent=['Win Rate' for value in range(0,len(Player))]
     
     # print(Player,WinPerc,Parent) 
     # print(len(Player),len(WinPerc),len(Parent)) 
@@ -168,7 +168,7 @@ def PlayerWinPlot(df,player):
     #print(sbdf)
     
     fig=px.sunburst(sbdf, path=['Parent', 'Value','Player'], values='TotalGames',color='Value',color_continuous_scale ="Emrld")
-    fig.update_layout(title=str(player)+' Win stat')
+    # fig.update_layout(title=str(player)+' Win stat')
     
     
    
@@ -196,15 +196,17 @@ def playerMacthesPlot(player):
             tableDf.at[index,'Color']='salmon'
     #print(tableDf)
     tableDf=tableDf.sort_values(by=['Color','Season'],ascending=[True,False])
+    ID=[(value+1) for value in range(0,len(tableDf))]
     fig = go.Figure(data=[go.Table(
-    header=dict(values=['Player','Score','Season'],
+    header=dict(values=['ID','Player','Score','Season'],
                 fill_color='cadetblue',
                 align='left'),
-    cells=dict(values=[tableDf.Player, tableDf.Score, tableDf.Season],
+    cells=dict(values=[ID,tableDf.Player, tableDf.Score, tableDf.Season],
                fill_color=[tableDf.Color],
-               align='left'))
+               align='left'),
+    columnwidth=[2,5,5,5])
     ])
-    fig.update_layout(title=str(player)+' vs - past macthes')
+    # fig.update_layout(title=str(player)+' vs - past macthes')
     return fig
 # df=pd.read_excel(r'plotdata.xlsx', engine ='openpyxl',keep_default_na=False)
 # fig1=playerBagelPlot(df,"Aditya")
