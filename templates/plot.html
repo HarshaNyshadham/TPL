@@ -11,7 +11,10 @@
     
   </head>
  <body>
-  <h1 style="text-align:center ;">Player Distribution <a href="{{ url_for('index') }}" class="previous" style="color:rgb(255, 255, 255);float: left;font-size: large;background-color: rgb(41, 43, 42);margin: 1%;">&laquo; TPL Home</a></h1>
+  <h1 style="text-align:center ;">Player Distribution 
+    <a href="{{ url_for('index') }}" class="previous" style="color:rgb(255, 255, 255);float: left;font-size: large;background-color: rgb(41, 43, 42);margin: 1%;">&laquo; TPL Home</a>
+    <a style="font-size: large;float: right;margin: 1%;">Last Updated:{{updateTime}}</a>
+  </h1>
   <p style="text-align:center ;">(hover mouse to view more details)</p>
   <div id='chart' class = "chart" style="width:100vw;  height:66.67vh;"></div>
   <h3 style="text-align:center ;">{{player}} Dashboard</h3>

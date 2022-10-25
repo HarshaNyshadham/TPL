@@ -14,6 +14,7 @@ from plots import playerDistribution,playerBagelPlot,PlayerWinPlot,playerMacthes
 import json
 import plotly
 import plotly.express as px
+import os.path,datetime,calendar
 #File path
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
@@ -348,7 +349,9 @@ def plot():
     
     df=pd.read_excel('/home/tpl/mysite/uploads/plotdata.xlsx', engine ='openpyxl',keep_default_na=False)
     #table data
-    
+    updateTime=os.path.getmtime('/home/tpl/mysite/uploads/plotdata.xlsx')
+    updateTime=datetime.datetime.fromtimestamp(updateTime)
+    lastUpdated=calendar.month_abbr[updateTime.month]+"-"+str(updateTime.day)
     df=df.sort_values(by=['%Win','%Games'],ascending=[False,False])
     data=[]
     for index,row in df.iterrows():
@@ -374,4 +377,4 @@ def plot():
     
         
     
-    return render_template('plot.html', graphJSON=graphJSON,graphJSON2=graphJSON2,graphJSON3=graphJSON3,graphJSON4=graphJSON4,player=playername,data=data)
+    return render_template('plot.html', graphJSON=graphJSON,graphJSON2=graphJSON2,graphJSON3=graphJSON3,graphJSON4=graphJSON4,player=playername,data=data,updateTime=lastUpdated)
