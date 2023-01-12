@@ -47,7 +47,7 @@ def index():
     data=[]
 
     for index,row in df_new.iterrows():
-                   data.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating'])])
+                   data.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating']),row['Division']])
 
     return render_template('home.html',data=data)
 
