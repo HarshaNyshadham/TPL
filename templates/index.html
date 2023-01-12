@@ -41,14 +41,12 @@
                     <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">PointTable</a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
                         <li>
-                            <a href="#">Group 1</a>
+                            <a href="{{ url_for('pointtable',div=4.5) }}">Div 4.5</a>
                         </li>
                         <li>
-                            <a href="#">Group 2</a>
+                            <a href="{{ url_for('pointtable',div=4.0) }}">Div 4.0</a>
                         </li>
-                        <li>
-                            <a href="#">Group 3</a>
-                        </li>
+                      
                     </ul>
                 </li>
 

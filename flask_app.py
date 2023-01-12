@@ -76,6 +76,7 @@ def test():
 
 @app.route('/pointtable')
 def pointtable():
+    div=request.args.get('div')
     message=request.args.get('message')
     if(message):
       message='Winner is '+ str(message)
@@ -86,7 +87,7 @@ def pointtable():
     data=[]
     for index,row in df.iterrows():
       data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group']])
-    return render_template('pointtable.html',data=4,pt_data=data,message=message)
+    return render_template('pointtable.html',data=4,pt_data=data,message=message,div=div)
 
 #     pt_dict={}
 
@@ -120,6 +121,8 @@ def schedule():
 
 @app.route('/playoffs',methods=['GET', 'POST'])
 def playoffs():
+
+    
     # read data from excel
     df=pd.read_excel(Playoff_filename, engine ='openpyxl',sheet_name ='Playoff',keep_default_na=False)
     data=[]
