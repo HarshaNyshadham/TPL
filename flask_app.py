@@ -44,12 +44,16 @@ def index():
     df_new['Points']=df_new['Points'].astype(int)
     df_new.sort_values(by=['Active','Points','Current Rating'],inplace =True,ascending=[True,False,False])
     print(df_new)
-    data=[]
+    data_45=[]
+    data_40=[]
 
     for index,row in df_new.iterrows():
-                   data.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating']),row['Division']])
+                  if(float(row['Division'])==4.5):
+                    data_45.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating'])])
+                  elif(float(row['Division'])==4.0):
+                    data_40.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating'])])
 
-    return render_template('home.html',data=data)
+    return render_template('home.html',data_45=data_45,data_40=data_40)
 
 @app.route('/test')
 def test():
