@@ -76,7 +76,7 @@ def test():
 
 @app.route('/pointtable')
 def pointtable():
-    div=request.args.get('div')
+    div=float(request.args.get('div'))
     message=request.args.get('message')
     if(message):
       message='Winner is '+ str(message)
@@ -86,7 +86,7 @@ def pointtable():
     df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
     for index,row in df.iterrows():
-      if(div==row['Division']):
+      if(div==float(row['Division'])):
         data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group']])
     return render_template('pointtable.html',data=4,pt_data=data,message=message,div=div)
 
