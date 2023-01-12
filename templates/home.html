@@ -41,8 +41,8 @@
          </thead>
 
          <tbody>
-            {% for entry in data %}
-              {% if entry[4] == 4.5 %}
+            {% for entry in data_45 %}
+              
                <tr>
                   <td>{{loop.index0 +1}}</td>
                   <td>{{ entry[0] }}</td>
@@ -58,7 +58,7 @@
                  {% endif %}
 
                </tr>
-              {% endif %}
+              
             {% endfor %}
          </tbody>
 </table>
@@ -80,8 +80,8 @@
          </thead>
 
          <tbody>
-            {% for entry in data %}
-              {% if entry[4] == 4.0 %}
+            {% for entry in data_40 %}
+              
                <tr>
                   <td>{{loop.index0 +1}}</td>
                   <td>{{ entry[0] }}</td>
@@ -97,7 +97,7 @@
                  {% endif %}
 
                </tr>
-              {% endif %}
+              
             {% endfor %}
          </tbody>
 </table>
