@@ -86,7 +86,7 @@ def pointtable():
     df.sort_values(by=['Points'],inplace =True,ascending=False)
     data=[]
     for index,row in df.iterrows():
-      data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group']])
+      data.append([row['Player'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['Group'],row['Division']])
     return render_template('pointtable.html',data=4,pt_data=data,message=message,div=div)
 
 #     pt_dict={}
