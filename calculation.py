@@ -78,7 +78,7 @@ def create_new_season(filename):
 
  return num_of_groups
 
-def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
+def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer,p1total,p2total):
   df=pd.read_excel(filename, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   p1index=0
   p2index=0
@@ -108,16 +108,16 @@ def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
     df.at[p2index,'Bonus']=df.at[p2index,'Bonus']+10
 
   #  #percentage games
-  # df.at[p1index,'GamesTotal']=df.at[p1index,'GamesTotal']+gamest1+gamest2
-  # df.at[p2index,'GamesTotal']=df.at[p2index,'GamesTotal']+gamest2+gamest1
+  df.at[p1index,'GamesTotal']=df.at[p1index,'GamesTotal']+p1total+p2total
+  df.at[p2index,'GamesTotal']=df.at[p2index,'GamesTotal']+p1total+p2total
 
-  # df.at[p1index,'GamesWon']=df.at[p1index,'GamesWon']+gamest1
-  # if(df.at[p1index,'GamesTotal']>0):
-  #   df.at[p1index,'%games']=(df.at[p1index,'GamesWon']/df.at[p1index,'GamesTotal'])*100
+  df.at[p1index,'GamesWon']=df.at[p1index,'GamesWon']+p1total
+  if(df.at[p1index,'GamesTotal']>0):
+    df.at[p1index,'%games']=(df.at[p1index,'GamesWon']/df.at[p1index,'GamesTotal'])*100
 
-  # df.at[p2index,'GamesWon']=df.at[p2index,'GamesWon']+gamest2
-  # if(df.at[p2index,'GamesTotal']>0):
-  #   df.at[p2index,'%games']=(df.at[p2index,'GamesWon']/df.at[p2index,'GamesTotal'])*100
+  df.at[p2index,'GamesWon']=df.at[p2index,'GamesWon']+p2total
+  if(df.at[p2index,'GamesTotal']>0):
+    df.at[p2index,'%games']=(df.at[p2index,'GamesWon']/df.at[p2index,'GamesTotal'])*100
 
 
 
@@ -267,7 +267,7 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
     return False
 
   get_points=calc_points(int(p1s1),int(p1s2),int(p1s3),int(p2s1),int(p2s2),int(p2s3))
-  update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]))
+  update_points(filename,player1,get_points[0],player2,get_points[1],str(get_points[2]),str(get_points[3]),(p1s1+p1s2+p1s3),(p2s1+p2s2+p2s3))
   #update Schedule
   for index,row in df_sch.iterrows():
     if((row['Player1']==str(player1)) and  (row['Player2']==str(player2))):
