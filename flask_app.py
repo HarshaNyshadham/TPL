@@ -41,7 +41,7 @@ def index():
     df['Player']=df['Player'].astype(str)
     df_PT['Player']=df_PT['Player'].astype(str)
 
-    df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
+    df_new=df.merge(df_PT[['Player','Points','%games']],on = 'Player', how = 'left')
     df_new=df_new.fillna(0)
     df_new['Points']=df_new['Points'].astype(int)
     df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
