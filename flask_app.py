@@ -94,6 +94,7 @@ def pointtable():
       message=''
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
+    df['%games']=round(df['%games'].astype(float),2)
     data=[]
     for index,row in df.iterrows():
       if(div==float(row['Division'])):
