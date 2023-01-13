@@ -98,7 +98,7 @@ a:focus {
 #sidebar ul li.active>a,
 a[aria-expanded="true"] {
     color: WHITE;
-    background: rgb(58, 187, 226);
+    background: rgb(55, 176, 212);
 }
 
 a[data-toggle="collapse"] {
