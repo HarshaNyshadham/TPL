@@ -33,7 +33,7 @@ app = Flask(__name__)
 def index():
     message=''
     if(request.args.get('message')):
-      message=request.args.get('message')
+      message='Winner is '+str(request.args.get('message'))
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
     
 
