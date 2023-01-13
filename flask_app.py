@@ -70,12 +70,12 @@ def test():
     df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
     df_new=df_new.fillna(0)
     df_new['Points']=df_new['Points'].astype(int)
-    df_new.sort_values(by=['Active','Points','Current Rating'],inplace =True,ascending=[True,False,False])
+    df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
     print(len(df),len(df_PT))
     data=[]
 
     for index,row in df_new.iterrows():
-                   data.append([row['Player'],row['Active'],row['Points'],row['Current Rating']])
+                   data.append([row['Player'],row['Active'],row['Points'],row['%games']])
 
 
     return render_template('test.html',data=data)
@@ -90,7 +90,7 @@ def pointtable():
     else:
       message=''
     df=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-    df.sort_values(by=['Points'],inplace =True,ascending=False)
+    df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     data=[]
     for index,row in df.iterrows():
       if(div==float(row['Division'])):
