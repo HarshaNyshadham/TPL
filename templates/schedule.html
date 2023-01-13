@@ -30,6 +30,7 @@
                <th>Player1</th>
                <th>Player2</th>
                <th>Score</th>
+               <th>Deadline</th>
 
 
             </tr>
@@ -47,6 +48,7 @@
                   {% else %}
                   <td>{{ entry[2] }}</td>
                   {% endif %}
+                  <td>{{ entry[3] }}</td>
                </tr>
             {% endfor %}
          </tbody>
