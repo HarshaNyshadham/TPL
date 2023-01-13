@@ -39,7 +39,7 @@ def index():
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
-    df_PT['%games']=df_PT['%games'].astype(float)
+    df_PT['%games']=round(df_PT['%games'].astype(float),2)
     # df['Player']=df['Player'].astype(str)
     # df_PT['Player']=df_PT['Player'].astype(str)
 
