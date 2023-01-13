@@ -38,6 +38,7 @@ def index():
     
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     # df['Player']=df['Player'].astype(str)
     # df_PT['Player']=df_PT['Player'].astype(str)
 
