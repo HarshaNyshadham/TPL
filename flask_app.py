@@ -31,7 +31,8 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index')
 def index():
-
+    if(request.args.get('message')):
+      message=request.args.get('message')
     df=pd.read_excel(TPL_leaderboard, engine ='openpyxl',sheet_name ='Leaderboard',keep_default_na=False)
     
 
@@ -53,7 +54,7 @@ def index():
                   elif(float(row['Division'])==4.0):
                     data_40.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating'])])
 
-    return render_template('home.html',data_45=data_45,data_40=data_40)
+    return render_template('home.html',data_45=data_45,data_40=data_40,message=message)
 
 @app.route('/test')
 def test():
@@ -80,6 +81,7 @@ def test():
 
 @app.route('/pointtable')
 def pointtable():
+
     div=float(request.args.get('div'))
     message=request.args.get('message')
     if(message):
@@ -204,7 +206,7 @@ def submitScore():
            name=player1
         elif(message=='p2'):
           name=player2
-        return redirect(url_for('pointtable',message=name))
+        return redirect(url_for('index',message=name))
       else:
         error="incorrect score"
         return render_template('enterScore.html',p1=player1,p2=player2,row_index=row_index,error=error)
