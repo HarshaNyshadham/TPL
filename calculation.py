@@ -107,6 +107,20 @@ def update_points(filename,p1,p1points,p2,p2points,winner,bonusplayer):
   elif(bonusplayer=='p2'):
     df.at[p2index,'Bonus']=df.at[p2index,'Bonus']+10
 
+  #  #percentage games
+  # df.at[p1index,'GamesTotal']=df.at[p1index,'GamesTotal']+gamest1+gamest2
+  # df.at[p2index,'GamesTotal']=df.at[p2index,'GamesTotal']+gamest2+gamest1
+
+  # df.at[p1index,'GamesWon']=df.at[p1index,'GamesWon']+gamest1
+  # if(df.at[p1index,'GamesTotal']>0):
+  #   df.at[p1index,'%games']=(df.at[p1index,'GamesWon']/df.at[p1index,'GamesTotal'])*100
+
+  # df.at[p2index,'GamesWon']=df.at[p2index,'GamesWon']+gamest2
+  # if(df.at[p2index,'GamesTotal']>0):
+  #   df.at[p2index,'%games']=(df.at[p2index,'GamesWon']/df.at[p2index,'GamesTotal'])*100
+
+
+
   PointTable_writer(df,filename)
 
 def update_points_doubles(filename,p1,p1points,p2,p2points,winner,bonusplayer,gamest1,gamest2):
