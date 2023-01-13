@@ -44,16 +44,16 @@ def index():
     df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
     df_new=df_new.fillna(0)
     df_new['Points']=df_new['Points'].astype(int)
-    df_new.sort_values(by=['Active','Points','Current Rating'],inplace =True,ascending=[True,False,False])
+    df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
     print(df_new)
     data_45=[]
     data_40=[]
 
     for index,row in df_new.iterrows():
                   if(float(row['Division'])==4.5):
-                    data_45.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating'])])
+                    data_45.append([row['Player'],row['Active'],row['Points'],int(row['%games'])])
                   elif(float(row['Division'])==4.0):
-                    data_40.append([row['Player'],row['Active'],row['Points'],int(row['Current Rating'])])
+                    data_40.append([row['Player'],row['Active'],row['Points'],int(row['%games'])])
 
     return render_template('home.html',data_45=data_45,data_40=data_40,message=message)
 
