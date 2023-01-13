@@ -38,23 +38,23 @@ def index():
     
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-    df['Player']=df['Player'].astype(str)
-    df_PT['Player']=df_PT['Player'].astype(str)
+    # df['Player']=df['Player'].astype(str)
+    # df_PT['Player']=df_PT['Player'].astype(str)
 
-    df_new=df.merge(df_PT[['Player','Points','%games']],on = 'Player', how = 'left')
-    df_new=df_new.fillna(0)
-    print(df_new.columns)
-    df_new['Points']=df_new['Points'].astype(int)
-    df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
+    # df_new=df.merge(df_PT[['Player','Points','%games']],on = 'Player', how = 'left')
+    # df_new=df_new.fillna(0)
+    # print(df_new.columns)
+    # df_new['Points']=df_new['Points'].astype(int)
+    # df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
     
     data_45=[]
     data_40=[]
 
-    for index,row in df_new.iterrows():
+    for index,row in df_PT.iterrows():
                   if(float(row['Division'])==4.5):
-                    data_45.append([row['Player'],row['Active'],row['Points'],row['%games']])
+                    data_45.append([row['Player'],row['Points'],row['%games']])
                   elif(float(row['Division'])==4.0):
-                    data_40.append([row['Player'],row['Active'],row['Points'],row['%games']])
+                    data_40.append([row['Player'],row['Points'],row['%games']])
 
     return render_template('home.html',data_45=data_45,data_40=data_40,message=message)
 
