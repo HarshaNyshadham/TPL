@@ -243,10 +243,10 @@ def update_score(filename,leaderboard_filename,row_id,player1,player2,p1s1,p1s2,
   #update pointable
   if(p1forefeit or p2forefeit):
    if(p1forefeit):
-     update_points(filename,player1,0,player2,40,'p2','')
+     update_points(filename,player1,0,player2,40,'p2','',0,0)
      score='Forefeit by '+ str(player1)
    elif(p2forefeit):
-     update_points(filename,player1,40,player2,0,'p1','')
+     update_points(filename,player1,40,player2,0,'p1','',0,0)
      score='Forefeit by '+ str(player2)
    for index,row in df_sch.iterrows():
      if((row['Player1']==str(player1)) and  (row['Player2']==str(player2))):
