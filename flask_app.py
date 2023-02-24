@@ -54,9 +54,9 @@ def index():
 
     for index,row in df_PT.iterrows():
                   if(float(row['Division'])==4.5):
-                    data_45.append([row['Player'],row['Points'],row['%games']])
+                    data_45.append([row['Player'],row['Points'],row['%games'],row['Matches']])
                   elif(float(row['Division'])==4.0):
-                    data_40.append([row['Player'],row['Points'],row['%games']])
+                    data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
 
     return render_template('home.html',data_45=data_45,data_40=data_40,message=message)
 
