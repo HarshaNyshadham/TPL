@@ -131,6 +131,10 @@ def schedule():
 
     return render_template('schedule.html',data=data,players=player_list)
 
+@app.route('/newplayoffs')
+def newplayoffs():
+   return render_template('newplayoffs.html')
+
 @app.route('/playoffs',methods=['GET', 'POST'])
 def playoffs():
 
