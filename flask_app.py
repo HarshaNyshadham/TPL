@@ -131,51 +131,51 @@ def schedule():
 
     return render_template('schedule.html',data=data,players=player_list)
 
-@app.route('/newplayoffs')
-def newplayoffs():
+@app.route('/playoffs')
+def playoffs():
    return render_template('newplayoffs.html')
 
-@app.route('/playoffs',methods=['GET', 'POST'])
-def playoffs():
+# @app.route('/playoffs',methods=['GET', 'POST'])
+# def playoffs():
 
     
-    # read data from excel
-    df=pd.read_excel(Playoff_filename, engine ='openpyxl',sheet_name ='Playoff',keep_default_na=False)
-    data=[]
-    score_data=[]
-    title=df.at[0,'Title']
+#     # read data from excel
+#     df=pd.read_excel(Playoff_filename, engine ='openpyxl',sheet_name ='Playoff',keep_default_na=False)
+#     data=[]
+#     score_data=[]
+#     title=df.at[0,'Title']
     
-    for index,row in  df.iterrows():
-            data.append(df.at[index,'Player'])
+#     for index,row in  df.iterrows():
+#             data.append(df.at[index,'Player'])
             
-    for i in range(16,31):
-            score_data.append(df.at[i,'Score'])
+#     for i in range(16,31):
+#             score_data.append(df.at[i,'Score'])
 
-    #write data back to excel
-    data_write=[]
-    score_write=[]
-    if request.method == "POST":
-        for i in range(1,32):
-            data_write.append(request.form.get("p"+str(i)))
-            if i<16:
-                score_write.append(request.form.get("s"+str(i)))
-        title_write=request.form.get("t1")
-        print(data_write)
-        print(score_write)
-        print(request.form.get("t1"))
-        workbook=openpyxl.load_workbook(Playoff_filename)
-        worksheet= workbook.get_sheet_by_name('Playoff')
+#     #write data back to excel
+#     data_write=[]
+#     score_write=[]
+#     if request.method == "POST":
+#         for i in range(1,32):
+#             data_write.append(request.form.get("p"+str(i)))
+#             if i<16:
+#                 score_write.append(request.form.get("s"+str(i)))
+#         title_write=request.form.get("t1")
+#         print(data_write)
+#         print(score_write)
+#         print(request.form.get("t1"))
+#         workbook=openpyxl.load_workbook(Playoff_filename)
+#         worksheet= workbook.get_sheet_by_name('Playoff')
 
-        for index in range(len(data_write)):
-            worksheet['A'+str(index+2)]=data_write[index]
-        for index in range(len(score_write)):
-            worksheet['B'+str(index+18)]=score_write[index]
-        worksheet['D2']=title_write
-        workbook.save(Playoff_filename)
-        return redirect(url_for('playoffs'))
+#         for index in range(len(data_write)):
+#             worksheet['A'+str(index+2)]=data_write[index]
+#         for index in range(len(score_write)):
+#             worksheet['B'+str(index+18)]=score_write[index]
+#         worksheet['D2']=title_write
+#         workbook.save(Playoff_filename)
+#         return redirect(url_for('playoffs'))
 
 
-    return render_template("playoffs.html",data=data,score_data=score_data,title=title)
+#     return render_template("playoffs.html",data=data,score_data=score_data,title=title)
 
 
 @app.route('/enterScore',methods=['GET', 'POST'])
