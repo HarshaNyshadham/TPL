@@ -60,6 +60,10 @@ def index():
 
     return render_template('home.html',data_45=data_45,data_40=data_40,message=message)
 
+@app.route('/newindex')
+def newindex():
+   return render_template('newindex.html')
+
 @app.route('/test')
 def test():
 
