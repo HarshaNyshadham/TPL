@@ -62,7 +62,7 @@ def index():
 
 @app.route('/newindex')
 def newindex():
-   return render_template('newindex.html')
+   return render_template('singles.html')
 
 @app.route('/test')
 def test():
