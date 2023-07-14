@@ -1,288 +1,39 @@
-/*
-    DEMO STYLE
-*/
-
-@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 body {
-    font-family: 'Poppins', sans-serif;
-    background: #fafafa;
+  position: relative;
 }
 
-p {
-    font-family: 'Poppins', sans-serif;
-    font-size: .9em;
-    font-weight: 300;
-    line-height: 1.7em;
-    color: White;
+.navbar-dark .navbar-brand {
+  color:#fff !important;
 }
 
-a,
-a:hover,
-a:focus {
-    color: white;
-    text-decoration: none;
-    transition: all 0.3s;
+#collapseEx2 .navbar-nav li a.active {
+  background:rgba(255,255,255,.15);
 }
 
-.navbar {
-    padding: 15px 10px;
-    background: #fff;
-    border: none;
-    border-radius: 0;
-    margin-bottom: 0px;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-    top:0;
-    position: fixed;
+#home .view {
+  height: 100vh;
+  width:100%;
 }
 
-.navbar-btn {
-    box-shadow: none;
-    outline: none !important;
-    border: none;
-}
-
-.line {
-    width: 100%;
-    height: 1px;
-    border-bottom: 1px dashed #ddd;
-    margin: 40px 0;
-}
-
-/* ---------------------------------------------------
-    SIDEBAR STYLE
------------------------------------------------------ */
-
-.wrapper {
-    display: flex;
-    width: 100%;
-    align-items: stretch;
-}
-
-#sidebar {
-    min-width: 250px;
-    max-width: 250px;
-    background: Grey;
-    color: WHITE;
-    transition: all 0.3s;
-}
-
-#sidebar.active {
-    margin-left: -250px;
-}
-
-#sidebar .sidebar-header {
-    padding: 20px;
-    background: BLACK;
-}
-
-#sidebar ul.components {
-    padding: 20px 0;
-    border-bottom: 1px solid BLACK;
-}
-
-#sidebar ul p {
-    color: WHITE;
-    padding: 10px;
-}
-
-#sidebar ul li a {
-    padding: 10px;
-    font-size: .9em;
-    display: block;
-    color: WHITE;
-}
-
-#sidebar ul li a:hover {
-    color: WHITE;
-    background: Red;
-}
-
-#sidebar ul li.active>a,
-a[aria-expanded="true"] {
-    color: WHITE;
-    background: rgb(55, 176, 212);
-}
-
-a[data-toggle="collapse"] {
-    position: relative;
-}
-
-.dropdown-toggle::after {
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-}
-
-ul ul a {
-    font-size: 0.9em !important;
-    padding-left: 30px !important;
-    background: Grey(110, 108, 108);
-}
-
-ul.CTAs {
-    padding: 20px;
-}
-
-ul.CTAs a {
-    text-align: center;
-    font-size: 0.9em !important;
-    display: block;
-    border-radius: 5px;
-    margin-bottom: 5px;
-}
-
-a.download {
-    background: #fff;
-    color: WHITE;
-}
-
-a.article,
-a.article:hover {
-    background: Blue !important;
-    color: WHITE !important;
-}
-
-/* ---------------------------------------------------
-    CONTENT STYLE
------------------------------------------------------ */
-
-#content {
-    width: 100%;
-    padding: 20px;
-    min-height: 100vh;
-    transition: all 0.3s;
-}
-
-/* ---------------------------------------------------
-    MEDIAQUERIES
------------------------------------------------------ */
-
-@media (max-width: 768px) {
-    #sidebar {
-        margin-left: -250px;
-    }
-    #sidebar.active {
-        margin-left: 0;
-    }
-    #sidebarCollapse span {
-        display: none;
-    }
-}
-
-/* new nav */
-
-
-@import url("https://fonts.googleapis.com/css?family=Bitter");
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: bitter;
-}
-html,
-body {
-  height: 100%;
-  min-height: 100%;
-}
-a {
-  text-decoration: none;
+.full-bg-img {
   color: #fff;
 }
-a.active {
-  border-bottom: 2px solid #85c2ff;
+
+#home p, .title{
+  font-weight:100;
 }
-.header {
-  height: auto;
+
+/*Fixed background*/
+.fixed-bg {
+  background: url("https://mdbootstrap.com/images/regular/work/img%20(1).jpg") no-repeat center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 55vh;
 }
-#header-scroll {
-  position: fixed;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  left: 0;
-  top: 0;
-  float: left;
-  width: 100%;
-  -ms-transition: all 0.3s ease-out;
-  -moz-transition: all 0.3s ease-out;
-  -webkit-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
+
+main {
+  margin-bottom: -20px;
 }
-#header-scroll h1 {
-  padding: 200px 0;
-  height: 100%;
-  font-size: 4em;
-  text-align: center;
-  line-height: 40px;
-  -ms-transition: all 0.3s ease-out;
-  -moz-transition: all 0.3s ease-out;
-  -webkit-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
-}
-#header-scroll.small {
-  height: auto;
-  display: inline-block;
-  float: left;
-}
-#header-scroll.small h1 {
-  padding: 10px 0;
-  height: auto;
-  font-size: 1rem;
-  text-decoration: none;
-  font-weight: bold;
-  display: inline-block;
-}
-body {
-  font-family: 'Open Sans', sans-serif;
-}
-nav {
-  width: 100%;
-  height: 60px;
-  position: fixed;
-  top: 0;
-}
-nav ul {
-  padding: 20px;
-  margin: 0 auto;
-  list-style: none;
-  text-align: center;
-}
-nav ul li {
-  display: inline-block;
-  margin: 0 10px;
-}
-nav ul li a {
-  padding: 10px 0;
-  color: #fff;
-  font-size: 1rem;
-  text-decoration: none;
-  font-weight: bold;
-  transition: all 0.2s ease;
-}
-nav ul li a:hover {
-  color: #85c2ff;
-}
-h1 {
-  font-size: 5rem;
-  color: #34495e;
-}
-section {
-  width: 100%;
-  height: 100%;
-  padding: 200px 0;
-  background: #fff;
-  border-bottom: 1px solid #ccc;
-  text-align: center;
-}
-section:nth-child(even) {
-  background: #ecf0f1;
-}
-section:nth-child(odd) {
-  background: #eff9ff;
-}
-.sections section:first-child {
-  margin-top: 100px;
-}
+.classWithPad { margin:10px; padding:10px; }
