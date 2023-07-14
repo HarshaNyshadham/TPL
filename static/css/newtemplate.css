@@ -1,0 +1,28 @@
+.section {
+	min-height: 800px;
+	position: relative;
+	text-align: center;
+	font-family: sans-serif, arial;
+	margin: 100;
+    padding:100;
+}
+body, html {
+	margin: 0;
+	padding: 0;
+}
+h1, p {
+	margin: 0;
+	font-family: sans-serif, arial;
+	font-weight: bold;
+}
+.title-top {
+	
+	padding-top: 100px;
+}
+.nav a.active {
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+}
+.nav a:hover {
+	background: rgba(255, 255, 255, 0.7);
+}
