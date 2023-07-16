@@ -61,7 +61,7 @@ def index():
                   elif(float(row['Division'])==4.0):
                     data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
 
-    return render_template('home.html',data_45=data_45,data_40=data_40,message=message)
+    return render_template('home.html',data_45=data_45,data_40=data_40,data_50=data_50,message=message)
 
 @app.route('/newindex')
 def newindex():
