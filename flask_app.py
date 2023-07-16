@@ -51,8 +51,11 @@ def index():
     
     data_45=[]
     data_40=[]
+    data_50=[]
 
     for index,row in df_PT.iterrows():
+                  if(float(row['Division'])==5.0):
+                    data_50.append([row['Player'],row['Points'],row['%games'],row['Matches']])
                   if(float(row['Division'])==4.5):
                     data_45.append([row['Player'],row['Points'],row['%games'],row['Matches']])
                   elif(float(row['Division'])==4.0):
