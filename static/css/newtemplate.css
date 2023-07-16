@@ -5,16 +5,19 @@
 	font-family: sans-serif, arial;
 	margin: 100;
     padding:100;
+    background-color: #f8f8f8;
+    
 }
 .section:nth-of-type(2n) {
-    background-color: #FE4B74;
+    background-color: rgb(172, 164, 165);
   }
 #section1 {
-	background: #5c53aa;
+	/* background: #5c53aa; */
+    
 	
 }
 #section2 {
-	background: #4bbfc3;
+	/* background: #4bbfc3; */
 	
 }
 #section1 .title-top{
@@ -23,13 +26,13 @@ padding-top: 8%;
 body, html {
 	margin: 0;
 	padding: 0;
-    font-size: 1em;
+    
 }
 h1, p {
 	margin: 0;
 	font-family: sans-serif, arial;
 	font-weight: bold;
-    font-size: 3vw;
+    
 }
 .title-top {
 	
@@ -45,7 +48,21 @@ h1, p {
 	width: 96%;
 	top:2%;
     left:2%;
+}
+
+#PlacementTable{
+
+    border-style: solid;
+    font-size: 1em;
+    width: 80%;
     
-	
-	
+    margin-top: 8%;
+    margin-left: 5%;
+}
+.table{
+    font-size: small;
+    
+}
+.title-table{
+    font-weight: bold;
 }
