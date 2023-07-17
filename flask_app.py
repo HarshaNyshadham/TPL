@@ -358,7 +358,7 @@ def doublesubmitscore():
 @app.route('/TplDoubles45',methods=['GET', 'POST'])
 def TplDoubles45():
 
-  pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable45',keep_default_na=False)
+  pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='PointTable45',keep_default_na=False)
   pt_df['%games']=pt_df['%games'].astype(int)
   pt_df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
   pt_data=[]
@@ -370,7 +370,7 @@ def TplDoubles45():
   for index,row in pt_df.iterrows():
     pt_data.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games'],row['Group']])
 
-  sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule45',keep_default_na=False)
+  sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='Schedule45',keep_default_na=False)
 
 
 
@@ -388,7 +388,7 @@ def TplDoubles45():
 
 @app.route('/doublescore45',methods=['GET', 'POST'])
 def doublesubmitscore45():
-    doubles_filename='/home/tpl/mysite/uploads/TPL_Doubles.xlsx'
+    doubles_filename='/home/tpl/mysite/uploads/TPL_Doubles45.xlsx'
     t1=request.args.get('team1')
     t2=request.args.get('team2')
     p1s1=int(request.form.get("p1set1"))
