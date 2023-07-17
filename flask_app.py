@@ -265,7 +265,7 @@ def rules():
   return render_template('rules.html')
 
 # ************** Doubles ****************
-
+# ************** Div 4.0 ****************
 @app.route('/TplDoubles',methods=['GET', 'POST'])
 def TplDoubles():
 
@@ -353,6 +353,94 @@ def doublesubmitscore():
       message='Winner is '+str(t2)
     return redirect(url_for('TplDoubles',error=error,message=message))
 
+# ************** Div 4.5 ****************
+
+@app.route('/TplDoubles45',methods=['GET', 'POST'])
+def TplDoubles45():
+
+  pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable45',keep_default_na=False)
+  pt_df['%games']=pt_df['%games'].astype(int)
+  pt_df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
+  pt_data=[]
+  sch_data=[]
+  error=request.args.get('error')
+  message=request.args.get('message')
+  players=pt_df.iloc[:,0]
+
+  for index,row in pt_df.iterrows():
+    pt_data.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games'],row['Group']])
+
+  sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule45',keep_default_na=False)
+
+
+
+  if request.method == "POST":
+      select_value=request.form.get("comp_select")
+      for index,row in sch_df.iterrows():
+        if(select_value==row['Team1'] or select_value==row['Team2']):
+          sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
+      return render_template('TplDoubles45.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
+
+  for index,row in sch_df.iterrows():
+    sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
+
+  return render_template('TplDoubles45.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
+
+@app.route('/doublescore',methods=['GET', 'POST'])
+def doublesubmitscore():
+    doubles_filename='/home/tpl/mysite/uploads/TPL_Doubles.xlsx'
+    t1=request.args.get('team1')
+    t2=request.args.get('team2')
+    p1s1=int(request.form.get("p1set1"))
+    p1s2=int(request.form.get("p1set2"))
+    p1s3=int(request.form.get("p1set3"))
+    p2s1=int(request.form.get("p2set1"))
+    p2s2=int(request.form.get("p2set2"))
+    p2s3=int(request.form.get("p2set3"))
+    p1forefeit=bool(request.form.get("p1forefeit"))
+    p2forefeit=bool(request.form.get("p2forefeit"))
+    print(t1,t2)
+    error=''
+    message=''
+    print(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)
+    if not (ScoreCheck(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3,p1forefeit,p2forefeit)):
+      error='Invalid Score!!!'
+      return redirect(url_for('TplDoubles45',error=error,message=message))
+
+    df_sch=pd.read_excel(doubles_filename, engine ='openpyxl',sheet_name ='Schedule45',keep_default_na=False)
+    score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
+
+    if(p1forefeit or p2forefeit):
+      if(p1forefeit):
+        score='Forefeit by '+str(t1)
+        update_points_doubles(doubles_filename,t1,0,t2,40,'p2',0,0,0)
+        message='Winner is '+str(t2)
+      elif(p2forefeit):
+        score='Forefeit by '+str(t2)
+        message='Winner is '+str(t1)
+        update_points_doubles(doubles_filename,t1,40,t2,0,'p1',0,0,0)
+      for index,row in df_sch.iterrows():
+        if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
+         df_sch.at[index,'Score']= score
+         Schedule_writer(df_sch,doubles_filename)
+      return redirect(url_for('TplDoubles45',error=error,message=message))
+
+    #update Schedule
+
+
+    for index,row in df_sch.iterrows():
+      if((row['Team1']==str(t1)) and  (row['Team2']==str(t2))):
+       df_sch.at[index,'Score']= score
+       Schedule_writer(df_sch,doubles_filename)
+
+    [t1points,t2points,winner,bonusteam]=calc_points(p1s1,p1s2,p1s3,p2s1,p2s2,p2s3)
+    update_points_doubles(doubles_filename,t1,t1points,t2,t2points,winner,bonusteam,(p1s1+p1s2+p1s3),(p2s1+p2s2+p2s3))
+    print(t1points,t2points,winner,bonusteam)
+    if(winner=='p1'):
+      message='Winner is '+str(t1)
+    elif(winner=='p2'):
+      message='Winner is '+str(t2)
+    return redirect(url_for('TplDoubles45',error=error,message=message))
 
 # ************** End Doubles ****************
 
