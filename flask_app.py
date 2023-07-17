@@ -386,8 +386,8 @@ def TplDoubles45():
 
   return render_template('TplDoubles45.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
 
-@app.route('/doublescore',methods=['GET', 'POST'])
-def doublesubmitscore():
+@app.route('/doublescore45',methods=['GET', 'POST'])
+def doublesubmitscore45():
     doubles_filename='/home/tpl/mysite/uploads/TPL_Doubles.xlsx'
     t1=request.args.get('team1')
     t2=request.args.get('team2')
