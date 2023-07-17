@@ -358,7 +358,7 @@ def doublesubmitscore():
 @app.route('/TplDoubles45',methods=['GET', 'POST'])
 def TplDoubles45():
 
-  pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='PointTable45',keep_default_na=False)
+  pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_df['%games']=pt_df['%games'].astype(int)
   pt_df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
   pt_data=[]
@@ -370,7 +370,7 @@ def TplDoubles45():
   for index,row in pt_df.iterrows():
     pt_data.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games'],row['Group']])
 
-  sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='Schedule45',keep_default_na=False)
+  sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
 
 
@@ -407,7 +407,7 @@ def doublesubmitscore45():
       error='Invalid Score!!!'
       return redirect(url_for('TplDoubles45',error=error,message=message))
 
-    df_sch=pd.read_excel(doubles_filename, engine ='openpyxl',sheet_name ='Schedule45',keep_default_na=False)
+    df_sch=pd.read_excel(doubles_filename, engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
     score= str(p1s1)+'-'+str(p2s1)+','+str(p1s2)+'-'+str(p2s2)+','+str(p1s3)+'-'+str(p2s3)
 
     if(p1forefeit or p2forefeit):
