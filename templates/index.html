@@ -63,7 +63,13 @@
                     <a href="{{ url_for('rules') }}">Rules</a>
                 </li>
                 <li>
-                    <a href="{{ url_for('TplDoubles') }}">Doubles</a>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Doubles</a>
+                    <li>
+                        <a href="{{ url_for('TplDoubles') }}">4.5</a> 
+                    </li>
+                    <li>
+                        <a href="{{ url_for('TplDoubles') }}">4.0</a> 
+                    </li>
                 </li>
                 <li>
                     <a href="{{ url_for('plot') }}">Player Stats</a>
