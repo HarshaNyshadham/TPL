@@ -99,7 +99,7 @@
   Schedule
 </h5>
 <div class="container mx-auto mb-3 text-center" style="width: 1000px; font-size: 14px;">
-<form action="{{ url_for("TplDoubles")}}" method="post">
+<form action="{{ url_for("TplDoubles45")}}" method="post">
 <select name="comp_select" class="selectpicker bg-light" data-live-search="true" aria-label="Default select example">
   <option selected>Select Team</option>
   {% for p in players %}
@@ -135,7 +135,7 @@
          <tbody class = "text-center">
             {% for entry in sch_data %}
            <div>
-              <form id="myForm" action="{{ url_for("doublesubmitscore",team1=entry[0],team2=entry[1])}}" method="post" >
+              <form id="myForm" action="{{ url_for("doublesubmitscore45",team1=entry[0],team2=entry[1])}}" method="post" >
 
                <tr>
                   <td><b>{{ entry[0] }}</b>&nbsp &nbsp &nbsp
