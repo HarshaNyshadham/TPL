@@ -84,6 +84,8 @@
 function myFunction() {
   document.getElementById("myBtn").disabled = true;
   document.getElementById("myForm").submit();
+  parent.document.getElementById("popup").style.display = "none";
+  parent.document.getElementById("popupdarkbg").style.display = "none";
 }
 </script>
 
