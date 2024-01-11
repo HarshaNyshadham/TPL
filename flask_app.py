@@ -446,11 +446,11 @@ def doublesubmitscore45():
 def DoublesLeaderboard():
      
 
-    df_PT_45=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df_PT_45=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_PT_45.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT_45['%games']=round(df_PT_45['%games'].astype(float),2)
 
-    df_PT_40=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df_PT_40=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_PT_40.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT_40['%games']=round(df_PT_40['%games'].astype(float),2)
       
