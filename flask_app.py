@@ -446,30 +446,26 @@ def doublesubmitscore45():
 def DoublesLeaderboard():
      
 
-    df_PT=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-    df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
-    df_PT['%games']=round(df_PT['%games'].astype(float),2)
-    # df['Player']=df['Player'].astype(str)
-    # df_PT['Player']=df_PT['Player'].astype(str)
+    df_PT_45=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df_PT_45.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
+    df_PT_45['%games']=round(df_PT_45['%games'].astype(float),2)
 
-    # df_new=df.merge(df_PT[['Player','Points','%games']],on = 'Player', how = 'left')
-    # df_new=df_new.fillna(0)
-    # print(df_new.columns)
-    # df_new['Points']=df_new['Points'].astype(int)
-    # df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
+    df_PT_40=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles45.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    df_PT_40.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
+    df_PT_40['%games']=round(df_PT_40['%games'].astype(float),2)
+      
     
     
+    data_45=[]
+    data_40=[]
+
+    for index,row in df_PT_45.iterrows():
+      data_45.append([row['Team'],row['Points'],row['%games'],row['Matches']])
+    for index,row in df_PT_40.iterrows():
+      data_40.append([row['Team'],row['Points'],row['%games'],row['Matches']])
     
-    data_50=[]
 
-    for index,row in df_PT.iterrows():
-                  data_50.append([row['Team'],row['Points'],row['%games'],row['Matches']])
-                  # if(float(row['Division'])==4.5):
-                  #   data_45.append([row['Player'],row['Points'],row['%games'],row['Matches']])
-                  # elif(float(row['Division'])==4.0):
-                  #   data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
-
-    return render_template('DoubleLB.html',data_50=data_50)
+    return render_template('DoubleLB.html',data_45=data_45,data_40=data_40)
     
 
 
