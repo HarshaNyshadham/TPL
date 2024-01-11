@@ -1,10 +1,49 @@
 {% extends "index.html" %}
 
 {% block content %}
-
-<h4>
-  Doubles Leaderboard
-</h4>
-
+<div>
+<h3 class = 'text-center'>
+    Season 11 - LeaderBoard
+  </h3>
+  <h5 class = 'text-center' style="color:red;"> {{message}}</h5>
+  
+  <h4 class = 'text-center'>Division 5.0</h4>
+  <div class="container mx-auto mb-3" style="width: 600px;">
+  
+  
+  <table class="table table-striped table-hover table-sm">
+           <thead class="thead-dark">
+              <tr>
+                 <th>Rank</th>
+                 <th>Player</th>
+                 <th>Matches</th>
+                 <th>Points</th>
+                 <th>% Games</th>
+                 <!-- <th>% Games<a data-toggle="modal" href="#myModal" style="color:white;">?</a></th> -->
+  
+              </tr>
+           </thead>
+  
+           <tbody>
+              {% for entry in data_50 %}
+                
+                 <tr>
+                    <td>{{loop.index0 +1}}</td>
+                    <td>{{ entry[0] }}</td>
+                    <td>{{ entry[3] }}</td>
+                   {% if loop.index0 < 8 %}
+                    <td class = "bg-success"><b>{{ entry[1] }}</b></td>
+                   {% else %}
+                    <td><b>{{ entry[1] }}</b></td>
+                   {% endif %}
+                   <td>{{ entry[2] }}</td>
+  
+                 </tr>
+                
+              {% endfor %}
+           </tbody>
+  </table>
+  </div>
+</div>
 
 {% endblock %}
