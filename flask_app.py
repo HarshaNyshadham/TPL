@@ -442,6 +442,14 @@ def doublesubmitscore45():
       message='Winner is '+str(t2)
     return redirect(url_for('TplDoubles45',error=error,message=message))
 
+@app.route('/DoublesLeaderboard',methods=['GET', 'POST'])
+def DoublesLeaderboard():
+    return render_template('DoubleLB.html',playername=playername,data=data)
+
+
+
+
+
 # ************** End Doubles ****************
 
 @app.route('/playerprofile',methods=['GET', 'POST'])
