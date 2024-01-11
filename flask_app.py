@@ -444,7 +444,7 @@ def doublesubmitscore45():
 
 @app.route('/DoublesLeaderboard',methods=['GET', 'POST'])
 def DoublesLeaderboard():
-    return render_template('DoubleLB.html',playername=playername,data=data)
+    return render_template('DoubleLB.html')
 
 
 
