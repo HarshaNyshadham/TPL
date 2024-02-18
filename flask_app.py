@@ -74,21 +74,24 @@ def test():
     
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-    df['Player']=df['Player'].astype(str)
-    df_PT['Player']=df_PT['Player'].astype(str)
+    df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
+    df_PT['%games']=round(df_PT['%games'].astype(float),2)
+    
+    
+    data_45=[]
+    data_40=[]
+    data_50=[]
 
-    df_new=df.merge(df_PT[['Player','Points']],on = 'Player', how = 'left')
-    df_new=df_new.fillna(0)
-    df_new['Points']=df_new['Points'].astype(int)
-    df_new.sort_values(by=['Active','Points','%games'],inplace =True,ascending=[True,False,False])
-    print(len(df),len(df_PT))
-    data=[]
-
-    for index,row in df_new.iterrows():
-                   data.append([row['Player'],row['Active'],row['Points'],row['%games']])
+    for index,row in df_PT.iterrows():
+                  if(float(row['Division'])==5.0):
+                    data_50.append([row['Player'],row['Points'],row['%games'],row['Matches']])
+                  if(float(row['Division'])==4.5):
+                    data_45.append([row['Player'],row['Points'],row['%games'],row['Matches']])
+                  elif(float(row['Division'])==4.0):
+                    data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
 
 
-    return render_template('test.html',data=data)
+    return render_template('test.html',data=data_50)
 
 @app.route('/pointtable')
 def pointtable():
