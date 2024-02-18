@@ -91,7 +91,7 @@ def test():
                     data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
 
 
-    return render_template('test.html',data=data_50)
+    return render_template('test.html',data_50=data_50)
 
 @app.route('/pointtable')
 def pointtable():
