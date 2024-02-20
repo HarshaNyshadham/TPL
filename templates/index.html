@@ -99,7 +99,7 @@
                     </button> -->
 
                    <div class="h4 mx-auto" style="margin-left: 20px;">Tennis Premier League</div>
-                   <div style="float:right"><a class="btn btn-primary" data-toggle="modal" href="##myModal" style="color:rgb(255, 255, 255);">Deadline</a></div>
+                   <div style="float:right"><a class="btn btn-primary" data-toggle="modal" href="#exampleModal" style="color:rgb(255, 255, 255);">Deadline</a></div>
 <!--                     <a class="nav-link" href="{{ url_for('admin') }}">Admin</a> -->
                     <form action="{{ url_for("admin")}}" method="post" >
                       <label for="Admin">Admin:</label>
@@ -116,24 +116,26 @@
             </div>
     </div>
 
-    <div class="modal fade" id="myModal" role="dialog">
-        <div class="modal-dialog">
-    
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-    
-            </div>
-            <div class="modal-body">
-              <p style="color:black;">Rating calculated on consistent performance, will be applied through all seasons </p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-    
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
+    </div>
+  </div>
 
 
 
