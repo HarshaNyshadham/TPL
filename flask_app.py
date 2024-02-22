@@ -17,9 +17,11 @@ import plotly.express as px
 import os.path,datetime,calendar
 #File path
 
-TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
-TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
-Playoff_filename='/home/tpl/mysite/uploads/Playoff.xlsx'
+from config import TPL_currentSeason,TPL_leaderboard,Playoff_filename
+
+# TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
+# TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
+# Playoff_filename='/home/tpl/mysite/uploads/Playoff.xlsx'
 groups_currentseason=0
 
 #global variable to hold current season
