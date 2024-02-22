@@ -76,7 +76,7 @@ def test():
     df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT['%games']=round(df_PT['%games'].astype(float),2)
     
-    unique_divs=df_PT['Division'].unique()
+    
 
     unique_divs=df_PT['Division'].unique()
     div_dict=dict.fromkeys(unique_divs)
