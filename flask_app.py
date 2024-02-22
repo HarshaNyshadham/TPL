@@ -76,7 +76,15 @@ def test():
     df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT['%games']=round(df_PT['%games'].astype(float),2)
     
-    
+    unique_divs=df_PT['Division'].unique()
+
+    unique_divs=df_PT['Division'].unique()
+    div_dict=dict.fromkeys(unique_divs)
+
+
+    for div in unique_divs:
+      div_dict[div]=df_PT.loc[df_PT['Division']==div]
+
     data_45=[]
     data_40=[]
     data_50=[]
@@ -90,7 +98,7 @@ def test():
                     data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
 
 
-    return render_template('test.html',data_50=data_50,data_45=data_45,data_40=data_40)
+    return render_template('test.html',data_50=data_50,data_45=data_45,data_40=data_40,div_dict=div_dict)
 
 @app.route('/pointtable')
 def pointtable():

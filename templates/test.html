@@ -11,12 +11,12 @@
    <div style="text-align: center;margin-top:5%;margin-bottom:0%;"><h5>Division</h5></div>
    <ul class="nav nav-pills nav-fill justify-content-center" id="pills-tab" role="tablist" style="text-align: center;margin:0%;">
       
-      {%for i in range(0,3)%}
+      {%for k in div_dict.keys()%}
       <li class="nav-item">
-         {% if i< 1 %}
-         <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#{{i}}" role="tab" aria-controls="#{{i}}" aria-selected="true">{{i}}</a>
+         {% if k< 1 %}
+         <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#{{k}}" role="tab" aria-controls="#{{k}}" aria-selected="true">{{k}}</a>
           {% else %}
-          <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#{{i}}" role="tab" aria-controls="#{{i}}" aria-selected="true">{{i}}</a>
+          <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#{{k}}" role="tab" aria-controls="#{{k}}" aria-selected="true">{{k}}</a>
          {% endif %}
          
       </li>
