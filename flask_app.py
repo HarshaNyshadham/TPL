@@ -83,7 +83,7 @@ def test():
 
 
     for div in unique_divs:
-      div_dict[div]=df_PT.loc[df_PT['Division']==div]
+      div_dict[div]=df_PT.loc[df_PT['Division']==div][['Player','Points','%games','Matches']]
 
     data_45=[]
     data_40=[]
