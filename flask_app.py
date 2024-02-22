@@ -17,7 +17,7 @@ import plotly.express as px
 import os.path,datetime,calendar
 #File path
 
-from TPL.config import TPL_currentSeason,TPL_leaderboard,Playoff_filename
+from config import TPL_currentSeason,TPL_leaderboard,Playoff_filename
 
 # TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
 # TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
