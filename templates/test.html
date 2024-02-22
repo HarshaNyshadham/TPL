@@ -19,9 +19,13 @@
    </ul>
    <div class="tab-content" id="pills-tabContent">
       {%for i in range(0,3)%}
-      <div class="tab-pane fade show active" id="{{i}}" role="tabpanel" aria-labelledby="{{i}}">one</div>
-      
+      {% if i< 1 %}
+      <div class="tab-pane fade show active" id="{{i}}" role="tabpanel" aria-labelledby="{{i}}">{{i}}</div>
+      {% else %}
+      <div class="tab-pane fade show" id="{{i}}" role="tabpanel" aria-labelledby="{{i}}">{{i}}</div>
+      {% endif %}
       {% endfor %}
+      
    </div>
 </div>
 
