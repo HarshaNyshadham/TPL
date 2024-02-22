@@ -40,18 +40,18 @@
             </thead>
    
             <tbody>
-               {% for entry in div_dict[i].iterrows() %}
+               {% for index,row in div_dict[i].iterrows() %}
                  
                   <tr>
-                     <td>{{loop.index0 +1}}</td>
-                     <td>{{ entry[0] }}</td>
-                     <td>{{ entry[3] }}</td>
+                     <td>{{index}}</td>
+                     <td>{{ row['Player'] }}</td>
+                     <td>{{ row['Matches'] }}</td>
                     {% if loop.index0 < 16 %}
-                     <td class = "bg-success"><b>{{ entry[1] }}</b></td>
+                     <td class = "bg-success"><b>{{ row['Points'] }}</b></td>
                     {% else %}
-                     <td><b>{{ entry[1] }}</b></td>
+                     <td><b>{{ row['Points'] }}</b></td>
                     {% endif %}
-                    <td>{{ entry[2] }}</td>
+                    <td>{{ row['%games'] }}</td>
    
                   </tr>
                  
