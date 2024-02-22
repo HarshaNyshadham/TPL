@@ -13,8 +13,13 @@
       
       {%for i in range(0,3)%}
       <li class="nav-item">
-         <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#{{i}}" role="tab" aria-controls="#{{i}}" aria-selected="true">{{i}}</a>
-         </li>
+         {% if i< 1 %}
+         <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#{{i}}" role="tab" aria-controls="#{{i}}" aria-selected="true">{{i}}</a>
+          {% else %}
+          <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#{{i}}" role="tab" aria-controls="#{{i}}" aria-selected="true">{{i}}</a>
+         {% endif %}
+         
+      </li>
       {% endfor %}
    </ul>
    <div class="tab-content" id="pills-tabContent">
