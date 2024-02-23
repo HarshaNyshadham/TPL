@@ -71,6 +71,7 @@ def newindex():
 
 @app.route('/test',methods=['GET', 'POST'])
 def test():
+    df_PT=pd.DataFrame()
     game_mode=request.args.get("game")
     if((game_mode is None) or (game_mode=='Singles') ):
       df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
