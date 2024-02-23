@@ -1,0 +1,92 @@
+<div class="container mx-auto mb-3" style="width: 600px; text-align: center;">
+    <div style="text-align: center;margin-top:5%;margin-bottom:0%; background-color: rgb(187, 197, 230);"><h4>Division</h4>
+    <ul class="nav nav-pills nav-fill justify-content-center" id="pills-tab" role="tablist" style="text-align: center;margin:0%;">
+       
+       {%for k in div_dict.keys()%}
+       <li class="nav-item">
+          {% if loop.index0< 1 %}
+          <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#{{k}}" role="tab" aria-controls="#{{k}}" aria-selected="true">{{k}}</a>
+           {% else %}
+           <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#{{k}}" role="tab" aria-controls="#{{k}}" aria-selected="true">{{k}}</a>
+          {% endif %}
+          
+       </li>
+       {% endfor %}
+    </ul></div>
+    <div class="tab-content" id="pills-tabContent">
+       {%for i in div_dict.keys()%}
+       {% if loop.index0< 1 %}
+       <div class="tab-pane fade show active" id="{{i}}" role="tabpanel" aria-labelledby="{{i}}">
+          <table class="table table-striped table-hover table-sm">
+             <thead class="thead-dark">
+                <tr>
+                   <th>Rank</th>
+                   <th>Player</th>
+                   <th>Matches</th>
+                   <th>Points</th>
+                   <th>% Games</th>
+                   <!-- <th>% Games<a data-toggle="modal" href="#myModal" style="color:white;">?</a></th> -->
+    
+                </tr>
+             </thead>
+    
+             <tbody>
+                {% for index,row in div_dict[i].iterrows() %}
+                  
+                   <tr>
+                      <td>{{loop.index0}}</td>
+                      <td>{{ row['Player'] }}</td>
+                      <td>{{ row['Matches'] }}</td>
+                     {% if loop.index0 < 16 %}
+                      <td class = "bg-success"><b>{{ row['Points'] }}</b></td>
+                     {% else %}
+                      <td><b>{{ row['Points'] }}</b></td>
+                     {% endif %}
+                     <td>{{ row['%games'] }}</td>
+    
+                   </tr>
+                  
+                {% endfor %}
+             </tbody>
+    </table>
+       </div>
+       {% else %}
+       <div class="tab-pane fade show" id="{{i}}" role="tabpanel" aria-labelledby="{{i}}">
+          <table class="table table-striped table-hover table-sm">
+             <thead class="thead-dark">
+                <tr>
+                   <th>Rank</th>
+                   <th>Player</th>
+                   <th>Matches</th>
+                   <th>Points</th>
+                   <th>% Games</th>
+                   <!-- <th>% Games<a data-toggle="modal" href="#myModal" style="color:white;">?</a></th> -->
+    
+                </tr>
+             </thead>
+    
+             <tbody>
+                {% for index,row in div_dict[i].iterrows() %}
+                  
+                   <tr>
+                      <td>{{loop.index0}}</td>
+                      <td>{{ row['Player'] }}</td>
+                      <td>{{ row['Matches'] }}</td>
+                     {% if loop.index0 < 16 %}
+                      <td class = "bg-success"><b>{{ row['Points'] }}</b></td>
+                     {% else %}
+                      <td><b>{{ row['Points'] }}</b></td>
+                     {% endif %}
+                     <td>{{ row['%games'] }}</td>
+    
+                   </tr>
+                  
+                {% endfor %}
+             </tbody>
+    </table>
+       </div>
+       {% endif %}
+       {% endfor %}
+       <div class="tab-pane fade show" id="a" role="tabpanel" aria-labelledby="a">a</div>
+    </div>
+ </div>
