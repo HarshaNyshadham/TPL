@@ -75,7 +75,7 @@ def test():
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT['%games']=round(df_PT['%games'].astype(float),2)
-    
+    game_mode='testing'
     if request.method == "POST":
       game_mode=request.form.get("option")
 
