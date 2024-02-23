@@ -71,14 +71,15 @@ def newindex():
 
 @app.route('/test',methods=['GET', 'POST'])
 def test():
-
-    df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    game_mode=request.args.get("game")
+    if((game_mode is None) or (game_mode=='singles') ):
+      df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    elif(game_mode=='doubles'):
+      df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
+    
     df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT['%games']=round(df_PT['%games'].astype(float),2)
-    game_mode='testing'
-    
-    game_mode=request.args.get("game")
-    print(game_mode)
+      
     unique_divs=df_PT['Division'].unique()
     div_dict=dict.fromkeys(unique_divs)
 
