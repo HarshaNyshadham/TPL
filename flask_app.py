@@ -69,14 +69,15 @@ def index():
 def newindex():
    return render_template('newindex.html')
 
-@app.route('/test')
+@app.route('/test',methods=['GET', 'POST'])
 def test():
 
     df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
     df_PT['%games']=round(df_PT['%games'].astype(float),2)
     
-    
+    if request.method == "POST":
+      game_mode=request.form.get("option")
 
     unique_divs=df_PT['Division'].unique()
     div_dict=dict.fromkeys(unique_divs)
@@ -85,20 +86,10 @@ def test():
     for div in unique_divs:
       div_dict[div]=df_PT.loc[df_PT['Division']==div][['Player','Points','%games','Matches']]
 
-    data_45=[]
-    data_40=[]
-    data_50=[]
-
-    for index,row in df_PT.iterrows():
-                  if(float(row['Division'])==5.0):
-                    data_50.append([row['Player'],row['Points'],row['%games'],row['Matches']])
-                  if(float(row['Division'])==4.5):
-                    data_45.append([row['Player'],row['Points'],row['%games'],row['Matches']])
-                  elif(float(row['Division'])==4.0):
-                    data_40.append([row['Player'],row['Points'],row['%games'],row['Matches']])
+    
 
 
-    return render_template('test.html',data_50=data_50,data_45=data_45,data_40=data_40,div_dict=div_dict)
+    return render_template('test.html',div_dict=div_dict,message=game_mode)
 
 @app.route('/pointtable')
 def pointtable():
