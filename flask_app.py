@@ -276,14 +276,20 @@ def TplDoubles():
   pt_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
   pt_df['%games']=pt_df['%games'].astype(int)
   pt_df.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
-  pt_data=[]
+  pt_data_50=[]
+  pt_data_45=[]
+  pt_data_40=[]
   sch_data=[]
   error=request.args.get('error')
   message=request.args.get('message')
   players=pt_df.iloc[:,0]
 
+
   for index,row in pt_df.iterrows():
-    pt_data.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games'],row['Group']])
+    if(row['Division']==5.0):
+      pt_data_50.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games'],row['Group']])
+    elif(row['Division']==4.5):
+      pt_data_45.append([row['Team'],row['Matches'],row['Won'],row['Loss'],row['Bonus'],row['Points'],row['GamesWon'],row['GamesTotal'],row['%games'],row['Group']])
 
   sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
@@ -297,12 +303,12 @@ def TplDoubles():
     for index,row in sch_df.iterrows():
       if(select_value==row['Team1'] or select_value==row['Team2']):
         sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
-    return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
+    return render_template('TplDoubles.html',pt_data_50=pt_data_50,pt_data_45=pt_data_45,sch_data=sch_data,players=players,error=error,message=message)
 
   for index,row in sch_df.iterrows():
     sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
 
-  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
+  return render_template('TplDoubles.html',pt_data_50=pt_data_50,pt_data_45=pt_data_45,sch_data=sch_data,players=players,error=error,message=message)
 
 @app.route('/doublescore',methods=['GET', 'POST'])
 def doublesubmitscore():
