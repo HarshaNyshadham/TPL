@@ -291,8 +291,9 @@ def TplDoubles():
   select_value='None'
   print('no')
   if request.method == "POST":
-    print('yes')
+    
     select_value=request.form.get("comp_select")
+    print(select_value)
     for index,row in sch_df.iterrows():
       if(select_value==row['Team1'] or select_value==row['Team2']):
         sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
