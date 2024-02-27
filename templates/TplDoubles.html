@@ -108,7 +108,11 @@
                         <td>{{item[2]}}</td>
                         <td>{{item[3]}}</td>
                         <td>{{item[4]}}</td>
+                        {% if loop.index0 < 8 %}
+                        <td class = "bg-success"><b>{{item[5]}}</b></td>
+                        {% else %}
                         <td><b>{{item[5]}}</b></td>
+                        {% endif %}
                         <td>{{item[6]}}</td>
                         <td>{{item[7]}}</td>
                        <td><b>{{item[8]}}</b></td>
@@ -150,7 +154,11 @@
                         <td>{{item[2]}}</td>
                         <td>{{item[3]}}</td>
                         <td>{{item[4]}}</td>
+                        {% if loop.index0 < 8 %}
+                        <td class = "bg-success"><b>{{item[5]}}</b></td>
+                        {% else %}
                         <td><b>{{item[5]}}</b></td>
+                        {% endif %}
                         <td>{{item[6]}}</td>
                         <td>{{item[7]}}</td>
                        <td><b>{{item[8]}}</b></td>
