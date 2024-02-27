@@ -1,6 +1,30 @@
 {% extends "index.html" %}
 
 {% block content %}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
+
 <h4 class = 'text-center'> TPL Doubles </h4>
 <h5 class = 'text-center'>
   Point Table
@@ -180,12 +204,11 @@
 <button type="submit">Submit</button>
   </form>
   <br>
-<h5 class = 'text-center' >
-   Start Date: October 29  -  End Date: January 21
+
   <h6 class = 'text-center' style = "color:green;font-size: 14px;">
-    *Play in any order but all league games must be completed by January 21*
+    *Play in any order but all league games must be completed before deadline*
   </h6>
-  </h5>
+ 
 </div>
 {% if error %}
 <p class='text-center' style="color:red;"><strong>Error: {{ error }}</strong></p>
