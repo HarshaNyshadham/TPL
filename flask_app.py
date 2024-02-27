@@ -289,8 +289,9 @@ def TplDoubles():
 
 
   select_value='None'
+  print('no')
   if request.method == "POST":
-    select_value='Yes'
+    print('yes')
     select_value=request.form.get("comp_select")
     for index,row in sch_df.iterrows():
       if(select_value==row['Team1'] or select_value==row['Team2']):
