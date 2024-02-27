@@ -288,7 +288,7 @@ def TplDoubles():
   sch_df=pd.read_excel('/home/tpl/mysite/uploads/TPL_Doubles.xlsx', engine ='openpyxl',sheet_name ='Schedule',keep_default_na=False)
 
 
-  select_value='None'
+  
   print('no')
   if request.method == "POST":
     
@@ -297,12 +297,12 @@ def TplDoubles():
     for index,row in sch_df.iterrows():
       if(select_value==row['Team1'] or select_value==row['Team2']):
         sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
-    return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=select_value)
+    return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
 
   for index,row in sch_df.iterrows():
     sch_data.append([row['Team1'],row['Team2'],row['Score'],row['Deadline']])
 
-  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=select_value)
+  return render_template('TplDoubles.html',pt_data=pt_data,sch_data=sch_data,players=players,error=error,message=message)
 
 @app.route('/doublescore',methods=['GET', 'POST'])
 def doublesubmitscore():
