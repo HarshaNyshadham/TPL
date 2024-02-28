@@ -132,7 +132,7 @@ def update_points_doubles(filename,p1,p1points,p2,p2points,winner,bonusplayer,ga
       p1index=index
     if(row['Team']==str(p2)):
       p2index=index
-
+  print(p1index,p1,p2index,p2)
   #points
   df.at[p1index,'Points']=df.at[p1index,'Points']+p1points
   df.at[p2index,'Points']=df.at[p2index,'Points']+p2points
