@@ -17,7 +17,7 @@ import plotly.express as px
 import os.path,datetime,calendar
 #File path
 
-from config import TPL_currentSeason,TPL_leaderboard,Playoff_filename,TPL_Doubles_test
+from config import TPL_currentSeason,TPL_leaderboard,Playoff_filename,TPL_Doubles_test,get_LeaderBoard
 
 # TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
 # TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
@@ -71,28 +71,9 @@ def newindex():
 
 @app.route('/test',methods=['GET', 'POST'])
 def test():
-    df_PT=pd.DataFrame()
-    game_mode=request.args.get("game")
-    if((game_mode is None) or (game_mode=='Singles') ):
-      df_PT=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-      game_mode='Singles'
-    elif(game_mode=='Doubles'):
-      df_PT=pd.read_excel(TPL_Doubles_test, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
-    
-    df_PT.sort_values(by=['Points','%games'],inplace =True,ascending=[False,False])
-    df_PT['%games']=round(df_PT['%games'].astype(float),2)
-      
-    unique_divs=df_PT['Division'].unique()
-    div_dict=dict.fromkeys(unique_divs)
+    data_50,data_45,data_40=get_LeaderBoard()
 
-
-    for div in unique_divs:
-      div_dict[div]=df_PT.loc[df_PT['Division']==div][['Player','Points','%games','Matches']]
-
-    
-
-
-    return render_template('test.html',div_dict=div_dict,message=game_mode)
+    return render_template('test.html',data_45=data_45,data_40=data_40,data_50=data_50,message='message')
 
 @app.route('/pointtable')
 def pointtable():
