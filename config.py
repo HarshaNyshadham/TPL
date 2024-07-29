@@ -1,3 +1,5 @@
+import pandas as pd
+
 #some file names
 
 TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
