@@ -2,37 +2,38 @@
 
 {% block content %}
 
+<!-- Main container -->
 <div class="container-lg border border-primary">
-   
+   <!-- Title Container -->
    <div class="p-3 border bg-light">
-      <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-         <a>Division</a>
-         <button type="button" class="btn btn-primary">1</button>
-         <button type="button" class="btn btn-primary">2</button>
-       
-         <div class="btn-group" role="group">
-           <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-             Dropdown
-           </button>
-           <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-             <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-             <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-           </ul>
+      <div class="row gx-5">
+         <div class="col">
+          <div class="btn-group" role="group" aria-label="Basic outlined example">
+            <button type="button" class="btn btn-outline-primary">Left</button>
+            <button type="button" class="btn btn-outline-primary">Middle</button>
+            <button type="button" class="btn btn-outline-primary">Right</button>
+          </div>
          </div>
-       </div>
+         <div class="col">
+            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+               <li><a class="dropdown-item active" href="#">Singles</a></li>
+               <li><a class="dropdown-item" href="#">Doubles</a></li>
+               <li><a class="dropdown-item" href="#">Mixed Doubles</a></li>
+             </ul>
+         </div>
+      </div>
+     
    </div>
 
 
-
+   <!-- Content Container -->
    <div class="row gx-5">
-     <div class="col">
-      <div class="p-3 border bg-light">1</div>
-     </div>
      <div class="col-8">
-      <div class="p-3 border bg-light">2</div>
+      <div class="p-3 border bg-light">LeaderBoard</div>
      </div>
      <div class="col">
-      <div class="p-3 border bg-light">3</div>
+      <div class="p-3 border bg-light">Groups</div>
      </div>
+</div>
 </div>
 {% endblock %}
