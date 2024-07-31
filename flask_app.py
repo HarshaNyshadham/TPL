@@ -48,10 +48,11 @@ def newindex():
 @app.route('/test',methods=['GET', 'POST'])
 def test():
     data_50,data_45,data_40=get_LeaderBoard()
+    message='test'
     if request.method == 'POST':
       selected_option = request.form.get('league_format_selection')
       message=selected_option
-    return render_template('test.html',data_45=data_45,data_40=data_40,data_50=data_50,message='message')
+    return render_template('test.html',data_45=data_45,data_40=data_40,data_50=data_50,message=message)
 
 @app.route('/pointtable')
 def pointtable():
