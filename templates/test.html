@@ -28,10 +28,10 @@
             <ul class="nav nav-pills mt-auto" id="myTab" role="tablist" style="text-align: center;">
                
                <li class="nav-item" role="presentation">
-                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home,#home2" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
                </li>
                <li class="nav-item" role="presentation">
-                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile,#profile2" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
                </li>
              </ul>
              
@@ -54,11 +54,11 @@
          
      </div>
      <div class="col">
-      <div class="p-3 border bg-light">
+      <div class="p-3 border bg-light" style="text-align: center;">Groups - {{message}}</div><br>
          
             <div class="tab-pane fade show active" id="home2" role="tabpanel" aria-labelledby="home-tab">1</div>
             <div class="tab-pane fade" id="profile2" role="tabpanel" aria-labelledby="profile-tab">2</div>
-         </div>   
+          
       </div>
      </div>
    </div>
