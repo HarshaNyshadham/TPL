@@ -58,7 +58,7 @@
       
                <tbody>
                       {% for item in pt_data_50 %}
-                      
+                      {% if item[9]==1 %}
                      <tr>
                        <td><b>{{item[0]}}</b></td>
                         <td>{{item[1]}}</td>
@@ -77,7 +77,7 @@
       
                      </tr>
       
-                      
+                      {% endif %}
                       {% endfor %}
                </tbody>
       </table>
@@ -148,7 +148,7 @@
         
                  <tbody>
                         {% for item in pt_data_45 %}
-                        
+                        {% if item[9]==2 %}
                        <tr>
                          <td><b>{{item[0]}}</b></td>
                           <td>{{item[1]}}</td>
@@ -167,7 +167,7 @@
         
                        </tr>
                         
-        
+                         {% endif %}         
                         {% endfor %}
                  </tbody>
         </table>
