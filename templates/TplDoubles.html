@@ -52,13 +52,13 @@
                      <th>Games won</th>
                      <th>Games total</th>
                      <th>%games </th>
-                     <th>Group </th>
+                     
                   </tr>
                </thead>
       
                <tbody>
                       {% for item in pt_data_50 %}
-                      {% if item[9]==1 %}
+                      
                      <tr>
                        <td><b>{{item[0]}}</b></td>
                         <td>{{item[1]}}</td>
@@ -73,12 +73,12 @@
                         <td>{{item[6]}}</td>
                         <td>{{item[7]}}</td>
                        <td><b>{{item[8]}}</b></td>
-                       <td><b>{{item[9]}}</b></td>
+                       
       
       
                      </tr>
       
-                      {% endif %}
+                      
                       {% endfor %}
                </tbody>
       </table>
@@ -105,7 +105,7 @@
       
                <tbody>
                       {% for item in pt_data_45 %}
-                      
+                      {% if item[9]==1 %}
                      <tr>
                        <td><b>{{item[0]}}</b></td>
                         <td>{{item[1]}}</td>
@@ -124,7 +124,7 @@
       
                      </tr>
                       
-      
+                      {% endif %}
                       {% endfor %}
                </tbody>
       </table>
