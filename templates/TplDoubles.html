@@ -104,7 +104,7 @@
       
                <tbody>
                       {% for item in pt_data_45 %}
-                      
+                      {% if {{item[9]}}==1 %}
                      <tr>
                        <td><b>{{item[0]}}</b></td>
                         <td>{{item[1]}}</td>
