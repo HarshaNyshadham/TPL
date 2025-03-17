@@ -1,6 +1,4 @@
 
-# A very simple Flask Hello World app for you to get started with...
-
 from flask import Flask,render_template,request,redirect,url_for
 import pandas as pd
 import numpy as np
@@ -455,3 +453,6 @@ def plot():
         
     
     return render_template('plot.html', graphJSON=graphJSON,graphJSON2=graphJSON2,graphJSON3=graphJSON3,graphJSON4=graphJSON4,player=playername,data=data,updateTime=lastUpdated)
+
+if __name__ == '__main__':
+    app.run(debug=True)
