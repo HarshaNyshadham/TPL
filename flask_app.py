@@ -1,5 +1,4 @@
-
-from flask import Flask,render_template,request,redirect,url_for
+from flask import Flask,render_template,request,redirect,url_for,jsonify
 import pandas as pd
 import numpy as np
 from pandas import ExcelWriter,DataFrame,ExcelFile
@@ -13,21 +12,35 @@ import json
 import plotly
 import plotly.express as px
 import os.path,datetime,calendar
+from models import db, Appointable, Schedule, init_db
+from models.seed_data import seed_database
+from services.score_service import ScoreService
+from services.point_table_service import PointTableService
+from services.schedule_service import ScheduleService
 
 #File path
-
 from config import TPL_currentSeason,TPL_leaderboard,Playoff_filename,TPL_Doubles_test,get_LeaderBoard
 
-# TPL_leaderboard='/home/tpl/mysite/uploads/TPL_Leaderboard.xlsx'
-# TPL_currentSeason='/home/tpl/mysite/uploads/TPL_currentseason.xlsx'
-# Playoff_filename='/home/tpl/mysite/uploads/Playoff.xlsx'
-groups_currentseason=0
+# Global variables
+groups_currentseason = 0
+SeasonSchedule = pd.DataFrame()
+SeasonPointtable = pd.DataFrame()
 
-#global variable to hold current season
-SeasonSchedule=pd.DataFrame()
-SeasonPointtable=pd.DataFrame()
+def create_app():
+    app = Flask(__name__)
+    init_db(app)
+    return app
 
-app = Flask(__name__)
+app = create_app()
+
+# Create database tables and seed with initial data if empty
+with app.app_context():
+    db.create_all()
+    try:
+        if not Appointable.query.first():
+            seed_database()
+    except Exception as e:
+        print(f"Error seeding database: {e}")
 
 @app.route('/')
 @app.route('/index')
@@ -41,7 +54,30 @@ def index():
 
 @app.route('/newindex')
 def newindex():
-   return render_template('newindex.html')
+    try:
+        # Get standings for all divisions
+        standings = PointTableService.get_all_divisions_standings()
+        
+        # Get all teams for schedule lookup
+        all_teams = []
+        for division_teams in standings.values():
+            all_teams.extend(team[0] for team in division_teams)
+        
+        # Get schedule data for all teams
+        schedule_data = ScheduleService.get_team_schedules(all_teams)
+        
+        return render_template('newindex.html',
+                             pt_data_50=standings[5.0],
+                             pt_data_45=standings[4.5],
+                             pt_data_40=standings[4.0],
+                             schedule_data=schedule_data)
+    except Exception as e:
+        print(f"Error in newindex route: {e}")
+        return render_template('newindex.html',
+                             pt_data_50=[],
+                             pt_data_45=[],
+                             pt_data_40=[],
+                             schedule_data={})
 
 @app.route('/test',methods=['GET', 'POST'])
 def test():
@@ -77,17 +113,17 @@ def schedule():
     data=[]
     df_pt=pd.read_excel(TPL_currentSeason, engine ='openpyxl',sheet_name ='PointTable',keep_default_na=False)
     player_list=[]
-
+    
     for index,row in df_pt.iterrows():
       player_list.append(row['Player'])
     player_list.sort()
 
     if request.method == "POST":
-      select_value=request.form.get("comp_select")
-      for index,row in df.iterrows():
-        if(select_value==row['Player1'] or select_value==row['Player2']):
-          data.append([row['Player1'],row['Player2'],row['Score'],row['Deadline']])
-      return render_template('schedule.html',data=data,players=player_list)
+       select_value=request.form.get("comp_select")
+       for index,row in df.iterrows():
+         if(select_value==row['Player1'] or select_value==row['Player2']):
+           data.append([row['Player1'],row['Player2'],row['Score'],row['Deadline']])
+       return render_template('schedule.html',data=data,players=player_list)
 
     for index,row in df.iterrows():
       data.append([row['Player1'],row['Player2'],row['Score'],row['Deadline']])
@@ -453,6 +489,36 @@ def plot():
         
     
     return render_template('plot.html', graphJSON=graphJSON,graphJSON2=graphJSON2,graphJSON3=graphJSON3,graphJSON4=graphJSON4,player=playername,data=data,updateTime=lastUpdated)
+
+@app.route('/update_score', methods=['POST'])
+def update_score():
+    try:
+        data = request.json
+        team1 = data.get('team1')
+        team2 = data.get('team2')
+        score = data.get('score')
+        
+        if not all([team1, team2, score]):
+            return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400
+        
+        # Update the score
+        ScoreService.update_match_score(team1, team2, score)
+        
+        # Get updated standings for all divisions
+        standings = PointTableService.get_all_divisions_standings()
+        
+        return jsonify({
+            'status': 'success',
+            'standings': {
+                '5.0': standings[5.0],
+                '4.5': standings[4.5],
+                '4.0': standings[4.0]
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error updating score: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
