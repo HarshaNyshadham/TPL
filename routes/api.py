@@ -3,20 +3,7 @@ from models import Appointable, Season
 
 api_bp = Blueprint('api', __name__)
 
-@api_bp.route('/season/<int:season_id>')
-def get_season_data(season_id):
-    # Get season data
-    season = Season.query.get_or_404(season_id)
-    
-    # Get all teams for this season
-    teams = Appointable.query.filter_by(season_id=season_id).all()
-    
-    # Organize teams by game type
-    singles = [t.to_dict() for t in teams if t.game_type == 'singles']
-    doubles = [t.to_dict() for t in teams if t.game_type == 'doubles']
-    mixed_doubles = [t.to_dict() for t in teams if t.game_type == 'mixed_doubles']
-    
-    # Calculate statistics
+''
     stats = {
         'singles_count': len(singles),
         'doubles_count': len(doubles),

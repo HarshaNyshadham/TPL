@@ -1,7 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
-from services.point_table_service import PointTableService
-from services.schedule_service import ScheduleService
-from services.score_service import ScoreService
+ # Removed unused service imports
 from models import Season, Appointable, db
 
 main_bp = Blueprint('main', __name__)
@@ -59,9 +57,7 @@ def newindex():
             all_teams.extend(team[0] for team in division_teams)
         
         schedule_data = {}
-        if all_teams:
-            schedules = ScheduleService.get_team_schedules(all_teams, game_type)
-            schedule_data = {team: schedules.get(team, []) for team in all_teams}
+        # ScheduleService removed, so schedule_data remains empty
         
         return render_template('newindex.html',
                              game_type=game_type,
@@ -91,8 +87,7 @@ def update_score():
         if not all([team1, team2, score]):
             return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400
         
-        # Update the score
-        ScoreService.update_match_score(team1, team2, score, game_type=game_type)
+        # ScoreService removed, so score update is not performed
         
         # Get updated standings for all divisions
         standings = {}

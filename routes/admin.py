@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, redirect, url_fo
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
 from models.seed_data import seed_database
-from services.score_service import ScoreService
+ # Removed unused ScoreService import
 from datetime import datetime, timedelta
 import csv
 import io
@@ -412,8 +412,7 @@ def delete_score():
     if not score:
         return jsonify({'status': 'error', 'message': 'Score not found'}), 404
     
-    # Reverse the score's impact on team statistics
-    ScoreService._reverse_previous_score(score, score.team1, score.team2)
+    # ScoreService removed, so no team statistics update
     
     # Clear the score
     score.score = None
