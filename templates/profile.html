@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}TPL - Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="row">
+            <!-- Player Info Card -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Player Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="avatar-circle mb-3">
+                                {{ player.name|first|upper }}
+                            </div>
+                            <h3>{{ player.name }}</h3>
+                            <p class="text-muted mb-0">Division {{ player.division }}</p>
+                            <p class="text-muted">Group {{ player.group }}</p>
+                        </div>
+                        <hr>
+                        <div class="row text-center">
+                            <div class="col">
+                                <h4>{{ player.matches_played }}</h4>
+                                <p class="text-muted mb-0">Matches</p>
+                            </div>
+                            <div class="col">
+                                <h4>{{ player.win_rate }}%</h4>
+                                <p class="text-muted mb-0">Win Rate</p>
+                            </div>
+                            <div class="col">
+                                <h4>{{ player.games_percentage }}%</h4>
+                                <p class="text-muted mb-0">Games %</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="col-md-8 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Performance History</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match History -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Match History</h4>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary active" onclick="filterMatches('all')">All</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterMatches('singles')">Singles</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterMatches('doubles')">Doubles</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterMatches('mixed')">Mixed</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Teams</th>
+                            <th>Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchHistory">
+                        {% for match in matches %}
+                        <tr data-match-type="{{ match.type|lower }}">
+                            <td>{{ match.date }}</td>
+                            <td>{{ match.type }}</td>
+                            <td>{{ match.teams }}</td>
+                            <td>{{ match.score }}</td>
+                            <td>
+                                <span class="badge {% if match.result == 'Won' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ match.result }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Upcoming Matches -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Upcoming Matches</h4>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Teams</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in upcoming_matches %}
+                        <tr>
+                            <td>{{ match.date }}</td>
+                            <td>{{ match.type }}</td>
+                            <td>{{ match.teams }}</td>
+                            <td>
+                                <span class="badge bg-warning">{{ match.status }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Initialize performance chart
+const ctx = document.getElementById('performanceChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ dates|tojson|safe }},
+        datasets: [{
+            label: 'Win Rate',
+            data: {{ win_rates|tojson|safe }},
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+
+// Filter match history
+function filterMatches(type) {
+    const rows = document.querySelectorAll('#matchHistory tr');
+    const buttons = document.querySelectorAll('.btn-outline-primary');
+    
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase() === type) {
+            btn.classList.add('active');
+        }
+    });
+
+    rows.forEach(row => {
+        if (type === 'all' || row.dataset.matchType === type) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}TPL - History{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <h1 class="page-title">Historical Seasons</h1>
+
+        <!-- Season Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Select Season</h4>
+            </div>
+            <div class="card-body">
+                <select class="form-select" id="seasonSelect" onchange="loadSeason(this.value)">
+                    <option value="">Choose a season...</option>
+                    {% for season in seasons %}
+                    <option value="{{ season.id }}">{{ season.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Season Stats -->
+        <div id="seasonStats" style="display: none;">
+            <div class="row">
+                <!-- Overview -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="mb-0">Overview</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6 class="text-muted">Total Matches</h6>
+                                <h3 id="totalMatches">-</h3>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-muted">Completion Rate</h6>
+                                <h3 id="completionRate">-</h3>
+                            </div>
+                            <div>
+                                <h6 class="text-muted">Active Players</h6>
+                                <h3 id="activePlayers">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Type Distribution -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="mb-0">Game Types</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="gameTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Division Distribution -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="mb-0">Divisions</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="divisionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Type Tabs -->
+            <ul class="nav nav-pills mb-4" id="gameTypeTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#singles" type="button">
+                        Singles
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#doubles" type="button">
+                        Doubles
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#mixed" type="button">
+                        Mixed Doubles
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Game Type Content -->
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="singles">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Singles Standings</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Division</th>
+                                        <th>Matches</th>
+                                        <th>Won</th>
+                                        <th>Lost</th>
+                                        <th>Win Rate</th>
+                                        <th>Games %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="singlesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="doubles">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Doubles Standings</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Team</th>
+                                        <th>Division</th>
+                                        <th>Matches</th>
+                                        <th>Won</th>
+                                        <th>Lost</th>
+                                        <th>Win Rate</th>
+                                        <th>Games %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doublesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="mixed">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Mixed Doubles Standings</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Team</th>
+                                        <th>Division</th>
+                                        <th>Matches</th>
+                                        <th>Won</th>
+                                        <th>Lost</th>
+                                        <th>Win Rate</th>
+                                        <th>Games %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mixedTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let gameTypeChart = null;
+let divisionChart = null;
+
+function loadSeason(seasonId) {
+    if (!seasonId) {
+        document.getElementById('seasonStats').style.display = 'none';
+        return;
+    }
+
+    fetch(`/api/season/${seasonId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('seasonStats').style.display = 'block';
+            updateOverview(data.overview);
+            updateCharts(data.distribution);
+            updateTables(data.standings);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading season data');
+        });
+}
+
+function updateOverview(overview) {
+    document.getElementById('totalMatches').textContent = overview.total_matches;
+    document.getElementById('completionRate').textContent = `${overview.completion_rate}%`;
+    document.getElementById('activePlayers').textContent = overview.active_players;
+}
+
+function updateCharts(distribution) {
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    };
+
+    // Game Type Chart
+    if (gameTypeChart) {
+        gameTypeChart.destroy();
+    }
+    const gameTypeCtx = document.getElementById('gameTypeChart').getContext('2d');
+    gameTypeChart = new Chart(gameTypeCtx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(distribution.game_types),
+            datasets: [{
+                data: Object.values(distribution.game_types),
+                backgroundColor: ['#3498db', '#e74c3c', '#2ecc71']
+            }]
+        },
+        options: chartOptions
+    });
+
+    // Division Chart
+    if (divisionChart) {
+        divisionChart.destroy();
+    }
+    const divisionCtx = document.getElementById('divisionChart').getContext('2d');
+    divisionChart = new Chart(divisionCtx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(distribution.divisions),
+            datasets: [{
+                data: Object.values(distribution.divisions),
+                backgroundColor: ['#3498db', '#e74c3c', '#2ecc71']
+            }]
+        },
+        options: chartOptions
+    });
+}
+
+function updateTables(standings) {
+    const tables = {
+        singles: document.getElementById('singlesTable'),
+        doubles: document.getElementById('doublesTable'),
+        mixed: document.getElementById('mixedTable')
+    };
+
+    for (const [type, data] of Object.entries(standings)) {
+        const tbody = tables[type];
+        tbody.innerHTML = '';
+        
+        data.forEach(player => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${player.name}</td>
+                <td>${player.division}</td>
+                <td>${player.matches}</td>
+                <td>${player.won}</td>
+                <td>${player.lost}</td>
+                <td>${player.win_rate}%</td>
+                <td>${player.games_percentage}%</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+}
+</script>
+{% endblock %} 

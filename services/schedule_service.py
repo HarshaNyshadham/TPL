@@ -2,10 +2,11 @@ from models import Schedule, Appointable
 
 class ScheduleService:
     @staticmethod
-    def get_team_schedules(teams):
+    def get_team_schedules(teams, game_type):
         """Get schedules for a list of teams"""
         schedules = Schedule.query.filter(
-            (Schedule.team1.in_(teams)) | (Schedule.team2.in_(teams))
+            ((Schedule.team1.in_(teams)) | (Schedule.team2.in_(teams))) &
+            (Schedule.game_type == game_type)
         ).all()
         
         schedule_data = {}

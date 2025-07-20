@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}TPL - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="page-title">Admin Dashboard</h1>
+        
+        <!-- Player Management -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Import Players</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin.upload_players') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Game Type</label>
+                        <select class="form-select" name="game_type" required>
+                            <option value="singles">Singles</option>
+                            <option value="doubles">Doubles</option>
+                            <option value="mixed_doubles">Mixed Doubles</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Player List (CSV)</label>
+                        <input type="file" class="form-control" name="file" accept=".csv" required>
+                        <div class="form-text">CSV should have columns: Player,Division,Group</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload Players</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Player Assignments -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Player Assignments</h4>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="filterPlayers('singles')">Singles</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="filterPlayers('doubles')">Doubles</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="filterPlayers('mixed_doubles')">Mixed</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Game Type</th>
+                                <th>Division</th>
+                                <th>Group</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playerTableBody">
+                            {% for player in players %}
+                            <tr data-game-type="{{ player.game_type }}">
+                                <td>{{ player.name }}</td>
+                                <td>{{ player.game_type }}</td>
+                                <td>{{ player.division or '-' }}</td>
+                                <td>{{ player.group or '-' }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="editPlayer('{{ player.id }}')">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="removeAssignment('{{ player.id }}')">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Season Creation -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Create Season</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin.create_season') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Season Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" name="start_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" name="end_date" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Game Type</label>
+                        <select class="form-select" name="game_type" required>
+                            <option value="singles">Singles</option>
+                            <option value="doubles">Doubles</option>
+                            <option value="mixed_doubles">Mixed Doubles</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Season</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Season -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Active Season</h4>
+            </div>
+            <div class="card-body">
+                {% if active_season %}
+                <div class="mb-3">
+                    <strong>Name:</strong> {{ active_season.name }}<br>
+                    <strong>Game Type:</strong> {{ active_season.game_type }}<br>
+                    <strong>Start Date:</strong> {{ active_season.start_date.strftime('%Y-%m-%d') }}<br>
+                    <strong>End Date:</strong> {{ active_season.end_date.strftime('%Y-%m-%d') }}
+                </div>
+                {% else %}
+                <p class="text-muted">No active season.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Edit Player Modal -->
+<div class="modal fade" id="editPlayerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Player Assignment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPlayerForm">
+                    <input type="hidden" name="player_id">
+                    <div class="mb-3">
+                        <label class="form-label">Division</label>
+                        <select class="form-select" name="division" required>
+                            <option value="5.0">5.0</option>
+                            <option value="4.5">4.5</option>
+                            <option value="4.0">4.0</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Group</label>
+                        <select class="form-select" name="group" required>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterPlayers(gameType) {
+    const rows = document.querySelectorAll('#playerTableBody tr');
+    rows.forEach(row => {
+        if (gameType === 'all' || row.dataset.gameType === gameType) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function editPlayer(playerId) {
+    const modal = new bootstrap.Modal(document.getElementById('editPlayerModal'));
+    const form = document.getElementById('editPlayerForm');
+    form.player_id.value = playerId;
+    modal.show();
+}
+
+function removeAssignment(playerId) {
+    if (confirm('Are you sure you want to remove this assignment?')) {
+        fetch(`/admin/player/${playerId}/remove`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error removing assignment: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error removing assignment');
+        });
+    }
+}
+
+document.getElementById('editPlayerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch(`/admin/player/${formData.get('player_id')}/update`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert('Error updating player: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating player');
+    });
+});
+
+// Set minimum date for date inputs to today
+document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+        input.min = today;
+    });
+});
+</script>
+{% endblock %} 
