@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
-from flask_migrate import Migrate
+#from flask_migrate import Migrate
 from models import db, init_db, User, Appointable
 from models.seed_data import seed_database
 from routes import init_routes
