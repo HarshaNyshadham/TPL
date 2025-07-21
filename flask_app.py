@@ -9,10 +9,8 @@ import os
 def create_app():
     app = Flask(__name__)
 
-    project_root = os.path.abspath(os.path.dirname(__file__))
-
     app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(project_root, 'tennis.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tennis.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize the database
