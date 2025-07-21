@@ -4,11 +4,15 @@ from flask_login import LoginManager
 from models import db, init_db, User, Appointable
 from models.seed_data import seed_database
 from routes import init_routes
+import os
 
 def create_app():
     app = Flask(__name__)
+
+    project_root = os.path.abspath(os.path.dirname(__file__))
+
     app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tennis.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(project_root, 'tennis.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize the database
