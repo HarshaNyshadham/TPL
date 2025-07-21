@@ -7,6 +7,10 @@ from routes import init_routes
 import os
 
 def create_app():
+    # Debug: print the resolved path to tpl.db
+    print('DEBUG: Current working directory:', os.getcwd())
+    print('DEBUG: __file__:', __file__)
+    print('DEBUG: tpl.db expected at:', os.path.join(os.getcwd(), 'tpl.db'))
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
