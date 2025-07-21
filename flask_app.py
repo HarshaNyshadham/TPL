@@ -10,7 +10,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tennis.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tpl.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize the database
