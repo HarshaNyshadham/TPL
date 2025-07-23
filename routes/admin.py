@@ -34,7 +34,8 @@ def admin_required(f):
 def admin():
     seasons = Season.query.all()
     for season in seasons:
-        season.players = Player.query.filter_by(season_id=season.id).all()
+        # Player does not have season_id, so just get all players (or filter by game_type/division/group if needed)
+        season.players = Player.query.all()
     return render_template('admin.html', seasons=seasons)
 
 #get all players
@@ -114,8 +115,7 @@ def publish_players():
                     name=str(row['name']),
                     game_type=str(row['game type']),
                     division=float(row['division']),
-                    group=str(row['group']),
-                    season_id=active_season.id
+                    group=str(row['group'])
                 )
                 db.session.add(player)
                 count += 1
