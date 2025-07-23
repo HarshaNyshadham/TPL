@@ -234,11 +234,11 @@ document.getElementById('uploadPlayersForm').addEventListener('submit', function
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
-    .then(data => {
+    .then(r => r.json().then(data => ({ ok: r.ok, data })).catch(() => ({ ok: false, data: { status: 'error', message: 'Invalid JSON response' } })))
+    .then(({ ok, data }) => {
         const resultDiv = document.getElementById('uploadResult');
         const tableContainer = document.getElementById('playerTableContainer');
-        if (data.status === 'success') {
+        if (ok && data.status === 'success') {
             resultDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
             if (data.players && data.players.length > 0) {
                 // Group players by division and group
@@ -347,7 +347,8 @@ document.getElementById('uploadPlayersForm').addEventListener('submit', function
                             tableContainer.innerHTML += '<div class="alert alert-danger">' + (resp.message || 'Publish failed') + '</div>';
                         }
                     })
-                    .catch(() => {
+                    .catch((err) => {
+                        console.error('Publish error:', err);
                         tableContainer.innerHTML += '<div class="alert alert-danger">Publish failed</div>';
                     });
                 };
@@ -361,7 +362,8 @@ document.getElementById('uploadPlayersForm').addEventListener('submit', function
             tableContainer.style.display = 'none';
         }
     })
-    .catch(() => {
+    .catch((err) => {
+        console.error('Upload error:', err);
         document.getElementById('uploadResult').innerHTML = '<div class="alert alert-danger">Upload failed</div>';
         document.getElementById('playerTableContainer').innerHTML = '';
         document.getElementById('playerTableContainer').style.display = 'none';

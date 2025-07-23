@@ -80,8 +80,12 @@ def upload_players():
                                 col_map['division']: 'division',
                                 col_map['game type']: 'game type',
                                 col_map['group']: 'group'})
-        # Instead of saving, return the parsed player data for editing
-        player_data = df.to_dict(orient='records')
+        # Only keep required columns in the returned player data
+        filtered_columns = ['name', 'division', 'game type', 'group']
+        player_data = [
+            {col: row.get(col, None) for col in filtered_columns}
+            for row in df.to_dict(orient='records')
+        ]
         return jsonify({'status': 'success', 'players': player_data, 'message': f'Loaded {len(player_data)} players. Please review and publish.'})
     except Exception as e:
         import traceback
