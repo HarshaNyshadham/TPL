@@ -9,7 +9,6 @@ class Schedule(db.Model):
     deadline = db.Column(db.DateTime, nullable=False)
     division = db.Column(db.String(10), nullable=False)  # Division as string
     game_type = db.Column(db.String(20), nullable=False)  # 'singles', 'doubles', 'mixed_doubles'
-    season_id = db.Column(db.Integer, db.ForeignKey('season.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -25,7 +24,6 @@ class Schedule(db.Model):
             'deadline': self.deadline.isoformat(),
             'division': self.division,
             'game_type': self.game_type,
-            'season_id': self.season_id,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

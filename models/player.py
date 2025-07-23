@@ -10,7 +10,6 @@ class Player(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    season_id = db.Column(db.Integer, db.ForeignKey('season.id'), nullable=False)
 
     def __repr__(self):
         return f'<Player {self.name}>'
