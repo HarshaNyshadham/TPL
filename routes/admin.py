@@ -65,7 +65,7 @@ def upload_players():
     if file.filename == '' or not (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
         return jsonify({'status': 'error', 'message': 'Invalid file format. Please upload an Excel file (.xlsx, .xls).'}), 400
     try:
-        df = pd.read_excel(file)
+        df = pd.read_excel(file, engine="openpyxl")
         # Validate required columns (case-insensitive)
         required_columns = ['name', 'division', 'game type', 'group']
         # Create a mapping from lower-case column names to actual column names
