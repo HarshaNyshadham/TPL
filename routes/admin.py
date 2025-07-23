@@ -110,17 +110,13 @@ def publish_players():
             # User-friendly message
             message = 'Duplicate player names found. Please ensure each player name is unique.'
             return jsonify({'status': 'error', 'message': message, 'duplicates': duplicate_rows}), 400
-        # Get active season
-        active_season = Season.query.filter_by(is_active=True).first()
-        if not active_season:
-            return jsonify({'status': 'error', 'message': 'No active season found. Please create a season first.'}), 400
         count = 0
         for row in players:
             try:
                 player = Player(
                     name=str(row['name']),
                     game_type=str(row['game type']),
-                    division=float(row['division']),
+                    division=str(row['division']),
                     group=str(row['group'])
                 )
                 db.session.add(player)
