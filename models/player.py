@@ -11,6 +11,7 @@ class Player(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # season_id removed; now use Schedule.season_id for season association
 
     def __repr__(self):
         if self.partner_name:
@@ -28,4 +29,4 @@ class Player(db.Model):
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
-        } 
+        }

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, redirect, url_fo
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
 from models.seed_data import seed_database
- # Removed unused ScoreService import
+from services.point_calculation import calculate_points
 from datetime import datetime, timedelta
 import csv
 import io
@@ -32,11 +32,10 @@ def admin_required(f):
 @admin_bp.route('/')
 @admin_required
 def admin():
-    players = Player.query.all()
-    active_season = Season.query.filter_by(is_active=True).first()
-    return render_template('admin.html', 
-                         players=players,
-                         active_season=active_season)
+    seasons = Season.query.all()
+    for season in seasons:
+        season.players = Player.query.filter_by(season_id=season.id).all()
+    return render_template('admin.html', seasons=seasons)
 
 #get all players
 @admin_bp.route('/players')
@@ -59,37 +58,82 @@ def delete_players():
 @admin_bp.route('/upload_players', methods=['POST'])
 @admin_required
 def upload_players():
-    if 'file' not in request.files:
-        flash('No file uploaded.', 'danger')
-        return redirect(url_for('admin.admin'))
-    
-    file = request.files['file']
-    game_type = request.form.get('game_type')
-    
-    if file.filename == '' or not file.filename.endswith('.csv'):
-        flash('Invalid file format. Please upload a CSV file.', 'danger')
-        return redirect(url_for('admin.admin'))
-    
+    if 'playerFile' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No file uploaded.'}), 400
+    file = request.files['playerFile']
+    if file.filename == '' or not (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
+        return jsonify({'status': 'error', 'message': 'Invalid file format. Please upload an Excel file (.xlsx, .xls).'}), 400
     try:
-        # Read and process CSV
-        df = pd.read_csv(file)
-        for _, row in df.iterrows():
-            player = Player(
-                name=row['Player'],
-                division=float(row['Division']),
-                group=str(row['Group']),
-                game_type=game_type
-            )
-            db.session.add(player)
-        
-        db.session.commit()
-        flash('Players imported successfully.', 'success')
-        
+        df = pd.read_excel(file)
+        # Validate required columns (case-insensitive)
+        required_columns = ['name', 'division', 'game type', 'group']
+        # Create a mapping from lower-case column names to actual column names
+        col_map = {c.lower(): c for c in df.columns}
+        missing_columns = [col for col in required_columns if col not in col_map]
+        if missing_columns:
+            # Return the required columns in original case for clarity
+            return jsonify({'status': 'error', 'message': f"Missing required columns: {', '.join([col.title() for col in missing_columns])}"}), 400
+
+        # Rename columns to standard names for internal use
+        df = df.rename(columns={col_map['name']: 'name',
+                                col_map['division']: 'division',
+                                col_map['game type']: 'game type',
+                                col_map['group']: 'group'})
+        # Instead of saving, return the parsed player data for editing
+        player_data = df.to_dict(orient='records')
+        return jsonify({'status': 'success', 'players': player_data, 'message': f'Loaded {len(player_data)} players. Please review and publish.'})
     except Exception as e:
         db.session.rollback()
-        flash(f'Error: {str(e)}', 'danger')
-    
-    return redirect(url_for('admin.admin'))
+        return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}'}), 400
+@admin_bp.route('/publish_players', methods=['POST'])
+def publish_players():
+    try:
+        data = request.json
+        players = data.get('players', [])
+        if not players:
+            return jsonify({'status': 'error', 'message': 'No player data provided.'}), 400
+        # Check for duplicate names in the submitted list (case-insensitive)
+        names = [str(row['name']).strip().lower() for row in players]
+        from collections import Counter
+        name_counts = Counter(names)
+        duplicates = [name for name, count in name_counts.items() if count > 1]
+        if duplicates:
+            # Find all rows that are duplicates
+            duplicate_rows = [row for row in players if str(row['name']).strip().lower() in duplicates]
+            # User-friendly message
+            message = 'Duplicate player names found. Please ensure each player name is unique.'
+            return jsonify({'status': 'error', 'message': message, 'duplicates': duplicate_rows}), 400
+        # Get active season
+        active_season = Season.query.filter_by(is_active=True).first()
+        if not active_season:
+            return jsonify({'status': 'error', 'message': 'No active season found. Please create a season first.'}), 400
+        count = 0
+        for row in players:
+            try:
+                player = Player(
+                    name=str(row['name']),
+                    game_type=str(row['game type']),
+                    division=float(row['division']),
+                    group=str(row['group']),
+                    season_id=active_season.id
+                )
+                db.session.add(player)
+                count += 1
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'status': 'error', 'message': f'Row error: {str(e)}'}), 400
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            # User-friendly SQL error
+            if 'NOT NULL constraint failed' in str(e) or 'IntegrityError' in str(e):
+                return jsonify({'status': 'error', 'message': 'A required field is missing for one or more players. Please ensure all players have all required fields and are associated with a season.'}), 400
+            return jsonify({'status': 'error', 'message': f'Publish failed: {str(e)}'}), 400
+        return jsonify({'status': 'success', 'message': f'Published {count} players successfully.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': f'Publish failed: {str(e)}'}), 400
 
 @admin_bp.route('/assign_players', methods=['POST'])
 @admin_required
@@ -669,3 +713,87 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('main.newindex'))
+
+@admin_bp.route('/schedule/<int:sched_id>/update', methods=['POST'])
+def update_schedule(sched_id):
+    data = request.json
+    sched = Schedule.query.get(sched_id)
+    if not sched:
+        return jsonify({'status': 'error', 'message': 'Schedule not found'}), 404
+    sched.score = data.get('score', sched.score)
+    sched.updated_at = db.func.now()
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+@admin_bp.route('/pointtable/<int:team_id>/update', methods=['POST'])
+def update_pointtable(team_id):
+    data = request.json
+    appoint = Appointable.query.get(team_id)
+    if not appoint:
+        return jsonify({'status': 'error', 'message': 'Team not found'}), 404
+    appoint.matches = int(data.get('matches', appoint.matches))
+    appoint.won = int(data.get('won', appoint.won))
+    appoint.loss = int(data.get('loss', appoint.loss))
+    appoint.points = int(data.get('points', appoint.points))
+    appoint.updated_at = db.func.now()
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+@admin_bp.route('/recalculate_scores', methods=['POST'])
+def recalculate_scores():
+    try:
+        active_season = Season.query.filter_by(is_active=True).first()
+        if not active_season:
+            return jsonify({'status': 'error', 'message': 'No active season'}), 400
+        # Reset all appointables
+        appoints = Appointable.query.filter_by(season_id=active_season.id).all()
+        for appoint in appoints:
+            appoint.matches = 0
+            appoint.won = 0
+            appoint.loss = 0
+            appoint.points = 0
+            appoint.bonus = 0
+            appoint.games_total = 0
+            appoint.games_won = 0
+            appoint.games_percentage = 0.0
+        # Recalculate from all schedules
+        schedules = Schedule.query.filter_by(season_id=active_season.id).all()
+        for sched in schedules:
+            if not sched.score:
+                continue
+            sets = [s.strip() for s in sched.score.split(',') if '-' in s]
+            team1_sets = 0
+            team2_sets = 0
+            team1_games = 0
+            team2_games = 0
+            for s in sets:
+                try:
+                    g1, g2 = map(int, s.split('-'))
+                    if g1 > g2:
+                        team1_sets += 1
+                    elif g2 > g1:
+                        team2_sets += 1
+                    team1_games += g1
+                    team2_games += g2
+                except Exception:
+                    continue
+            t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, sched.score)
+            for team, points, bonus, win, loss, games, sets in [
+                (sched.team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, team1_sets),
+                (sched.team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, team2_sets)
+            ]:
+                appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type, season_id=active_season.id).first()
+                if appoint:
+                    appoint.matches = (appoint.matches or 0) + 1
+                    appoint.points = (appoint.points or 0) + points + bonus
+                    appoint.bonus = (appoint.bonus or 0) + bonus
+                    appoint.games_total = (appoint.games_total or 0) + games
+                    appoint.games_won = (appoint.games_won or 0) + sets
+                    appoint.won = (appoint.won or 0) + win
+                    appoint.loss = (appoint.loss or 0) + loss
+                    appoint.calculate_games_percentage()
+                    appoint.updated_at = db.func.now()
+        db.session.commit()
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500

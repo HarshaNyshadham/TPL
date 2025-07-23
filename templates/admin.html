@@ -3,166 +3,143 @@
 {% block title %}TPL - Admin{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <h1 class="page-title">Admin Dashboard</h1>
-        
-        <!-- Player Management -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="mb-0">Import Players</h4>
+<style>
+    .editable-cell {
+        background-color: #fffbe6;
+        cursor: pointer;
+        position: relative;
+    }
+    .editable-cell:after {
+        content: '\270E'; /* pencil icon */
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.9em;
+        color: #bfa500;
+        opacity: 0.7;
+    }
+</style>
+<div class="container mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    <ul class="nav nav-tabs" id="adminTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pointtable-tab" data-bs-toggle="tab" data-bs-target="#pointtable" type="button" role="tab">Point Table</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">Schedule</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="createseason-tab" data-bs-toggle="tab" data-bs-target="#createseason" type="button" role="tab">Create Season</button>
+        </li>
+    </ul>
+    <div class="tab-content mt-3" id="adminTabContent">
+        <div class="tab-pane fade show active" id="pointtable" role="tabpanel">
+            <h3>Point Table</h3>
+            <div class="mb-2">
+                <input type="text" id="pointTableSearch" class="form-control" placeholder="Search team...">
             </div>
-            <div class="card-body">
-                <form action="{{ url_for('admin.upload_players') }}" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label">Game Type</label>
-                        <select class="form-select" name="game_type" required>
-                            <option value="singles">Singles</option>
-                            <option value="doubles">Doubles</option>
-                            <option value="mixed_doubles">Mixed Doubles</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Player List (CSV)</label>
-                        <input type="file" class="form-control" name="file" accept=".csv" required>
-                        <div class="form-text">CSV should have columns: Player,Division,Group</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload Players</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Player Assignments -->
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Player Assignments</h4>
-                <div class="btn-group">
-                    <button class="btn btn-outline-secondary btn-sm" onclick="filterPlayers('singles')">Singles</button>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="filterPlayers('doubles')">Doubles</button>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="filterPlayers('mixed_doubles')">Mixed</button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Player</th>
-                                <th>Game Type</th>
-                                <th>Division</th>
-                                <th>Group</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="playerTableBody">
-                            {% for player in players %}
-                            <tr data-game-type="{{ player.game_type }}">
-                                <td>{{ player.name }}</td>
-                                <td>{{ player.game_type }}</td>
-                                <td>{{ player.division or '-' }}</td>
-                                <td>{{ player.group or '-' }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" onclick="editPlayer('{{ player.id }}')">
-                                        Edit
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="removeAssignment('{{ player.id }}')">
-                                        Remove
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="pointTable">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Matches</th>
+                            <th>Won</th>
+                            <th>Loss</th>
+                            <th>Points</th>
+                            <th>Games %</th>
+                            <th>Group</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for season in seasons %}
+                        {% for team in season.teams %}
+                        <tr data-id="{{ team.id }}">
+                            <td>{{ team.team }}</td>
+                            <td contenteditable="true" class="editable-cell">{{ team.matches }}</td>
+                            <td contenteditable="true" class="editable-cell">{{ team.won }}</td>
+                            <td contenteditable="true" class="editable-cell">{{ team.loss }}</td>
+                            <td contenteditable="true" class="editable-cell">{{ team.points }}</td>
+                            <td>{{ '%.2f'|format(team.games_percentage) }}</td>
+                            <td>{{ team.group }}</td>
+                            <td><button class="btn btn-sm btn-success" onclick="savePointTable(this, {{ team.id }})">Save</button></td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <!-- Season Creation -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="mb-0">Create Season</h4>
+        <div class="tab-pane fade" id="schedule" role="tabpanel">
+            <h3>Schedule</h3>
+            <div class="mb-2 d-flex justify-content-between align-items-center">
+                <input type="text" id="scheduleTableSearch" class="form-control w-50" placeholder="Search team...">
+                <button class="btn btn-warning ms-2" id="recalcScoresBtn" onclick="recalculateScores()">Recalculate Scores</button>
             </div>
-            <div class="card-body">
-                <form action="{{ url_for('admin.create_season') }}" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Season Name</label>
-                        <input type="text" class="form-control" name="name" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" class="form-control" name="start_date" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">End Date</label>
-                            <input type="date" class="form-control" name="end_date" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Game Type</label>
-                        <select class="form-select" name="game_type" required>
-                            <option value="singles">Singles</option>
-                            <option value="doubles">Doubles</option>
-                            <option value="mixed_doubles">Mixed Doubles</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Create Season</button>
-                </form>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="scheduleTable">
+                    <thead>
+                        <tr>
+                            <th>Team 1</th>
+                            <th>Team 2</th>
+                            <th>Score</th>
+                            <th>Deadline</th>
+                            <th>Division</th>
+                            <th>Game Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for season in seasons %}
+                        {% for sched in season.schedules %}
+                        <tr data-id="{{ sched.id }}">
+                            <td>{{ sched.team1 }}</td>
+                            <td>{{ sched.team2 }}</td>
+                            <td contenteditable="true" class="editable-cell">{{ sched.score }}</td>
+                            <td>{{ sched.deadline.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ sched.division }}</td>
+                            <td>{{ sched.game_type }}</td>
+                            <td><button class="btn btn-sm btn-success" onclick="saveSchedule(this, {{ sched.id }})">Save</button></td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <!-- Active Season -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="mb-0">Active Season</h4>
-            </div>
-            <div class="card-body">
-                {% if active_season %}
+        <div class="tab-pane fade" id="createseason" role="tabpanel">
+            <h3>Create New Season</h3>
+            <form id="uploadPlayersForm" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <strong>Name:</strong> {{ active_season.name }}<br>
-                    <strong>Game Type:</strong> {{ active_season.game_type }}<br>
-                    <strong>Start Date:</strong> {{ active_season.start_date.strftime('%Y-%m-%d') }}<br>
-                    <strong>End Date:</strong> {{ active_season.end_date.strftime('%Y-%m-%d') }}
+                    <label for="playerFile" class="form-label">Upload Player List (Excel)</label>
+                    <input class="form-control" type="file" id="playerFile" name="playerFile" accept=".xlsx,.xls" required>
+                    <div class="form-text">Required columns: <b>Name, Game Type, Division, Group</b></div>
                 </div>
-                {% else %}
-                <p class="text-muted">No active season.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block modals %}
-<!-- Edit Player Modal -->
-<div class="modal fade" id="editPlayerModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Player Assignment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editPlayerForm">
-                    <input type="hidden" name="player_id">
-                    <div class="mb-3">
-                        <label class="form-label">Division</label>
-                        <select class="form-select" name="division" required>
-                            <option value="5.0">5.0</option>
-                            <option value="4.5">4.5</option>
-                            <option value="4.0">4.0</option>
-                        </select>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+            <div id="uploadResult" class="mt-3"></div>
+            <div id="playerTableContainer" class="mt-3" style="display:none;"></div>
+            <hr>
+            <form id="createSeasonForm">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="seasonName" class="form-label">Season Name</label>
+                        <input class="form-control" type="text" id="seasonName" name="seasonName" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Group</label>
-                        <select class="form-select" name="group" required>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                        </select>
+                    <div class="col-md-4">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input class="form-control" type="date" id="startDate" name="startDate" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </div>
+                    <div class="col-md-4">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input class="form-control" type="date" id="endDate" name="endDate" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success" id="createSeasonBtn">Create Season & Schedule</button>
+            </form>
+            <div id="createSeasonResult" class="mt-3"></div>
         </div>
     </div>
 </div>
@@ -170,72 +147,248 @@
 
 {% block extra_js %}
 <script>
-function filterPlayers(gameType) {
-    const rows = document.querySelectorAll('#playerTableBody tr');
-    rows.forEach(row => {
-        if (gameType === 'all' || row.dataset.gameType === gameType) {
-            row.style.display = '';
+function savePointTable(btn, id) {
+    const row = btn.closest('tr');
+    const data = {
+        matches: row.cells[1].innerText,
+        won: row.cells[2].innerText,
+        loss: row.cells[3].innerText,
+        points: row.cells[4].innerText
+    };
+    fetch(`/admin/pointtable/${id}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+            btn.innerText = 'Saved';
         } else {
-            row.style.display = 'none';
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    });
+}
+function saveSchedule(btn, id) {
+    const row = btn.closest('tr');
+    const data = {
+        score: row.cells[2].innerText
+    };
+    fetch(`/admin/schedule/${id}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+            btn.innerText = 'Saved';
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
         }
     });
 }
 
-function editPlayer(playerId) {
-    const modal = new bootstrap.Modal(document.getElementById('editPlayerModal'));
-    const form = document.getElementById('editPlayerForm');
-    form.player_id.value = playerId;
-    modal.show();
+document.getElementById('pointTableSearch').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#pointTable tbody tr');
+    rows.forEach(row => {
+        const team = row.cells[0].innerText.toLowerCase();
+        row.style.display = team.includes(filter) ? '' : 'none';
+    });
+});
+document.getElementById('scheduleTableSearch').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#scheduleTable tbody tr');
+    rows.forEach(row => {
+        const team1 = row.cells[0].innerText.toLowerCase();
+        const team2 = row.cells[1].innerText.toLowerCase();
+        row.style.display = (team1.includes(filter) || team2.includes(filter)) ? '' : 'none';
+    });
+});
+
+function recalculateScores() {
+    fetch('/admin/recalculate_scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Scores recalculated and point table updated!');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    });
 }
 
-function removeAssignment(playerId) {
-    if (confirm('Are you sure you want to remove this assignment?')) {
-        fetch(`/admin/player/${playerId}/remove`, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                location.reload();
-            } else {
-                alert('Error removing assignment: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error removing assignment');
-        });
-    }
-}
-
-document.getElementById('editPlayerForm').addEventListener('submit', function(e) {
+document.getElementById('uploadPlayersForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
-    
-    fetch(`/admin/player/${formData.get('player_id')}/update`, {
+    fetch('/admin/upload_players', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
+        const resultDiv = document.getElementById('uploadResult');
+        const tableContainer = document.getElementById('playerTableContainer');
         if (data.status === 'success') {
-            location.reload();
+            resultDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+            if (data.players && data.players.length > 0) {
+                // Group players by division and group
+                const grouped = {};
+                data.players.forEach(player => {
+                    const division = player['division'] || 'Unknown';
+                    const group = player['group'] || 'Unknown';
+                    if (!grouped[division]) grouped[division] = {};
+                    if (!grouped[division][group]) grouped[division][group] = [];
+                    grouped[division][group].push(player);
+                });
+                // Build division tabs
+                let html = '<h5>Review/Edit Player List</h5>';
+                html += '<ul class="nav nav-pills mb-2" id="divTabs" role="tablist">';
+                const divisions = Object.keys(grouped);
+                divisions.forEach((div, i) => {
+                    html += `<li class="nav-item" role="presentation"><button class="nav-link${i===0?' active':''}" id="div-tab-${div}" data-bs-toggle="pill" data-bs-target="#div-${div}" type="button" role="tab">Division ${div}</button></li>`;
+                });
+                html += '</ul>';
+                html += '<div class="tab-content" id="divTabContent">';
+                divisions.forEach((div, i) => {
+                    html += `<div class="tab-pane fade${i===0?' show active':''}" id="div-${div}" role="tabpanel">`;
+                    // Group pills
+                    const groups = Object.keys(grouped[div]);
+                    html += '<ul class="nav nav-pills mb-2" id="groupTabs-' + div + '" role="tablist">';
+                    groups.forEach((grp, j) => {
+                        html += `<li class="nav-item" role="presentation"><button class="nav-link${j===0?' active':''}" id="group-tab-${div}-${grp}" data-bs-toggle="pill" data-bs-target="#group-${div}-${grp}" type="button" role="tab">Group ${grp}</button></li>`;
+                    });
+                    html += '</ul>';
+                    html += '<div class="tab-content" id="groupTabContent-' + div + '">';
+                    groups.forEach((grp, j) => {
+                        html += `<div class="tab-pane fade${j===0?' show active':''}" id="group-${div}-${grp}" role="tabpanel">`;
+                        // Editable table for this group
+                        const players = grouped[div][grp];
+                        if (players.length > 0) {
+                            const columns = Object.keys(players[0]);
+                            html += '<div class="table-responsive"><table class="table table-bordered playerEditTable"><thead><tr>';
+                            columns.forEach(col => {
+                                html += `<th>${col.charAt(0).toUpperCase() + col.slice(1)}</th>`;
+                            });
+                            html += '</tr></thead><tbody>';
+                            players.forEach((row, idx) => {
+                                html += '<tr>';
+                                columns.forEach(col => {
+                                    html += `<td contenteditable="true">${row[col] ?? ''}</td>`;
+                                });
+                                html += '</tr>';
+                            });
+                            html += '</tbody></table></div>';
+                        }
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+                html += '<button class="btn btn-success mt-2" id="publishPlayersBtn">Publish Player List</button>';
+                tableContainer.innerHTML = html;
+                tableContainer.style.display = '';
+                // Add event listener for publish
+                document.getElementById('publishPlayersBtn').onclick = function() {
+                    // Gather all players from all tables
+                    const allTables = tableContainer.querySelectorAll('.playerEditTable');
+                    let players = [];
+                    allTables.forEach(table => {
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        const cols = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.toLowerCase());
+                        rows.forEach(row => {
+                            const cells = Array.from(row.querySelectorAll('td'));
+                            const obj = {};
+                            cells.forEach((cell, idx) => {
+                                obj[cols[idx]] = cell.innerText.trim();
+                            });
+                            players.push(obj);
+                        });
+                    });
+                    fetch('/admin/publish_players', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ players })
+                    })
+                    .then(r => r.json())
+                    .then(resp => {
+                        if (resp.status === 'success') {
+                            tableContainer.innerHTML = '<div class="alert alert-success">' + resp.message + '</div>';
+                        } else if (resp.duplicates && Array.isArray(resp.duplicates) && resp.duplicates.length > 0) {
+                            // Show user-friendly error and duplicate rows in a table
+                            let errHtml = '<div class="alert alert-danger">' + (resp.message || 'Duplicate player names found.') + '</div>';
+                            errHtml += '<div class="mb-2"><b>Duplicate Rows:</b></div>';
+                            errHtml += '<div class="table-responsive"><table class="table table-bordered"><thead><tr>';
+                            const columns = Object.keys(resp.duplicates[0]);
+                            columns.forEach(col => {
+                                errHtml += `<th>${col.charAt(0).toUpperCase() + col.slice(1)}</th>`;
+                            });
+                            errHtml += '</tr></thead><tbody>';
+                            resp.duplicates.forEach(row => {
+                                errHtml += '<tr>';
+                                columns.forEach(col => {
+                                    errHtml += `<td>${row[col] ?? ''}</td>`;
+                                });
+                                errHtml += '</tr>';
+                            });
+                            errHtml += '</tbody></table></div>';
+                            tableContainer.innerHTML += errHtml;
+                        } else {
+                            tableContainer.innerHTML += '<div class="alert alert-danger">' + (resp.message || 'Publish failed') + '</div>';
+                        }
+                    })
+                    .catch(() => {
+                        tableContainer.innerHTML += '<div class="alert alert-danger">Publish failed</div>';
+                    });
+                };
+            } else {
+                tableContainer.innerHTML = '';
+                tableContainer.style.display = 'none';
+            }
         } else {
-            alert('Error updating player: ' + (data.message || 'Unknown error'));
+            resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Upload failed') + '</div>';
+            tableContainer.innerHTML = '';
+            tableContainer.style.display = 'none';
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating player');
+    .catch(() => {
+        document.getElementById('uploadResult').innerHTML = '<div class="alert alert-danger">Upload failed</div>';
+        document.getElementById('playerTableContainer').innerHTML = '';
+        document.getElementById('playerTableContainer').style.display = 'none';
     });
 });
 
-// Set minimum date for date inputs to today
-document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    document.querySelectorAll('input[type="date"]').forEach(input => {
-        input.min = today;
+document.getElementById('createSeasonBtn').addEventListener('click', function() {
+    const name = document.getElementById('seasonName').value;
+    const start = document.getElementById('startDate').value;
+    const end = document.getElementById('endDate').value;
+    fetch('/admin/create_season', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, start_date: start, end_date: end })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const resultDiv = document.getElementById('createSeasonResult');
+        if (data.status === 'success') {
+            resultDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+        } else {
+            resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Season creation failed') + '</div>';
+        }
+    })
+    .catch(() => {
+        document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">Season creation failed</div>';
     });
 });
 </script>
-{% endblock %} 
+{% endblock %}
