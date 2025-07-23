@@ -84,8 +84,10 @@ def upload_players():
         player_data = df.to_dict(orient='records')
         return jsonify({'status': 'success', 'players': player_data, 'message': f'Loaded {len(player_data)} players. Please review and publish.'})
     except Exception as e:
+        import traceback
         db.session.rollback()
-        return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}'}), 400
+        tb = traceback.format_exc()
+        return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}', 'traceback': tb}), 400
 @admin_bp.route('/publish_players', methods=['POST'])
 def publish_players():
     try:
