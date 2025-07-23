@@ -3,17 +3,17 @@ from . import db
 
 class Appointable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team = db.Column(db.String(100), nullable=False)  # Changed from name to team
-    matches = db.Column(db.Integer, default=0)
-    won = db.Column(db.Integer, default=0)
-    loss = db.Column(db.Integer, default=0)
-    bonus = db.Column(db.Integer, default=0)
-    points = db.Column(db.Integer, default=0)
-    group = db.Column(db.String(1), nullable=False)  # 'A' or 'B'
-    games_total = db.Column(db.Integer, default=0)
-    games_won = db.Column(db.Integer, default=0)
-    games_percentage = db.Column(db.Float, default=0.0)  # For %games
-    division = db.Column(db.Float, nullable=False)  # For storing division like 4.0, 4.5, 5.0
+    team = db.Column(db.String(100), nullable=False)  # Team name (unique per group/division/type)
+    matches = db.Column(db.Integer, default=0)  # Matches played
+    won = db.Column(db.Integer, default=0)      # Matches won
+    loss = db.Column(db.Integer, default=0)     # Matches lost
+    bonus = db.Column(db.Integer, default=0)    # Bonus points
+    points = db.Column(db.Integer, default=0)   # Total points
+    group = db.Column(db.String(2), nullable=False)  # Group, e.g. 'A', 'B', or 'AA'
+    games_total = db.Column(db.Integer, default=0)   # Total games played
+    games_won = db.Column(db.Integer, default=0)     # Games won
+    games_percentage = db.Column(db.Float, default=0.0)  # Games win %
+    division = db.Column(db.String(10), nullable=False)   # Division as string, e.g. '4.0', '4.5', '5.0'
     game_type = db.Column(db.String(20), nullable=False)  # 'singles', 'doubles', 'mixed_doubles'
     season_id = db.Column(db.Integer, db.ForeignKey('season.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -74,4 +74,4 @@ class Season(db.Model):
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
-        } 
+        }

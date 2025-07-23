@@ -3,11 +3,11 @@ from datetime import datetime
 
 class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team1 = db.Column(db.String(100), nullable=False)
-    team2 = db.Column(db.String(100), nullable=False)
-    score = db.Column(db.String(50))  # Nullable since score won't be set initially
+    team1 = db.Column(db.String(100), nullable=False)  # Team 1 name
+    team2 = db.Column(db.String(100), nullable=False)  # Team 2 name
+    score = db.Column(db.String(50))  # Match score
     deadline = db.Column(db.DateTime, nullable=False)
-    division = db.Column(db.Float, nullable=False)  # 4.0, 4.5, 5.0
+    division = db.Column(db.String(10), nullable=False)  # Division as string
     game_type = db.Column(db.String(20), nullable=False)  # 'singles', 'doubles', 'mixed_doubles'
     season_id = db.Column(db.Integer, db.ForeignKey('season.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -28,4 +28,4 @@ class Schedule(db.Model):
             'season_id': self.season_id,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
-        } 
+        }
