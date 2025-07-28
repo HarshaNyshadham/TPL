@@ -30,6 +30,9 @@
             <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">Schedule</button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players" type="button" role="tab">Players</button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="createseason-tab" data-bs-toggle="tab" data-bs-target="#createseason" type="button" role="tab">Create Season</button>
         </li>
     </ul>
@@ -64,10 +67,46 @@
                             <td contenteditable="true" class="editable-cell">{{ team.points }}</td>
                             <td>{{ '%.2f'|format(team.games_percentage) }}</td>
                             <td>{{ team.group }}</td>
-                            <td><button class="btn btn-sm btn-success" onclick="savePointTable(this, {{ team.id }})">Save</button></td>
+                            <td><button class="btn btn-sm btn-success" onclick="savePointTable(this, '{{ team.id }}')">Save</button></td>
                         </tr>
                         {% endfor %}
                         {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="players" role="tabpanel">
+            <h3>Players</h3>
+            <div class="mb-2">
+                <input type="text" id="playersTableSearch" class="form-control" placeholder="Search player...">
+            </div>
+            <div class="mb-3">
+                <form id="uploadPlayersForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="playerFile" class="form-label">Upload Player List (Excel)</label>
+                        <input class="form-control" type="file" id="playerFile" name="playerFile" accept=".xlsx,.xls" required>
+                        <div class="form-text">Required columns: <b>Name, Game Type, Division, Group</b></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+                <div id="uploadResult" class="mt-3"></div>
+                <div id="playerTableContainer" class="mt-3" style="display:none;"></div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="playersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Game Type</th>
+                            <th>Division</th>
+                            <th>Group</th>
+                            <th>Active</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playersTableBody">
+                        <!-- Will be filled by JS -->
                     </tbody>
                 </table>
             </div>
@@ -101,7 +140,7 @@
                             <td>{{ sched.deadline.strftime('%Y-%m-%d') }}</td>
                             <td>{{ sched.division }}</td>
                             <td>{{ sched.game_type }}</td>
-                            <td><button class="btn btn-sm btn-success" onclick="saveSchedule(this, {{ sched.id }})">Save</button></td>
+                            <td><button class="btn btn-sm btn-success" onclick="saveSchedule(this, '{{ sched.id }}')">Save</button></td>
                         </tr>
                         {% endfor %}
                         {% endfor %}
@@ -111,17 +150,6 @@
         </div>
         <div class="tab-pane fade" id="createseason" role="tabpanel">
             <h3>Create New Season</h3>
-            <form id="uploadPlayersForm" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="playerFile" class="form-label">Upload Player List (Excel)</label>
-                    <input class="form-control" type="file" id="playerFile" name="playerFile" accept=".xlsx,.xls" required>
-                    <div class="form-text">Required columns: <b>Name, Game Type, Division, Group</b></div>
-                </div>
-                <button type="submit" class="btn btn-primary">Upload</button>
-            </form>
-            <div id="uploadResult" class="mt-3"></div>
-            <div id="playerTableContainer" class="mt-3" style="display:none;"></div>
-            <hr>
             <form id="createSeasonForm">
                 <div class="row mb-3">
                     <div class="col-md-4">
@@ -147,6 +175,43 @@
 
 {% block extra_js %}
 <script>
+// Players tab: fetch and render all players
+function renderPlayersTable(players) {
+    const tbody = document.getElementById('playersTableBody');
+    tbody.innerHTML = '';
+    players.forEach(player => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${player.name}</td>
+            <td>${player.game_type}</td>
+            <td>${player.division}</td>
+            <td>${player.group}</td>
+            <td>${player.is_active ? 'Yes' : 'No'}</td>
+            <td>${player.created_at ? player.created_at.split('T')[0] : ''}</td>
+            <td>${player.updated_at ? player.updated_at.split('T')[0] : ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function fetchAndShowPlayers() {
+    fetch('/admin/players')
+        .then(r => r.json())
+        .then(players => {
+            renderPlayersTable(players);
+        });
+}
+
+document.getElementById('players-tab').addEventListener('click', fetchAndShowPlayers);
+document.getElementById('playersTableSearch').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#playersTable tbody tr');
+    rows.forEach(row => {
+        const name = row.cells[0].innerText.toLowerCase();
+        const gameType = row.cells[1].innerText.toLowerCase();
+        row.style.display = (name.includes(filter) || gameType.includes(filter)) ? '' : 'none';
+    });
+});
 function savePointTable(btn, id) {
     const row = btn.closest('tr');
     const data = {
@@ -241,14 +306,16 @@ document.getElementById('uploadPlayersForm').addEventListener('submit', function
         if (ok && data.status === 'success') {
             resultDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
             if (data.players && data.players.length > 0) {
-                // Group players by division and group
+                // Group players by division, then by game_type, then by group
                 const grouped = {};
                 data.players.forEach(player => {
                     const division = player['division'] || 'Unknown';
+                    const gameType = player['game type'] || 'Unknown';
                     const group = player['group'] || 'Unknown';
                     if (!grouped[division]) grouped[division] = {};
-                    if (!grouped[division][group]) grouped[division][group] = [];
-                    grouped[division][group].push(player);
+                    if (!grouped[division][gameType]) grouped[division][gameType] = {};
+                    if (!grouped[division][gameType][group]) grouped[division][gameType][group] = [];
+                    grouped[division][gameType][group].push(player);
                 });
                 // Build division tabs
                 let html = '<h5>Review/Edit Player List</h5>';
@@ -261,34 +328,38 @@ document.getElementById('uploadPlayersForm').addEventListener('submit', function
                 html += '<div class="tab-content" id="divTabContent">';
                 divisions.forEach((div, i) => {
                     html += `<div class="tab-pane fade${i===0?' show active':''}" id="div-${div}" role="tabpanel">`;
-                    // Group pills
-                    const groups = Object.keys(grouped[div]);
-                    html += '<ul class="nav nav-pills mb-2" id="groupTabs-' + div + '" role="tablist">';
-                    groups.forEach((grp, j) => {
-                        html += `<li class="nav-item" role="presentation"><button class="nav-link${j===0?' active':''}" id="group-tab-${div}-${grp}" data-bs-toggle="pill" data-bs-target="#group-${div}-${grp}" type="button" role="tab">Group ${grp}</button></li>`;
+                    // Game type pills
+                    const gameTypes = Object.keys(grouped[div]);
+                    html += '<ul class="nav nav-pills mb-2" id="gameTypeTabs-' + div + '" role="tablist">';
+                    gameTypes.forEach((gt, j) => {
+                        html += `<li class="nav-item" role="presentation"><button class="nav-link${j===0?' active':''}" id="game-type-tab-${div}-${gt}" data-bs-toggle="pill" data-bs-target="#game-type-${div}-${gt}" type="button" role="tab">${gt.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</button></li>`;
                     });
                     html += '</ul>';
-                    html += '<div class="tab-content" id="groupTabContent-' + div + '">';
-                    groups.forEach((grp, j) => {
-                        html += `<div class="tab-pane fade${j===0?' show active':''}" id="group-${div}-${grp}" role="tabpanel">`;
-                        // Editable table for this group
-                        const players = grouped[div][grp];
-                        if (players.length > 0) {
-                            const columns = Object.keys(players[0]);
-                            html += '<div class="table-responsive"><table class="table table-bordered playerEditTable"><thead><tr>';
-                            columns.forEach(col => {
-                                html += `<th>${col.charAt(0).toUpperCase() + col.slice(1)}</th>`;
-                            });
-                            html += '</tr></thead><tbody>';
-                            players.forEach((row, idx) => {
-                                html += '<tr>';
+                    html += '<div class="tab-content" id="gameTypeTabContent-' + div + '">';
+                    gameTypes.forEach((gt, j) => {
+                        html += `<div class="tab-pane fade${j===0?' show active':''}" id="game-type-${div}-${gt}" role="tabpanel">`;
+                        // For each group in this game type
+                        const groups = Object.keys(grouped[div][gt]);
+                        groups.forEach((grp) => {
+                            const players = grouped[div][gt][grp];
+                            if (players.length > 0) {
+                                html += `<h6>Group ${grp}</h6>`;
+                                const columns = Object.keys(players[0]);
+                                html += '<div class="table-responsive"><table class="table table-bordered playerEditTable"><thead><tr>';
                                 columns.forEach(col => {
-                                    html += `<td contenteditable="true">${row[col] ?? ''}</td>`;
+                                    html += `<th>${col.charAt(0).toUpperCase() + col.slice(1)}</th>`;
                                 });
-                                html += '</tr>';
-                            });
-                            html += '</tbody></table></div>';
-                        }
+                                html += '</tr></thead><tbody>';
+                                players.forEach((row, idx) => {
+                                    html += '<tr>';
+                                    columns.forEach(col => {
+                                        html += `<td contenteditable="true">${row[col] ?? ''}</td>`;
+                                    });
+                                    html += '</tr>';
+                                });
+                                html += '</tbody></table></div>';
+                            }
+                        });
                         html += '</div>';
                     });
                     html += '</div>';
