@@ -9,22 +9,89 @@ import io
 import itertools
 import pandas as pd
 
-admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
-
-
-
-
-
 def admin_required(f):
-    """Decorator to check if user is an admin"""
+    """Decorator to check if user is an admin, returns JSON for AJAX/JS requests"""
     @login_required
     def decorated_function(*args, **kwargs):
         if not current_user.is_admin:
+            if request.accept_mimetypes['application/json'] or request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'status': 'error', 'message': 'You do not have permission to access this page.'}), 403
             flash('You do not have permission to access this page.', 'danger')
             return redirect(url_for('main.newindex'))
         return f(*args, **kwargs)
     decorated_function.__name__ = f.__name__
     return decorated_function
+
+admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+# --- PLAYER CRUD API ---
+@admin_bp.route('/players', methods=['GET'])
+@admin_required
+def get_players():
+    players = Player.query.all()
+    return jsonify([p.to_dict() for p in players])
+
+# Add new player
+@admin_bp.route('/players', methods=['POST'])
+@admin_required
+def add_player():
+    data = request.get_json()
+    name = data.get('name', '').strip()
+    if not name:
+        return jsonify({'status': 'error', 'message': 'Name is required'}), 400
+    player = Player(
+        name=name,
+        game_type=data.get('game_type', '').strip(),
+        division=data.get('division', '').strip(),
+        group=data.get('group', '').strip(),
+        is_active=bool(data.get('is_active', True))
+    )
+    db.session.add(player)
+    db.session.commit()
+    return jsonify({'status': 'success', 'player': player.to_dict()})
+
+# Update player by id
+@admin_bp.route('/players/<int:player_id>', methods=['PUT'])
+@admin_required
+def update_player(player_id):
+    player = Player.query.get_or_404(player_id)
+    data = request.get_json()
+    player.name = data.get('name', player.name)
+    player.game_type = data.get('game_type', player.game_type)
+    player.division = data.get('division', player.division)
+    player.group = data.get('group', player.group)
+    player.is_active = bool(data.get('is_active', player.is_active))
+    db.session.commit()
+    return jsonify({'status': 'success', 'player': player.to_dict()})
+
+# Delete player by id
+@admin_bp.route('/players/<int:player_id>', methods=['DELETE'])
+@admin_required
+def delete_player(player_id):
+    player = Player.query.get_or_404(player_id)
+    db.session.delete(player)
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+# Global error handlers for AJAX/JS requests
+from flask import current_app
+@admin_bp.app_errorhandler(401)
+def handle_401(e):
+    if request.accept_mimetypes['application/json'] or request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'status': 'error', 'message': 'Unauthorized'}), 401
+    return e
+
+@admin_bp.app_errorhandler(403)
+def handle_403(e):
+    if request.accept_mimetypes['application/json'] or request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'status': 'error', 'message': 'Forbidden'}), 403
+    return e
+
+@admin_bp.app_errorhandler(500)
+def handle_500(e):
+    if request.accept_mimetypes['application/json'] or request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'status': 'error', 'message': 'Internal server error'}), 500
+    return e
 
 
 
@@ -38,14 +105,6 @@ def admin():
         season.players = Player.query.all()
     return render_template('admin.html', seasons=seasons)
 
-#get all players
-@admin_bp.route('/players')
-@admin_required
-def players():
-    players = Player.query.all()
-    #plaers list to json
-    players_list = [player.to_dict() for player in players]
-    return jsonify(players_list)
 
 #delete all players clear database
 @admin_bp.route('/delete_players')
@@ -66,27 +125,39 @@ def upload_players():
         return jsonify({'status': 'error', 'message': 'Invalid file format. Please upload an Excel file (.xlsx, .xls).'}), 400
     try:
         df = pd.read_excel(file, engine="openpyxl")
-        # Validate required columns (case-insensitive)
         required_columns = ['name', 'division', 'game type', 'group']
-        # Create a mapping from lower-case column names to actual column names
         col_map = {c.lower(): c for c in df.columns}
         missing_columns = [col for col in required_columns if col not in col_map]
         if missing_columns:
-            # Return the required columns in original case for clarity
             return jsonify({'status': 'error', 'message': f"Missing required columns: {', '.join([col.title() for col in missing_columns])}"}), 400
-
-        # Rename columns to standard names for internal use
         df = df.rename(columns={col_map['name']: 'name',
                                 col_map['division']: 'division',
                                 col_map['game type']: 'game type',
                                 col_map['group']: 'group'})
-        # Only keep required columns in the returned player data
-        filtered_columns = ['name', 'division', 'game type', 'group']
-        player_data = [
-            {col: row.get(col, None) for col in filtered_columns}
-            for row in df.to_dict(orient='records')
-        ]
-        return jsonify({'status': 'success', 'players': player_data, 'message': f'Loaded {len(player_data)} players. Please review and publish.'})
+        # Insert players into the Player table
+        count = 0
+        for row in df.to_dict(orient='records'):
+            try:
+                player = Player(
+                    name=str(row['name']),
+                    game_type=str(row['game type']),
+                    division=str(row['division']),
+                    group=str(row['group'])
+                )
+                db.session.add(player)
+                count += 1
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'status': 'error', 'message': f'Row error: {str(e)}'}), 400
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}'}), 400
+        # Return all players after upload
+        all_players = Player.query.all()
+        players_list = [p.to_dict() for p in all_players]
+        return jsonify({'status': 'success', 'players': players_list, 'message': f'Uploaded and added {count} players.'})
     except Exception as e:
         import traceback
         db.session.rollback()
@@ -246,7 +317,6 @@ def create_season():
                     division=division,
                     group=group,
                     game_type=game_type,
-                    season_id=season.id,
                     matches=0,
                     won=0,
                     loss=0,
@@ -258,7 +328,6 @@ def create_season():
                 )
                 teams.append(team)
                 db.session.add(team)
-            
             # Create schedules for this group
             if len(teams) >= 2:
                 n = len(teams)
@@ -270,7 +339,6 @@ def create_season():
                             division=division,
                             group=group,
                             game_type=game_type,
-                            season_id=season.id,
                             deadline=start_date + timedelta(days=7 * (i + j))
                         )
                         db.session.add(schedule)
@@ -303,9 +371,8 @@ def publish_season(season_id):
         season.is_active = True
         
         # Generate schedules for each division and group
-        teams = Appointable.query.filter_by(season_id=season.id).all()
+        teams = Appointable.query.filter_by(game_type=season.game_type).all()
         divisions = {team.division for team in teams}
-        
         for division in divisions:
             groups = {team.group for team in teams if team.division == division}
             for group in groups:
@@ -344,7 +411,6 @@ def create_schedule(teams, season):
                     division=team1.division,
                     group=team1.group,
                     game_type=season.game_type,
-                    season_id=season.id,
                     deadline=season.start_date + timedelta(days=7 * i)
                 )
                 db.session.add(schedule)
@@ -524,7 +590,6 @@ def create_schedule():
                 division=float(division),
                 group=group,
                 game_type=game_type,
-                season_id=active_season.id,
                 matches=0,
                 won=0,
                 loss=0,
@@ -536,14 +601,11 @@ def create_schedule():
             )
             teams.append(team)
             db.session.add(team)
-        
         db.session.commit()
-        
         # Create schedule for each pair of teams
         total_teams = len(teams)
         matches_per_team = total_teams - 1
         days_between_matches = (active_season.end_date - active_season.start_date).days // matches_per_team
-        
         for i, j in itertools.combinations(range(total_teams), 2):
             match_date = active_season.start_date + timedelta(days=days_between_matches * min(i, j))
             schedule = Schedule(
@@ -552,7 +614,6 @@ def create_schedule():
                 division=float(division),
                 group=group,
                 game_type=game_type,
-                season_id=active_season.id,
                 deadline=match_date
             )
             db.session.add(schedule)
@@ -635,13 +696,14 @@ def update_score():
     
     return redirect(url_for('admin.admin'))
 
+
+# Renamed to avoid endpoint conflict with RESTful /players/<int:player_id> PUT
 @admin_bp.route('/player/<int:player_id>/update', methods=['POST'])
 @admin_required
-def update_player(player_id):
+def update_player_assignment(player_id):
     player = Player.query.get_or_404(player_id)
     player.division = float(request.form.get('division'))
     player.group = request.form.get('group')
-    
     try:
         db.session.commit()
         return jsonify({'status': 'success'})
@@ -665,7 +727,7 @@ def remove_player(player_id):
 def create_schedules(season_id):
     """Create schedules for all divisions and groups in a season"""
     season = Season.query.get(season_id)
-    teams = Appointable.query.filter_by(season_id=season_id).all()
+    teams = Appointable.query.all()
     
     # Group teams by division and group
     team_groups = {}
@@ -699,7 +761,6 @@ def create_schedules(season_id):
                         division=division,
                         group=group,
                         game_type=season.game_type,
-                        season_id=season_id,
                         deadline=season.start_date + timedelta(days=7 * i)
                     )
                     db.session.add(schedule)
@@ -748,7 +809,7 @@ def recalculate_scores():
         if not active_season:
             return jsonify({'status': 'error', 'message': 'No active season'}), 400
         # Reset all appointables
-        appoints = Appointable.query.filter_by(season_id=active_season.id).all()
+        appoints = Appointable.query.all()
         for appoint in appoints:
             appoint.matches = 0
             appoint.won = 0
@@ -759,7 +820,7 @@ def recalculate_scores():
             appoint.games_won = 0
             appoint.games_percentage = 0.0
         # Recalculate from all schedules
-        schedules = Schedule.query.filter_by(season_id=active_season.id).all()
+        schedules = Schedule.query.all()
         for sched in schedules:
             if not sched.score:
                 continue
@@ -784,7 +845,7 @@ def recalculate_scores():
                 (sched.team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, team1_sets),
                 (sched.team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, team2_sets)
             ]:
-                appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type, season_id=active_season.id).first()
+                appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type).first()
                 if appoint:
                     appoint.matches = (appoint.matches or 0) + 1
                     appoint.points = (appoint.points or 0) + points + bonus

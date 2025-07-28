@@ -134,56 +134,8 @@ def seed_database():
         }
     }
     
-    # Seed Appointable data
-    for game_type, divisions in division_teams.items():
-        for division, groups in divisions.items():
-            for group, teams in groups.items():
-                for team_name in teams:
-                    team = Appointable(
-                        team=team_name,
-                        division=division,
-                        matches=0,
-                        won=0,
-                        loss=0,
-                        bonus=0,
-                        points=0,
-                        group=group,
-                        games_total=0,
-                        games_won=0,
-                        games_percentage=0.0,
-                        game_type=game_type,
-                        season_id=current_season.id
-                    )
-                    db.session.add(team)
-    
-    db.session.commit()
-    
-    # Create schedule data
-    start_date = datetime.now()
-    for game_type, divisions in division_teams.items():
-        for division in divisions.keys():
-            teams = Appointable.query.filter_by(
-                division=division,
-                game_type=game_type,
-                season_id=current_season.id
-            ).all()
-            
-            for i in range(len(teams)):
-                for j in range(i + 1, len(teams)):
-                    # Only create matches between teams in the same group
-                    if teams[i].group == teams[j].group:
-                        deadline = start_date + timedelta(days=(7 * (i + j)))
-                        schedule = Schedule(
-                            team1=teams[i].team,
-                            team2=teams[j].team,
-                            deadline=deadline,
-                            division=division,
-                            game_type=game_type,
-                            season_id=current_season.id
-                        )
-                        db.session.add(schedule)
-    
-    db.session.commit()
+    # Seeding is disabled and all season_id usage removed as per user request.
+    pass
 
 if __name__ == '__main__':
     from flask import Flask

@@ -77,8 +77,26 @@
         </div>
         <div class="tab-pane fade" id="players" role="tabpanel">
             <h3>Players</h3>
-            <div class="mb-2">
-                <input type="text" id="playersTableSearch" class="form-control" placeholder="Search player...">
+            <div class="mb-2 d-flex flex-wrap align-items-center gap-2">
+                <input type="text" id="playersTableSearch" class="form-control w-auto flex-grow-1" placeholder="Search player...">
+                <label class="mb-0 ms-2">Game Type:</label>
+                <select id="filterGameType" class="form-select form-select-sm w-auto">
+                    <option value="">All</option>
+                </select>
+                <label class="mb-0 ms-2">Division:</label>
+                <select id="filterDivision" class="form-select form-select-sm w-auto">
+                    <option value="">All</option>
+                </select>
+                <label class="mb-0 ms-2">Group:</label>
+                <select id="filterGroup" class="form-select form-select-sm w-auto">
+                    <option value="">All</option>
+                </select>
+                <label class="mb-0 ms-2">Active:</label>
+                <select id="filterActive" class="form-select form-select-sm w-auto">
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
             </div>
             <div class="mb-3">
                 <form id="uploadPlayersForm" enctype="multipart/form-data">
@@ -103,6 +121,7 @@
                             <th>Active</th>
                             <th>Created</th>
                             <th>Updated</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="playersTableBody">
@@ -110,6 +129,8 @@
                     </tbody>
                 </table>
             </div>
+            <button class="btn btn-secondary mt-2" id="addPlayerRowBtn">Add Player</button>
+            <button class="btn btn-success mt-2 ms-2" id="updatePlayersBtn">Update Players</button>
         </div>
         <div class="tab-pane fade" id="schedule" role="tabpanel">
             <h3>Schedule</h3>
@@ -175,269 +196,153 @@
 
 {% block extra_js %}
 <script>
-// Players tab: fetch and render all players
+// Players tab: fetch and render all players, allow editing, adding, deleting, and updating
+let allPlayersData = [];
 function renderPlayersTable(players) {
+    allPlayersData = players;
     const tbody = document.getElementById('playersTableBody');
     tbody.innerHTML = '';
     players.forEach(player => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${player.name}</td>
-            <td>${player.game_type}</td>
-            <td>${player.division}</td>
-            <td>${player.group}</td>
-            <td>${player.is_active ? 'Yes' : 'No'}</td>
+            <td contenteditable="true" class="editable-cell" data-field="name">${player.name || ''}</td>
+            <td contenteditable="true" class="editable-cell" data-field="game_type">${player.game_type || ''}</td>
+            <td contenteditable="true" class="editable-cell" data-field="division">${player.division || ''}</td>
+            <td contenteditable="true" class="editable-cell" data-field="group">${player.group || ''}</td>
+            <td>
+                <select class="form-select form-select-sm is-active-select">
+                    <option value="true" ${player.is_active ? 'selected' : ''}>Yes</option>
+                    <option value="false" ${!player.is_active ? 'selected' : ''}>No</option>
+                </select>
+            </td>
             <td>${player.created_at ? player.created_at.split('T')[0] : ''}</td>
             <td>${player.updated_at ? player.updated_at.split('T')[0] : ''}</td>
+            <td>
+                <button class="btn btn-sm btn-success save-player-btn" data-id="${player.id}">Save</button>
+                <button class="btn btn-sm btn-danger delete-player-btn" data-id="${player.id}">Delete</button>
+            </td>
         `;
+        tr.dataset.id = player.id;
         tbody.appendChild(tr);
+    });
+    // Add row for new player
+    const addTr = document.createElement('tr');
+    addTr.innerHTML = `
+        <td contenteditable="true" class="editable-cell" data-field="name"></td>
+        <td contenteditable="true" class="editable-cell" data-field="game_type"></td>
+        <td contenteditable="true" class="editable-cell" data-field="division"></td>
+        <td contenteditable="true" class="editable-cell" data-field="group"></td>
+        <td>
+            <select class="form-select form-select-sm is-active-select">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </td>
+        <td></td>
+        <td></td>
+        <td><button class="btn btn-sm btn-primary add-player-btn">Add</button></td>
+    `;
+    tbody.appendChild(addTr);
+
+    // Attach event listeners for save, delete, add
+    tbody.querySelectorAll('.save-player-btn').forEach(btn => {
+        btn.onclick = function() {
+            const row = btn.closest('tr');
+            const id = btn.dataset.id;
+            const data = getPlayerRowData(row);
+            fetch(`/admin/players/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(resp => {
+                if (resp.status === 'success') fetchAndShowPlayers();
+                else alert(resp.message || 'Update failed');
+            });
+        };
+    });
+    tbody.querySelectorAll('.delete-player-btn').forEach(btn => {
+        btn.onclick = function() {
+            if (!confirm('Delete this player?')) return;
+            const id = btn.dataset.id;
+            fetch(`/admin/players/${id}`, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(resp => {
+                if (resp.status === 'success') fetchAndShowPlayers();
+                else alert(resp.message || 'Delete failed');
+            });
+        };
+    });
+    tbody.querySelectorAll('.add-player-btn').forEach(btn => {
+        btn.onclick = function() {
+            const row = btn.closest('tr');
+            const data = getPlayerRowData(row);
+            fetch('/admin/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(resp => {
+                if (resp.status === 'success') fetchAndShowPlayers();
+                else alert(resp.message || 'Add failed');
+            });
+        };
     });
 }
 
+// Helper to get player data from a row
+function getPlayerRowData(row) {
+    return {
+        name: row.querySelector('[data-field="name"]').innerText.trim(),
+        game_type: row.querySelector('[data-field="game_type"]').innerText.trim(),
+        division: row.querySelector('[data-field="division"]').innerText.trim(),
+        group: row.querySelector('[data-field="group"]').innerText.trim(),
+        is_active: row.querySelector('.is-active-select').value === 'true'
+    };
+}
+
+// Fetch and show players on page load and when switching to Players tab
 function fetchAndShowPlayers() {
     fetch('/admin/players')
         .then(r => r.json())
-        .then(players => {
-            renderPlayersTable(players);
-        });
+        .then(data => renderPlayersTable(data));
 }
 
-document.getElementById('players-tab').addEventListener('click', fetchAndShowPlayers);
-document.getElementById('playersTableSearch').addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#playersTable tbody tr');
-    rows.forEach(row => {
-        const name = row.cells[0].innerText.toLowerCase();
-        const gameType = row.cells[1].innerText.toLowerCase();
-        row.style.display = (name.includes(filter) || gameType.includes(filter)) ? '' : 'none';
-    });
-});
-function savePointTable(btn, id) {
-    const row = btn.closest('tr');
-    const data = {
-        matches: row.cells[1].innerText,
-        won: row.cells[2].innerText,
-        loss: row.cells[3].innerText,
-        points: row.cells[4].innerText
-    };
-    fetch(`/admin/pointtable/${id}/update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'success') {
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-secondary');
-            btn.innerText = 'Saved';
-        } else {
-            alert('Error: ' + (data.message || 'Unknown error'));
-        }
-    });
-}
-function saveSchedule(btn, id) {
-    const row = btn.closest('tr');
-    const data = {
-        score: row.cells[2].innerText
-    };
-    fetch(`/admin/schedule/${id}/update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'success') {
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-secondary');
-            btn.innerText = 'Saved';
-        } else {
-            alert('Error: ' + (data.message || 'Unknown error'));
-        }
-    });
-}
-
-document.getElementById('pointTableSearch').addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#pointTable tbody tr');
-    rows.forEach(row => {
-        const team = row.cells[0].innerText.toLowerCase();
-        row.style.display = team.includes(filter) ? '' : 'none';
-    });
-});
-document.getElementById('scheduleTableSearch').addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#scheduleTable tbody tr');
-    rows.forEach(row => {
-        const team1 = row.cells[0].innerText.toLowerCase();
-        const team2 = row.cells[1].innerText.toLowerCase();
-        row.style.display = (team1.includes(filter) || team2.includes(filter)) ? '' : 'none';
-    });
+// On page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetchAndShowPlayers();
+    // Show players when switching to tab
+    document.getElementById('players-tab').addEventListener('click', fetchAndShowPlayers);
 });
 
-function recalculateScores() {
-    fetch('/admin/recalculate_scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('Scores recalculated and point table updated!');
-            location.reload();
-        } else {
-            alert('Error: ' + (data.message || 'Unknown error'));
-        }
-    });
-}
-
+// --- Upload Players Excel ---
 document.getElementById('uploadPlayersForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    const formData = new FormData(this);
+    const form = e.target;
+    const fileInput = document.getElementById('playerFile');
+    if (!fileInput.files.length) {
+        document.getElementById('uploadResult').innerHTML = '<div class="alert alert-danger">Please select a file.</div>';
+        return;
+    }
+    const formData = new FormData(form);
+    document.getElementById('uploadResult').innerHTML = 'Uploading...';
     fetch('/admin/upload_players', {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json().then(data => ({ ok: r.ok, data })).catch(() => ({ ok: false, data: { status: 'error', message: 'Invalid JSON response' } })))
-    .then(({ ok, data }) => {
-        const resultDiv = document.getElementById('uploadResult');
-        const tableContainer = document.getElementById('playerTableContainer');
-        if (ok && data.status === 'success') {
-            resultDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
-            if (data.players && data.players.length > 0) {
-                // Group players by division, then by game_type, then by group
-                const grouped = {};
-                data.players.forEach(player => {
-                    const division = player['division'] || 'Unknown';
-                    const gameType = player['game type'] || 'Unknown';
-                    const group = player['group'] || 'Unknown';
-                    if (!grouped[division]) grouped[division] = {};
-                    if (!grouped[division][gameType]) grouped[division][gameType] = {};
-                    if (!grouped[division][gameType][group]) grouped[division][gameType][group] = [];
-                    grouped[division][gameType][group].push(player);
-                });
-                // Build division tabs
-                let html = '<h5>Review/Edit Player List</h5>';
-                html += '<ul class="nav nav-pills mb-2" id="divTabs" role="tablist">';
-                const divisions = Object.keys(grouped);
-                divisions.forEach((div, i) => {
-                    html += `<li class="nav-item" role="presentation"><button class="nav-link${i===0?' active':''}" id="div-tab-${div}" data-bs-toggle="pill" data-bs-target="#div-${div}" type="button" role="tab">Division ${div}</button></li>`;
-                });
-                html += '</ul>';
-                html += '<div class="tab-content" id="divTabContent">';
-                divisions.forEach((div, i) => {
-                    html += `<div class="tab-pane fade${i===0?' show active':''}" id="div-${div}" role="tabpanel">`;
-                    // Game type pills
-                    const gameTypes = Object.keys(grouped[div]);
-                    html += '<ul class="nav nav-pills mb-2" id="gameTypeTabs-' + div + '" role="tablist">';
-                    gameTypes.forEach((gt, j) => {
-                        html += `<li class="nav-item" role="presentation"><button class="nav-link${j===0?' active':''}" id="game-type-tab-${div}-${gt}" data-bs-toggle="pill" data-bs-target="#game-type-${div}-${gt}" type="button" role="tab">${gt.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</button></li>`;
-                    });
-                    html += '</ul>';
-                    html += '<div class="tab-content" id="gameTypeTabContent-' + div + '">';
-                    gameTypes.forEach((gt, j) => {
-                        html += `<div class="tab-pane fade${j===0?' show active':''}" id="game-type-${div}-${gt}" role="tabpanel">`;
-                        // For each group in this game type
-                        const groups = Object.keys(grouped[div][gt]);
-                        groups.forEach((grp) => {
-                            const players = grouped[div][gt][grp];
-                            if (players.length > 0) {
-                                html += `<h6>Group ${grp}</h6>`;
-                                const columns = Object.keys(players[0]);
-                                html += '<div class="table-responsive"><table class="table table-bordered playerEditTable"><thead><tr>';
-                                columns.forEach(col => {
-                                    html += `<th>${col.charAt(0).toUpperCase() + col.slice(1)}</th>`;
-                                });
-                                html += '</tr></thead><tbody>';
-                                players.forEach((row, idx) => {
-                                    html += '<tr>';
-                                    columns.forEach(col => {
-                                        html += `<td contenteditable="true">${row[col] ?? ''}</td>`;
-                                    });
-                                    html += '</tr>';
-                                });
-                                html += '</tbody></table></div>';
-                            }
-                        });
-                        html += '</div>';
-                    });
-                    html += '</div>';
-                    html += '</div>';
-                });
-                html += '</div>';
-                html += '<button class="btn btn-success mt-2" id="publishPlayersBtn">Publish Player List</button>';
-                tableContainer.innerHTML = html;
-                tableContainer.style.display = '';
-                // Add event listener for publish
-                document.getElementById('publishPlayersBtn').onclick = function() {
-                    // Gather all players from all tables
-                    const allTables = tableContainer.querySelectorAll('.playerEditTable');
-                    let players = [];
-                    allTables.forEach(table => {
-                        const rows = Array.from(table.querySelectorAll('tbody tr'));
-                        const cols = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.toLowerCase());
-                        rows.forEach(row => {
-                            const cells = Array.from(row.querySelectorAll('td'));
-                            const obj = {};
-                            cells.forEach((cell, idx) => {
-                                obj[cols[idx]] = cell.innerText.trim();
-                            });
-                            players.push(obj);
-                        });
-                    });
-                    fetch('/admin/publish_players', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ players })
-                    })
-                    .then(r => r.json())
-                    .then(resp => {
-                        if (resp.status === 'success') {
-                            tableContainer.innerHTML = '<div class="alert alert-success">' + resp.message + '</div>';
-                        } else if (resp.duplicates && Array.isArray(resp.duplicates) && resp.duplicates.length > 0) {
-                            // Show user-friendly error and duplicate rows in a table
-                            let errHtml = '<div class="alert alert-danger">' + (resp.message || 'Duplicate player names found.') + '</div>';
-                            errHtml += '<div class="mb-2"><b>Duplicate Rows:</b></div>';
-                            errHtml += '<div class="table-responsive"><table class="table table-bordered"><thead><tr>';
-                            const columns = Object.keys(resp.duplicates[0]);
-                            columns.forEach(col => {
-                                errHtml += `<th>${col.charAt(0).toUpperCase() + col.slice(1)}</th>`;
-                            });
-                            errHtml += '</tr></thead><tbody>';
-                            resp.duplicates.forEach(row => {
-                                errHtml += '<tr>';
-                                columns.forEach(col => {
-                                    errHtml += `<td>${row[col] ?? ''}</td>`;
-                                });
-                                errHtml += '</tr>';
-                            });
-                            errHtml += '</tbody></table></div>';
-                            tableContainer.innerHTML += errHtml;
-                        } else {
-                            tableContainer.innerHTML += '<div class="alert alert-danger">' + (resp.message || 'Publish failed') + '</div>';
-                        }
-                    })
-                    .catch((err) => {
-                        console.error('Publish error:', err);
-                        tableContainer.innerHTML += '<div class="alert alert-danger">Publish failed</div>';
-                    });
-                };
-            } else {
-                tableContainer.innerHTML = '';
-                tableContainer.style.display = 'none';
-            }
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('uploadResult').innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+            fetchAndShowPlayers();
         } else {
-            resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Upload failed') + '</div>';
-            tableContainer.innerHTML = '';
-            tableContainer.style.display = 'none';
+            document.getElementById('uploadResult').innerHTML = '<div class="alert alert-danger">' + (data.message || 'Upload failed') + '</div>';
         }
     })
-    .catch((err) => {
-        console.error('Upload error:', err);
+    .catch(() => {
         document.getElementById('uploadResult').innerHTML = '<div class="alert alert-danger">Upload failed</div>';
-        document.getElementById('playerTableContainer').innerHTML = '';
-        document.getElementById('playerTableContainer').style.display = 'none';
     });
 });
 
