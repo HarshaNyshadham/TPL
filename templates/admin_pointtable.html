@@ -1,0 +1,38 @@
+{% block admin_pointtable %}
+<h3>Point Table</h3>
+<div class="mb-2">
+    <input type="text" id="pointTableSearch" class="form-control" placeholder="Search team...">
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered" id="pointTable">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Matches</th>
+                <th>Won</th>
+                <th>Loss</th>
+                <th>Points</th>
+                <th>Games %</th>
+                <th>Group</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for season in seasons %}
+            {% for team in season.teams %}
+            <tr data-id="{{ team.id }}">
+                <td>{{ team.team }}</td>
+                <td contenteditable="true" class="editable-cell">{{ team.matches }}</td>
+                <td contenteditable="true" class="editable-cell">{{ team.won }}</td>
+                <td contenteditable="true" class="editable-cell">{{ team.loss }}</td>
+                <td contenteditable="true" class="editable-cell">{{ team.points }}</td>
+                <td>{{ '%.2f'|format(team.games_percentage) }}</td>
+                <td>{{ team.group }}</td>
+                <td><button class="btn btn-sm btn-success" onclick="savePointTable(this, '{{ team.id }}')">Save</button></td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

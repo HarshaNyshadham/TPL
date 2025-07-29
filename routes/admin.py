@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
@@ -23,6 +24,22 @@ def admin_required(f):
     return decorated_function
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+# --- PLAYER GROUPS VIEW FOR CREATE SEASON ---
+@admin_bp.route('/player_groups', methods=['GET'])
+@admin_required
+def get_player_groups():
+    # Query all players
+    players = Player.query.all()
+    # Group by game_type, division, group
+    from collections import defaultdict
+    groups = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    for p in players:
+        groups[p.game_type][p.division][p.group].append(p.to_dict())
+    # Convert to regular dict for JSON
+    result = {g: {d: dict(grps) for d, grps in divs.items()} for g, divs in groups.items()}
+    return jsonify(result)
+
 
 # --- PLAYER CRUD API ---
 @admin_bp.route('/players', methods=['GET'])

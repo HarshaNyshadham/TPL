@@ -38,157 +38,16 @@
     </ul>
     <div class="tab-content mt-3" id="adminTabContent">
         <div class="tab-pane fade show active" id="pointtable" role="tabpanel">
-            <h3>Point Table</h3>
-            <div class="mb-2">
-                <input type="text" id="pointTableSearch" class="form-control" placeholder="Search team...">
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered" id="pointTable">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th>Matches</th>
-                            <th>Won</th>
-                            <th>Loss</th>
-                            <th>Points</th>
-                            <th>Games %</th>
-                            <th>Group</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for season in seasons %}
-                        {% for team in season.teams %}
-                        <tr data-id="{{ team.id }}">
-                            <td>{{ team.team }}</td>
-                            <td contenteditable="true" class="editable-cell">{{ team.matches }}</td>
-                            <td contenteditable="true" class="editable-cell">{{ team.won }}</td>
-                            <td contenteditable="true" class="editable-cell">{{ team.loss }}</td>
-                            <td contenteditable="true" class="editable-cell">{{ team.points }}</td>
-                            <td>{{ '%.2f'|format(team.games_percentage) }}</td>
-                            <td>{{ team.group }}</td>
-                            <td><button class="btn btn-sm btn-success" onclick="savePointTable(this, '{{ team.id }}')">Save</button></td>
-                        </tr>
-                        {% endfor %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% include 'admin_pointtable.html' %}
         </div>
         <div class="tab-pane fade" id="players" role="tabpanel">
-            <h3>Players</h3>
-            <div class="mb-2 d-flex flex-wrap align-items-center gap-2">
-                <input type="text" id="playersTableSearch" class="form-control w-auto flex-grow-1" placeholder="Search player...">
-                <label class="mb-0 ms-2">Game Type:</label>
-                <select id="filterGameType" class="form-select form-select-sm w-auto">
-                    <option value="">All</option>
-                </select>
-                <label class="mb-0 ms-2">Division:</label>
-                <select id="filterDivision" class="form-select form-select-sm w-auto">
-                    <option value="">All</option>
-                </select>
-                <label class="mb-0 ms-2">Group:</label>
-                <select id="filterGroup" class="form-select form-select-sm w-auto">
-                    <option value="">All</option>
-                </select>
-                <label class="mb-0 ms-2">Active:</label>
-                <select id="filterActive" class="form-select form-select-sm w-auto">
-                    <option value="">All</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <form id="uploadPlayersForm" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="playerFile" class="form-label">Upload Player List (Excel)</label>
-                        <input class="form-control" type="file" id="playerFile" name="playerFile" accept=".xlsx,.xls" required>
-                        <div class="form-text">Required columns: <b>Name, Game Type, Division, Group</b></div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </form>
-                <div id="uploadResult" class="mt-3"></div>
-                <div id="playerTableContainer" class="mt-3" style="display:none;"></div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered" id="playersTable">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Game Type</th>
-                            <th>Division</th>
-                            <th>Group</th>
-                            <th>Active</th>
-                            <th>Created</th>
-                            <th>Updated</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="playersTableBody">
-                        <!-- Will be filled by JS -->
-                    </tbody>
-                </table>
-            </div>
-            <button class="btn btn-secondary mt-2" id="addPlayerRowBtn">Add Player</button>
-            <button class="btn btn-success mt-2 ms-2" id="updatePlayersBtn">Update Players</button>
+            {% include 'admin_players.html' %}
         </div>
         <div class="tab-pane fade" id="schedule" role="tabpanel">
-            <h3>Schedule</h3>
-            <div class="mb-2 d-flex justify-content-between align-items-center">
-                <input type="text" id="scheduleTableSearch" class="form-control w-50" placeholder="Search team...">
-                <button class="btn btn-warning ms-2" id="recalcScoresBtn" onclick="recalculateScores()">Recalculate Scores</button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered" id="scheduleTable">
-                    <thead>
-                        <tr>
-                            <th>Team 1</th>
-                            <th>Team 2</th>
-                            <th>Score</th>
-                            <th>Deadline</th>
-                            <th>Division</th>
-                            <th>Game Type</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for season in seasons %}
-                        {% for sched in season.schedules %}
-                        <tr data-id="{{ sched.id }}">
-                            <td>{{ sched.team1 }}</td>
-                            <td>{{ sched.team2 }}</td>
-                            <td contenteditable="true" class="editable-cell">{{ sched.score }}</td>
-                            <td>{{ sched.deadline.strftime('%Y-%m-%d') }}</td>
-                            <td>{{ sched.division }}</td>
-                            <td>{{ sched.game_type }}</td>
-                            <td><button class="btn btn-sm btn-success" onclick="saveSchedule(this, '{{ sched.id }}')">Save</button></td>
-                        </tr>
-                        {% endfor %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% include 'admin_schedule.html' %}
         </div>
         <div class="tab-pane fade" id="createseason" role="tabpanel">
-            <h3>Create New Season</h3>
-            <form id="createSeasonForm">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="seasonName" class="form-label">Season Name</label>
-                        <input class="form-control" type="text" id="seasonName" name="seasonName" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="startDate" class="form-label">Start Date</label>
-                        <input class="form-control" type="date" id="startDate" name="startDate" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="endDate" class="form-label">End Date</label>
-                        <input class="form-control" type="date" id="endDate" name="endDate" required>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-success" id="createSeasonBtn">Create Season & Schedule</button>
-            </form>
-            <div id="createSeasonResult" class="mt-3"></div>
+            {% include 'admin_createseason.html' %}
         </div>
     </div>
 </div>
@@ -307,7 +166,30 @@ function getPlayerRowData(row) {
 function fetchAndShowPlayers() {
     fetch('/admin/players')
         .then(r => r.json())
-        .then(data => renderPlayersTable(data));
+        .then(data => {
+            renderPlayersTable(data);
+            // Save all data for search
+            allPlayersData = data;
+        });
+}
+
+// Dynamic search for Players tab
+const playersTableSearch = document.getElementById('playersTableSearch');
+if (playersTableSearch) {
+    playersTableSearch.addEventListener('input', function() {
+        const q = playersTableSearch.value.trim().toLowerCase();
+        if (!q) {
+            renderPlayersTable(allPlayersData);
+            return;
+        }
+        const filtered = allPlayersData.filter(p =>
+            (p.name && p.name.toLowerCase().includes(q)) ||
+            (p.game_type && p.game_type.toLowerCase().includes(q)) ||
+            (p.division && p.division.toLowerCase().includes(q)) ||
+            (p.group && p.group.toLowerCase().includes(q))
+        );
+        renderPlayersTable(filtered);
+    });
 }
 
 // On page load
@@ -350,10 +232,15 @@ document.getElementById('createSeasonBtn').addEventListener('click', function() 
     const name = document.getElementById('seasonName').value;
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
+    const gameType = document.getElementById('gameTypeSelect').value;
+    if (!gameType) {
+        alert('Please select a game type.');
+        return;
+    }
     fetch('/admin/create_season', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name, start_date: start, end_date: end })
+        body: JSON.stringify({ name: name, start_date: start, end_date: end, game_type: gameType })
     })
     .then(r => r.json())
     .then(data => {
@@ -366,6 +253,149 @@ document.getElementById('createSeasonBtn').addEventListener('click', function() 
     })
     .catch(() => {
         document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">Season creation failed</div>';
+    });
+});
+
+// --- Create Season: Show Player Groups ---
+// Declare these only once at the top
+let lastPlayerGroupsData = {};
+let lastGameType = 'All';
+let gameTypeSelect = null;
+
+function renderGameTypePills(groups) {
+    const pillsDiv = document.getElementById('gameTypePills');
+    if (!pillsDiv) return;
+    const gameTypes = Object.keys(groups);
+    let html = `<span class="badge rounded-pill bg-secondary me-2 pill-game-type" data-gt="All">All</span>`;
+    for (const gt of gameTypes) {
+        html += `<span class="badge rounded-pill bg-primary me-2 pill-game-type" data-gt="${gt}">${gt}</span>`;
+    }
+    pillsDiv.innerHTML = html;
+    // Add click listeners
+    pillsDiv.querySelectorAll('.pill-game-type').forEach(pill => {
+        pill.addEventListener('click', function() {
+            lastGameType = pill.getAttribute('data-gt');
+            syncGameTypeDropdown(lastGameType);
+            renderPlayerGroupsView(lastPlayerGroupsData, lastGameType);
+            pillsDiv.querySelectorAll('.pill-game-type').forEach(p => p.classList.remove('bg-success'));
+            pill.classList.add('bg-success');
+        });
+    });
+    // Set initial active
+    pillsDiv.querySelectorAll('.pill-game-type').forEach(p => {
+        if (p.getAttribute('data-gt') === lastGameType) p.classList.add('bg-success');
+    });
+}
+
+function renderPlayerGroupsView(groups, filterGameType = 'All') {
+    lastPlayerGroupsData = groups;
+    const container = document.getElementById('playerGroupsView');
+    if (!groups || Object.keys(groups).length === 0) {
+        container.innerHTML = '<div class="alert alert-info">No players found.</div>';
+        return;
+    }
+    let html = '<div class="d-flex flex-wrap gap-3">';
+    for (const [gameType, divisions] of Object.entries(groups)) {
+        if (filterGameType !== 'All' && gameType !== filterGameType) continue;
+        for (const [division, groupMap] of Object.entries(divisions)) {
+            for (const [group, players] of Object.entries(groupMap)) {
+                html += `<div class="card shadow-sm mb-2" style="min-width:220px; max-width:260px; flex:1 1 220px;">
+                    <div class="card-body p-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-primary me-2">${gameType}</span>
+                            <span class="fw-bold small">Division ${division} - Group ${group}</span>
+                        </div>
+                        <table class="table table-bordered table-sm mb-0"><tbody>`;
+                for (const player of players) {
+                    html += `<tr><td class="py-1 px-2">${player.name}</td></tr>`;
+                }
+                html += '</tbody></table></div></div>';
+            }
+        }
+    }
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function fetchAndShowPlayerGroups() {
+    fetch('/admin/player_groups')
+        .then(r => r.json())
+        .then(data => {
+            lastPlayerGroupsData = data;
+            // Always show all data on initial load; only pills filter the view
+            lastGameType = 'All';
+            renderGameTypePills(data);
+            renderPlayerGroupsView(data, lastGameType);
+            // No need to sync dropdown
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    gameTypeSelect = document.getElementById('gameTypeSelect');
+    // Do NOT add any event handler for gameTypeSelect; dropdown is for form only, not for filtering view
+    fetchAndShowPlayerGroups();
+});
+
+function syncGameTypeDropdown(gt) {
+    // No-op: dropdown is not used for filtering the view
+}
+
+// --- Create Season: Preview and Confirm Season ---
+let previewedSeasonData = null;
+
+document.getElementById('previewSeasonBtn').addEventListener('click', function() {
+    const name = document.getElementById('seasonName').value;
+    const start = document.getElementById('startDate').value;
+    const gameType = document.getElementById('gameTypeSelect').value;
+    if (!name || !start || !gameType) {
+        alert('Please fill all fields.');
+        return;
+    }
+    // Call backend to get preview (schedule, point table, end date)
+    fetch('/admin/preview_season', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, start_date: start, game_type: gameType })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            previewedSeasonData = data;
+            document.getElementById('seasonEndDate').textContent = 'End Date: ' + data.end_date;
+            document.getElementById('confirmSeasonBtn').classList.remove('d-none');
+            document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-info">Preview ready. Review schedule and point table below, then confirm to publish.</div>';
+            // Optionally, render schedule/point table preview here
+        } else {
+            document.getElementById('seasonEndDate').textContent = '';
+            document.getElementById('confirmSeasonBtn').classList.add('d-none');
+            document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">' + (data.message || 'Preview failed') + '</div>';
+        }
+    })
+    .catch(() => {
+        document.getElementById('seasonEndDate').textContent = '';
+        document.getElementById('confirmSeasonBtn').classList.add('d-none');
+        document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">Preview failed</div>';
+    });
+});
+
+document.getElementById('confirmSeasonBtn').addEventListener('click', function() {
+    if (!previewedSeasonData) return;
+    fetch('/admin/confirm_season', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(previewedSeasonData)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+            document.getElementById('confirmSeasonBtn').classList.add('d-none');
+        } else {
+            document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">' + (data.message || 'Publish failed') + '</div>';
+        }
+    })
+    .catch(() => {
+        document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">Publish failed</div>';
     });
 });
 </script>

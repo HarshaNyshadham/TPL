@@ -1,0 +1,32 @@
+{% block admin_createseason %}
+<h3>Create New Season</h3>
+<form id="createSeasonForm">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="seasonName" class="form-label">Season Name</label>
+            <input class="form-control" type="text" id="seasonName" name="seasonName" required>
+        </div>
+        <div class="col-md-4">
+            <label for="startDate" class="form-label">Start Date</label>
+            <input class="form-control" type="date" id="startDate" name="startDate" required>
+        </div>
+        <div class="col-md-4">
+            <label for="gameTypeSelect" class="form-label">Game Type</label>
+            <select class="form-select" id="gameTypeSelect" name="gameTypeSelect" required>
+                <option value="">Select...</option>
+                <option value="singles">Singles</option>
+                <option value="doubles">Doubles</option>
+                <option value="mixed_doubles">Mixed Doubles</option>
+            </select>
+        </div>
+    </div>
+    <button type="button" class="btn btn-success" id="createSeasonBtn">Create Season & Schedule</button>
+</form>
+<div id="createSeasonResult" class="mt-3"></div>
+<div class="d-flex align-items-center mb-2">
+    <button class="btn btn-outline-secondary btn-sm me-2" id="refreshPlayerGroupsBtn">Refresh Player Groups</button>
+    <span class="text-muted">(Shows all players by game type, division, and group)</span>
+</div>
+<div id="gameTypePills" class="mb-2"></div>
+<div id="playerGroupsView" class="mt-2"></div>
+{% endblock %}

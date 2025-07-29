@@ -1,0 +1,57 @@
+{% block admin_players %}
+<h3>Players</h3>
+<div class="mb-2 d-flex flex-wrap align-items-center gap-2">
+    <input type="text" id="playersTableSearch" class="form-control w-auto flex-grow-1" placeholder="Search player...">
+    <label class="mb-0 ms-2">Game Type:</label>
+    <select id="filterGameType" class="form-select form-select-sm w-auto">
+        <option value="">All</option>
+    </select>
+    <label class="mb-0 ms-2">Division:</label>
+    <select id="filterDivision" class="form-select form-select-sm w-auto">
+        <option value="">All</option>
+    </select>
+    <label class="mb-0 ms-2">Group:</label>
+    <select id="filterGroup" class="form-select form-select-sm w-auto">
+        <option value="">All</option>
+    </select>
+    <label class="mb-0 ms-2">Active:</label>
+    <select id="filterActive" class="form-select form-select-sm w-auto">
+        <option value="">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+    </select>
+</div>
+<div class="mb-3">
+    <form id="uploadPlayersForm" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="playerFile" class="form-label">Upload Player List (Excel)</label>
+            <input class="form-control" type="file" id="playerFile" name="playerFile" accept=".xlsx,.xls" required>
+            <div class="form-text">Required columns: <b>Name, Game Type, Division, Group</b></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    <div id="uploadResult" class="mt-3"></div>
+    <div id="playerTableContainer" class="mt-3" style="display:none;"></div>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered" id="playersTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Game Type</th>
+                <th>Division</th>
+                <th>Group</th>
+                <th>Active</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="playersTableBody">
+            <!-- Will be filled by JS -->
+        </tbody>
+    </table>
+</div>
+<button class="btn btn-secondary mt-2" id="addPlayerRowBtn">Add Player</button>
+<button class="btn btn-success mt-2 ms-2" id="updatePlayersBtn">Update Players</button>
+{% endblock %}
