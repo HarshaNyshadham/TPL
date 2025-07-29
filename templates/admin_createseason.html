@@ -10,15 +10,7 @@
             <label for="startDate" class="form-label">Start Date</label>
             <input class="form-control" type="date" id="startDate" name="startDate" required>
         </div>
-        <div class="col-md-4">
-            <label for="gameTypeSelect" class="form-label">Game Type</label>
-            <select class="form-select" id="gameTypeSelect" name="gameTypeSelect" required>
-                <option value="">Select...</option>
-                <option value="singles">Singles</option>
-                <option value="doubles">Doubles</option>
-                <option value="mixed_doubles">Mixed Doubles</option>
-            </select>
-        </div>
+        <!-- Game Type selection removed as per user request -->
     </div>
     <button type="button" class="btn btn-success" id="createSeasonBtn">Create Season & Schedule</button>
 </form>
@@ -29,4 +21,83 @@
 </div>
 <div id="gameTypePills" class="mb-2"></div>
 <div id="playerGroupsView" class="mt-2"></div>
+{% include 'season_preview_modal.html' %}
 {% endblock %}
+<script>
+// --- Create Season Modal Workflow ---
+document.getElementById('createSeasonBtn').onclick = function() {
+    const name = document.getElementById('seasonName').value;
+    const start = document.getElementById('startDate').value;
+    if (!name || !start) {
+        alert('Please fill all fields.');
+        return;
+    }
+    fetch('/admin/season_preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, start_date: start })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            fillSeasonPreviewModal(data);
+            const modal = new bootstrap.Modal(document.getElementById('seasonPreviewModal'));
+            modal.show();
+        } else {
+            document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">' + (data.message || 'Error') + '</div>';
+        }
+    })
+    .catch(() => {
+        document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">Error generating preview</div>';
+    });
+};
+
+function fillSeasonPreviewModal(data) {
+    const s = data.season;
+    // Info header
+    let infoHtml = `<div class="mb-2">
+        <b>Season Name:</b> ${s.name} &nbsp; | &nbsp;
+        <b>Start Date:</b> ${s.start_date} &nbsp; | &nbsp;
+        <b>End Date:</b> <span id="previewEndDate">${s.end_date}</span>
+    </div>`;
+    document.getElementById('seasonPreviewInfo').innerHTML = infoHtml;
+    // Schedule preview with tabs/pills
+    renderSeasonPreviewModal(s, data.schedule);
+    // Point table preview below modal tabs
+    let ptHtml = '<h5 class="mt-4">Point Table Preview</h5>';
+    ptHtml += '<div class="table-responsive"><table class="table table-bordered table-sm"><thead><tr><th>Team</th><th>Division</th><th>Group</th><th>Matches</th><th>Won</th><th>Loss</th><th>Points</th></tr></thead><tbody>';
+    data.point_table.forEach(row => {
+        ptHtml += `<tr><td>${row.team}</td><td>${row.division}</td><td>${row.group}</td><td>${row.matches}</td><td>${row.won}</td><td>${row.loss}</td><td>${row.points}</td></tr>`;
+    });
+    ptHtml += '</tbody></table></div>';
+    // Insert after tab content
+    document.getElementById('previewScheduleTabContent').insertAdjacentHTML('afterend', ptHtml);
+    // Store preview data for confirm
+    window._seasonPreviewData = data;
+}
+
+document.getElementById('confirmSeasonBtn').onclick = function() {
+    const data = window._seasonPreviewData;
+    if (!data) return;
+    fetch('/admin/confirm_season', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(resp => {
+        if (resp.status === 'success') {
+            // Hide modal, show success, reload
+            const modal = bootstrap.Modal.getInstance(document.getElementById('seasonPreviewModal'));
+            if (modal) modal.hide();
+            document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-success">' + resp.message + '</div>';
+            setTimeout(() => window.location.reload(), 1200);
+        } else {
+            alert(resp.message || 'Error publishing season');
+        }
+    })
+    .catch(() => {
+        alert('Error publishing season');
+    });
+};
+</script>

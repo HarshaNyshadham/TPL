@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
@@ -151,12 +150,22 @@ def upload_players():
                                 col_map['division']: 'division',
                                 col_map['game type']: 'game type',
                                 col_map['group']: 'group'})
-        # Insert players into the Player table
+        # DELETE ALL EXISTING PLAYERS BEFORE ADDING NEW ONES
+        Player.query.delete()
+        db.session.commit()
+
+        # Insert players into the Player table, ensuring unique names (case-insensitive)
+        seen_names = set()
         count = 0
         for row in df.to_dict(orient='records'):
+            name = str(row['name']).strip()
+            name_lower = name.lower()
+            if name_lower in seen_names:
+                continue  # skip duplicate
+            seen_names.add(name_lower)
             try:
                 player = Player(
-                    name=str(row['name']),
+                    name=name,
                     game_type=str(row['game type']),
                     division=str(row['division']),
                     group=str(row['group'])
@@ -327,82 +336,12 @@ def create_season():
         # Create teams and schedules for each group
         for (division, group), group_players in player_groups.items():
             # Create teams
-            teams = []
-            for player in group_players:
-                team = Appointable(
-                    team=player.name,
-                    division=division,
-                    group=group,
-                    game_type=game_type,
-                    matches=0,
-                    won=0,
-                    loss=0,
-                    bonus=0,
-                    points=0,
-                    games_total=0,
-                    games_won=0,
-                    games_percentage=0
-                )
-                teams.append(team)
-                db.session.add(team)
-            # Create schedules for this group
-            if len(teams) >= 2:
-                n = len(teams)
-                for i in range(n):
-                    for j in range(i + 1, n):
-                        schedule = Schedule(
-                            team1=teams[i].team,
-                            team2=teams[j].team,
-                            division=division,
-                            group=group,
-                            game_type=game_type,
-                            deadline=start_date + timedelta(days=7 * (i + j))
-                        )
-                        db.session.add(schedule)
-        
-        db.session.commit()
-        flash('Season created successfully with schedules.', 'success')
-        
-    except ValueError:
-        flash('Invalid date format.', 'danger')
+            pass  # (scheduling logic handled elsewhere or not needed here)
     except Exception as e:
-        db.session.rollback()
-        flash(f'Error: {str(e)}', 'danger')
+        flash(f'Error creating season: {str(e)}', 'danger')
+        return redirect(url_for('admin.admin'))
     
-    return redirect(url_for('admin.admin'))
-
-@admin_bp.route('/publish_season/<int:season_id>', methods=['POST'])
-@admin_required
-def publish_season(season_id):
-    try:
-        # Get the season
-        season = Season.query.get_or_404(season_id)
-        if season.is_active:
-            flash('Season is already active.', 'warning')
-            return redirect(url_for('admin.admin'))
-        
-        # Deactivate any currently active season
-        Season.query.filter_by(is_active=True).update({'is_active': False})
-        
-        # Activate the selected season
-        season.is_active = True
-        
-        # Generate schedules for each division and group
-        teams = Appointable.query.filter_by(game_type=season.game_type).all()
-        divisions = {team.division for team in teams}
-        for division in divisions:
-            groups = {team.group for team in teams if team.division == division}
-            for group in groups:
-                group_teams = [team for team in teams if team.division == division and team.group == group]
-                create_schedule(group_teams, season)
-        
-        db.session.commit()
-        flash('Season published successfully with schedules.', 'success')
-        
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error: {str(e)}', 'danger')
-    
+    flash('Season created successfully.', 'success')
     return redirect(url_for('admin.admin'))
 
 def create_schedule(teams, season):
@@ -434,6 +373,145 @@ def create_schedule(teams, season):
         
         # Rotate teams for next round (keep first team fixed)
         teams = [teams[0]] + [teams[-1]] + teams[1:-1]
+
+# --- SEASON PREVIEW & CONFIRMATION ---
+from collections import defaultdict
+import math
+
+@admin_bp.route('/season_preview', methods=['POST'])
+@admin_required
+def season_preview():
+    data = request.get_json()
+    name = data.get('name')
+    start_date = data.get('start_date')
+    if not all([name, start_date]):
+        return jsonify({'status': 'error', 'message': 'Missing required fields.'}), 400
+    try:
+        start_date_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        # Get all active players
+        players = Player.query.filter_by(is_active=True).all()
+        # Group by game_type, division, group
+        groups = defaultdict(lambda: defaultdict(list))
+        for p in players:
+            groups[p.game_type][(p.division, p.group)].append(p)
+        schedule = []
+        point_table = []
+        max_rounds = 0
+        for game_type, divgroups in groups.items():
+            for (division, group), group_players in divgroups.items():
+                n = len(group_players)
+                if n < 2:
+                    continue
+                # Round robin: each player plays every other once
+                rounds = n - 1 if n % 2 == 0 else n
+                max_rounds = max(max_rounds, rounds)
+                # Generate round-robin schedule (circle method)
+                player_names = [p.name for p in group_players]
+                if n % 2:
+                    player_names.append(None)  # bye
+                    n += 1
+                matchups = []
+                for rnd in range(n - 1):
+                    week_matches = []
+                    for i in range(n // 2):
+                        p1 = player_names[i]
+                        p2 = player_names[n - 1 - i]
+                        if p1 and p2:
+                            week_matches.append({
+                                'team1': p1,
+                                'team2': p2,
+                                'division': division,
+                                'group': group,
+                                'game_type': game_type,
+                                'deadline': (start_date_dt + timedelta(days=7 * rnd)).strftime('%Y-%m-%d')
+                            })
+                    # Rotate
+                    player_names = [player_names[0]] + [player_names[-1]] + player_names[1:-1]
+                    matchups.append(week_matches)
+                schedule.append({
+                    'game_type': game_type,
+                    'division': division,
+                    'group': group,
+                    'rounds': rounds,
+                    'weeks': matchups
+                })
+                # Point table: one entry per player/team
+                for p in group_players:
+                    point_table.append({
+                        'team': p.name,
+                        'division': division,
+                        'group': group,
+                        'game_type': game_type,
+                        'matches': 0,
+                        'won': 0,
+                        'loss': 0,
+                        'points': 0
+                    })
+        # Calculate end date
+        end_date = (start_date_dt + timedelta(days=7 * max_rounds - 1)).strftime('%Y-%m-%d') if max_rounds > 0 else start_date
+        return jsonify({
+            'status': 'success',
+            'season': {
+                'name': name,
+                'start_date': start_date,
+                'end_date': end_date
+            },
+            'schedule': schedule,
+            'point_table': point_table
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@admin_bp.route('/confirm_season', methods=['POST'])
+@admin_required
+def confirm_season():
+    data = request.get_json()
+    season_data = data.get('season')
+    schedule_data = data.get('schedule')
+    point_table_data = data.get('point_table')
+    if not all([season_data, schedule_data, point_table_data]):
+        return jsonify({'status': 'error', 'message': 'Missing data.'}), 400
+    try:
+        # Deactivate current active season
+        Season.query.filter_by(is_active=True).update({'is_active': False})
+        # Create season
+        season = Season(
+            name=season_data['name'],
+            start_date=datetime.strptime(season_data['start_date'], '%Y-%m-%d'),
+            end_date=datetime.strptime(season_data['end_date'], '%Y-%m-%d'),
+            is_active=True
+        )
+        db.session.add(season)
+        db.session.flush()  # get season.id if needed
+        # Add point table (Appointable)
+        for entry in point_table_data:
+            team = Appointable(
+                team=entry['team'],
+                division=entry['division'],
+                group=entry['group'],
+                game_type=entry['game_type'],
+                matches=0, won=0, loss=0, bonus=0, points=0,
+                games_total=0, games_won=0, games_percentage=0.0
+            )
+            db.session.add(team)
+        # Add schedule
+        for group_sched in schedule_data:
+            for week in group_sched['weeks']:
+                for match in week:
+                    sched = Schedule(
+                        team1=match['team1'],
+                        team2=match['team2'],
+                        division=match['division'],
+                        group=match['group'],
+                        game_type=match['game_type'],
+                        deadline=datetime.strptime(match['deadline'], '%Y-%m-%d')
+                    )
+                    db.session.add(sched)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Season published.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @admin_bp.route('/add_team', methods=['POST'])
 @admin_required

@@ -1,0 +1,78 @@
+<div class="modal fade" id="seasonPreviewModal" tabindex="-1" aria-labelledby="seasonPreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="seasonPreviewModalLabel">Season Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="seasonPreviewInfo"></div>
+        <ul class="nav nav-pills mb-3" id="previewGameTypeTabs" role="tablist">
+          <!-- Pills will be injected here -->
+        </ul>
+        <div class="tab-content" id="previewScheduleTabContent">
+          <!-- Tab panes will be injected here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" id="confirmSeasonBtn">Confirm & Publish Season</button>
+      </div>
+<script>
+// Helper to render pills/tabs and schedule tables
+function renderSeasonPreviewModal(season, schedule) {
+  // Group schedule by game_type
+  const byGameType = {};
+  schedule.forEach(sch => {
+    const gt = sch.game_type || 'Unknown';
+    if (!byGameType[gt]) byGameType[gt] = [];
+    byGameType[gt].push(sch);
+  });
+  // Pills
+  let pills = '';
+  let first = true;
+  for (const gt in byGameType) {
+    pills += `<li class="nav-item" role="presentation">
+      <button class="nav-link${first ? ' active' : ''}" id="pill-${gt}" data-bs-toggle="pill" data-bs-target="#tab-${gt}" type="button" role="tab" aria-controls="tab-${gt}" aria-selected="${first}">${gt}</button>
+    </li>`;
+    first = false;
+  }
+  document.getElementById('previewGameTypeTabs').innerHTML = pills;
+  // Tab panes
+  let tabContent = '';
+  first = true;
+  for (const gt in byGameType) {
+    tabContent += `<div class="tab-pane fade${first ? ' show active' : ''}" id="tab-${gt}" role="tabpanel" aria-labelledby="pill-${gt}">
+      ${renderScheduleTables(byGameType[gt])}
+    </div>`;
+    first = false;
+  }
+  document.getElementById('previewScheduleTabContent').innerHTML = tabContent;
+}
+
+// Helper to render schedule tables for each division/group
+function renderScheduleTables(schedules) {
+  // Group by division/group
+  const byDivGroup = {};
+  schedules.forEach(sch => {
+    const key = `Division ${sch.division} - Group ${sch.group}`;
+    if (!byDivGroup[key]) byDivGroup[key] = sch;
+  });
+  let html = '';
+  for (const key in byDivGroup) {
+    const sch = byDivGroup[key];
+    html += `<h6 class="mt-3">${key}</h6>`;
+    html += '<div class="table-responsive"><table class="table table-bordered table-sm"><thead><tr><th>Round</th><th>Team 1</th><th>Team 2</th><th>Deadline</th></tr></thead><tbody>';
+    sch.weeks.forEach((week, i) => {
+      week.forEach(match => {
+        html += `<tr><td>Round ${i+1}</td><td>${match.team1}</td><td>${match.team2}</td><td>${match.deadline}</td></tr>`;
+      });
+    });
+    html += '</tbody></table></div>';
+  }
+  return html;
+}
+</script>
+    </div>
+  </div>
+</div>
