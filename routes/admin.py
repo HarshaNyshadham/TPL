@@ -28,14 +28,14 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @admin_bp.route('/player_groups', methods=['GET'])
 @admin_required
 def get_player_groups():
-    # Query all players
+    print("[ENDPOINT] /player_groups GET triggered")
     players = Player.query.all()
-    # Group by game_type, division, group
+    print(f"[DEBUG] Total players: {len(players)}")
     from collections import defaultdict
     groups = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for p in players:
         groups[p.game_type][p.division][p.group].append(p.to_dict())
-    # Convert to regular dict for JSON
+    print(f"[DEBUG] Group keys: {[(g, d, gr) for g in groups for d in groups[g] for gr in groups[g][d]]}")
     result = {g: {d: dict(grps) for d, grps in divs.items()} for g, divs in groups.items()}
     return jsonify(result)
 
@@ -44,16 +44,21 @@ def get_player_groups():
 @admin_bp.route('/players', methods=['GET'])
 @admin_required
 def get_players():
+    print("[ENDPOINT] /players GET triggered")
     players = Player.query.all()
+    print(f"[DEBUG] Returning {len(players)} players")
     return jsonify([p.to_dict() for p in players])
 
 # Add new player
 @admin_bp.route('/players', methods=['POST'])
 @admin_required
 def add_player():
+    print("[ENDPOINT] /players POST triggered")
     data = request.get_json()
+    print(f"[DEBUG] Payload: {data}")
     name = data.get('name', '').strip()
     if not name:
+        print("[ERROR] Name is required")
         return jsonify({'status': 'error', 'message': 'Name is required'}), 400
     player = Player(
         name=name,
@@ -64,29 +69,35 @@ def add_player():
     )
     db.session.add(player)
     db.session.commit()
+    print(f"[DEBUG] Player added with id={player.id}")
     return jsonify({'status': 'success', 'player': player.to_dict()})
 
 # Update player by id
 @admin_bp.route('/players/<int:player_id>', methods=['PUT'])
 @admin_required
 def update_player(player_id):
+    print(f"[ENDPOINT] /players/{player_id} PUT triggered")
     player = Player.query.get_or_404(player_id)
     data = request.get_json()
+    print(f"[DEBUG] Payload: {data}")
     player.name = data.get('name', player.name)
     player.game_type = data.get('game_type', player.game_type)
     player.division = data.get('division', player.division)
     player.group = data.get('group', player.group)
     player.is_active = bool(data.get('is_active', player.is_active))
     db.session.commit()
+    print(f"[DEBUG] Player updated: {player.to_dict()}")
     return jsonify({'status': 'success', 'player': player.to_dict()})
 
 # Delete player by id
 @admin_bp.route('/players/<int:player_id>', methods=['DELETE'])
 @admin_required
 def delete_player(player_id):
+    print(f"[ENDPOINT] /players/{player_id} DELETE triggered")
     player = Player.query.get_or_404(player_id)
     db.session.delete(player)
     db.session.commit()
+    print(f"[DEBUG] Player deleted: id={player_id}")
     return jsonify({'status': 'success'})
 
 # Global error handlers for AJAX/JS requests
@@ -115,9 +126,12 @@ def handle_500(e):
 @admin_bp.route('/')
 @admin_required
 def admin():
+    print("[ENDPOINT] /admin/ GET triggered")
     seasons = Season.query.all()
     for season in seasons:
-        # Player does not have season_id, so just get all players (or filter by game_type/division/group if needed)
+        # Attach teams (point table) and schedules for each season
+        season.teams = Appointable.query.all()
+        season.schedules = Schedule.query.all()
         season.players = Player.query.all()
     return render_template('admin.html', seasons=seasons)
 
@@ -126,6 +140,7 @@ def admin():
 @admin_bp.route('/delete_players')
 @admin_required
 def delete_players():
+    print("[ENDPOINT] /delete_players GET triggered")
     Player.query.delete()
     db.session.commit()
     return jsonify({'status': 'success', 'message': 'Players deleted successfully'})
@@ -134,6 +149,7 @@ def delete_players():
 @admin_bp.route('/upload_players', methods=['POST'])
 @admin_required
 def upload_players():
+    print("[ENDPOINT] /upload_players POST triggered")
     if 'playerFile' not in request.files:
         return jsonify({'status': 'error', 'message': 'No file uploaded.'}), 400
     file = request.files['playerFile']
@@ -154,21 +170,38 @@ def upload_players():
         Player.query.delete()
         db.session.commit()
 
-        # Insert players into the Player table, ensuring unique names (case-insensitive)
-        seen_names = set()
+        # Check for duplicate names in singles and doubles
+        singles_names = set()
+        doubles_names = set()
+        duplicate_rows = []
+        for row in df.to_dict(orient='records'):
+            name = str(row['name']).strip()
+            game_type = str(row['game type']).strip().lower()
+            name_lower = name.lower()
+            if game_type == 'singles':
+                if name_lower in singles_names:
+                    duplicate_rows.append(row)
+                singles_names.add(name_lower)
+            elif game_type == 'doubles':
+                if name_lower in doubles_names:
+                    duplicate_rows.append(row)
+                doubles_names.add(name_lower)
+        if duplicate_rows:
+            return jsonify({'status': 'error', 'message': 'Duplicate player names found in singles or doubles. Please ensure each player name is unique within each category.', 'duplicates': duplicate_rows}), 400
+
+        # Insert players into the Player table
         count = 0
         for row in df.to_dict(orient='records'):
             name = str(row['name']).strip()
-            name_lower = name.lower()
-            if name_lower in seen_names:
-                continue  # skip duplicate
-            seen_names.add(name_lower)
+            game_type = str(row['game type']).strip()
+            division = str(row['division'])
+            group = str(row['group'])
             try:
                 player = Player(
                     name=name,
-                    game_type=str(row['game type']),
-                    division=str(row['division']),
-                    group=str(row['group'])
+                    game_type=game_type,
+                    division=division,
+                    group=group
                 )
                 db.session.add(player)
                 count += 1
@@ -191,6 +224,7 @@ def upload_players():
         return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}', 'traceback': tb}), 400
 @admin_bp.route('/publish_players', methods=['POST'])
 def publish_players():
+    print("[ENDPOINT] /publish_players POST triggered")
     try:
         data = request.json
         players = data.get('players', [])
@@ -237,6 +271,7 @@ def publish_players():
 @admin_bp.route('/assign_players', methods=['POST'])
 @admin_required
 def assign_players():
+    print("[ENDPOINT] /assign_players POST triggered")
     player_ids = request.form.get('player_ids', '').split(',')
     division = float(request.form.get('division'))
     group = request.form.get('group')
@@ -261,6 +296,7 @@ def assign_players():
 @admin_bp.route('/remove_assignment/<int:player_id>', methods=['POST'])
 @admin_required
 def remove_assignment(player_id):
+    print(f"[ENDPOINT] /remove_assignment/{player_id} POST triggered")
     player = Player.query.get_or_404(player_id)
     player.division = None
     player.group = None
@@ -272,6 +308,7 @@ def remove_assignment(player_id):
 @admin_bp.route('/assign_player', methods=['POST'])
 @admin_required
 def assign_player():
+    print("[ENDPOINT] /assign_player POST triggered")
     player_id = request.form.get('player_id')
     division = request.form.get('division')
     group = request.form.get('group')
@@ -291,56 +328,78 @@ def assign_player():
 @admin_bp.route('/create_season', methods=['POST'])
 @admin_required
 def create_season():
+    print("[ENDPOINT] /create_season POST triggered")
     name = request.form.get('name')
     start_date = request.form.get('start_date')
-    end_date = request.form.get('end_date')
-    game_type = request.form.get('game_type')
-    
-    if not all([name, start_date, end_date, game_type]):
+    if not all([name, start_date]):
         flash('Missing required fields.', 'danger')
         return redirect(url_for('admin.admin'))
-    
     try:
+        print(f"[DEBUG] Creating season: name={name}, start_date={start_date}")
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-        
-        if start_date >= end_date:
-            flash('End date must be after start date.', 'danger')
-            return redirect(url_for('admin.admin'))
-        
-        # Deactivate current active season if exists
         Season.query.filter_by(is_active=True).update({'is_active': False})
-        
-        # Create new season
         season = Season(
             name=name,
             start_date=start_date,
-            end_date=end_date,
-            game_type=game_type,
+            end_date=start_date,  # Placeholder, not used
             is_active=True
         )
         db.session.add(season)
         db.session.commit()
-        
-        # Get all players for this game type
-        players = Player.query.filter_by(game_type=game_type).all()
-        
-        # Group players by division and group
-        player_groups = {}
+        print(f"[DEBUG] New season created with id={season.id}")
+        players = Player.query.all()
+        print(f"[DEBUG] Total players found: {len(players)}")
+        from models.schedule import Schedule
+        from models.appointable import Appointable
+        import math
+        game_types = ['singles', 'doubles', 'mixed_doubles']
+        divisions = [5.0, 4.5, 4.0]
+        # Build nested dict: (game_type, division, group) -> [players]
+        group_map = {}
         for player in players:
-            key = (player.division, player.group)
-            if key not in player_groups:
-                player_groups[key] = []
-            player_groups[key].append(player)
-        
-        # Create teams and schedules for each group
-        for (division, group), group_players in player_groups.items():
-            # Create teams
-            pass  # (scheduling logic handled elsewhere or not needed here)
+            key = (player.game_type.lower(), player.division, player.group)
+            if key not in group_map:
+                group_map[key] = []
+            group_map[key].append(player)
+        print(f"[DEBUG] Player groups by (game_type, division, group): {group_map}")
+        for (gt, div, group), group_players in group_map.items():
+            n = len(group_players)
+            if n < 2:
+                continue
+            print(f"[DEBUG] Creating schedule for game_type={gt}, division={div}, group={group}, n_players={n}")
+            # Round-robin: each player plays every other once
+            # Each match is scheduled one week apart, starting from start_date
+            matchups = []
+            for i in range(n):
+                for j in range(i+1, n):
+                    matchups.append((i, j))
+            for idx, (i, j) in enumerate(matchups):
+                deadline = start_date + timedelta(weeks=idx)
+                schedule = Schedule(
+                    team1=group_players[i].name,
+                    team2=group_players[j].name,
+                    score=None,
+                    deadline=deadline,
+                    division=div,
+                    game_type=gt,
+                    season_id=season.id
+                )
+                db.session.add(schedule)
+            for player in group_players:
+                appointable = Appointable(
+                    team=player.name,
+                    group=group,
+                    division=div,
+                    game_type=gt,
+                    season_id=season.id
+                )
+                db.session.add(appointable)
+        db.session.commit()
+        print(f"[DEBUG] Season creation complete.")
     except Exception as e:
+        print(f"[ERROR] Exception in create_season: {str(e)}")
         flash(f'Error creating season: {str(e)}', 'danger')
         return redirect(url_for('admin.admin'))
-    
     flash('Season created successfully.', 'success')
     return redirect(url_for('admin.admin'))
 
@@ -381,6 +440,7 @@ import math
 @admin_bp.route('/season_preview', methods=['POST'])
 @admin_required
 def season_preview():
+    print("[ENDPOINT] /season_preview POST triggered")
     data = request.get_json()
     name = data.get('name')
     start_date = data.get('start_date')
@@ -462,60 +522,11 @@ def season_preview():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@admin_bp.route('/confirm_season', methods=['POST'])
-@admin_required
-def confirm_season():
-    data = request.get_json()
-    season_data = data.get('season')
-    schedule_data = data.get('schedule')
-    point_table_data = data.get('point_table')
-    if not all([season_data, schedule_data, point_table_data]):
-        return jsonify({'status': 'error', 'message': 'Missing data.'}), 400
-    try:
-        # Deactivate current active season
-        Season.query.filter_by(is_active=True).update({'is_active': False})
-        # Create season
-        season = Season(
-            name=season_data['name'],
-            start_date=datetime.strptime(season_data['start_date'], '%Y-%m-%d'),
-            end_date=datetime.strptime(season_data['end_date'], '%Y-%m-%d'),
-            is_active=True
-        )
-        db.session.add(season)
-        db.session.flush()  # get season.id if needed
-        # Add point table (Appointable)
-        for entry in point_table_data:
-            team = Appointable(
-                team=entry['team'],
-                division=entry['division'],
-                group=entry['group'],
-                game_type=entry['game_type'],
-                matches=0, won=0, loss=0, bonus=0, points=0,
-                games_total=0, games_won=0, games_percentage=0.0
-            )
-            db.session.add(team)
-        # Add schedule
-        for group_sched in schedule_data:
-            for week in group_sched['weeks']:
-                for match in week:
-                    sched = Schedule(
-                        team1=match['team1'],
-                        team2=match['team2'],
-                        division=match['division'],
-                        group=match['group'],
-                        game_type=match['game_type'],
-                        deadline=datetime.strptime(match['deadline'], '%Y-%m-%d')
-                    )
-                    db.session.add(sched)
-        db.session.commit()
-        return jsonify({'status': 'success', 'message': 'Season published.'})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @admin_bp.route('/add_team', methods=['POST'])
 @admin_required
 def add_team():
+    print("[ENDPOINT] /add_team POST triggered")
     data = request.json
     player1 = data.get('player1')
     player2 = data.get('player2')
@@ -554,6 +565,7 @@ def add_team():
 @admin_bp.route('/delete_team', methods=['POST'])
 @admin_required
 def delete_team():
+    print("[ENDPOINT] /delete_team POST triggered")
     data = request.json
     team = data.get('team')
     
@@ -578,6 +590,7 @@ def delete_team():
 @admin_bp.route('/get_teams')
 @admin_required
 def get_teams():
+    print("[ENDPOINT] /get_teams GET triggered")
     teams = Appointable.query.all()
     teams_list = [team.team for team in teams]
     divisions = {team.team: team.division for team in teams}
@@ -591,6 +604,7 @@ def get_teams():
 @admin_bp.route('/get_scores')
 @admin_required
 def get_scores():
+    print("[ENDPOINT] /get_scores GET triggered")
     scores = Schedule.query.filter(Schedule.score.isnot(None)).all()
     scores_list = [{
         'id': score.id,
@@ -608,6 +622,7 @@ def get_scores():
 @admin_bp.route('/delete_score', methods=['POST'])
 @admin_required
 def delete_score():
+    print("[ENDPOINT] /delete_score POST triggered")
     data = request.json
     score_id = data.get('score_id')
     
@@ -630,6 +645,7 @@ def delete_score():
 @admin_bp.route('/new_season', methods=['POST'])
 @admin_required
 def new_season():
+    print("[ENDPOINT] /new_season POST triggered")
     data = request.json
     season_name = data.get('name')
     start_date = data.get('start_date')
@@ -650,6 +666,7 @@ def new_season():
 @admin_bp.route('/create_schedule', methods=['POST'])
 @admin_required
 def create_schedule():
+    print("[ENDPOINT] /create_schedule POST triggered")
     division = request.form.get('division')
     group = request.form.get('group')
     game_type = request.form.get('game_type')
@@ -725,6 +742,7 @@ def create_schedule():
 @admin_bp.route('/update_score', methods=['POST'])
 @admin_required
 def update_score():
+    print("[ENDPOINT] /update_score POST triggered")
     schedule_id = request.form.get('schedule_id')
     score = request.form.get('score')
     
@@ -796,6 +814,7 @@ def update_score():
 @admin_bp.route('/player/<int:player_id>/update', methods=['POST'])
 @admin_required
 def update_player_assignment(player_id):
+    print(f"[ENDPOINT] /player/{player_id}/update POST triggered")
     player = Player.query.get_or_404(player_id)
     player.division = float(request.form.get('division'))
     player.group = request.form.get('group')
@@ -809,6 +828,7 @@ def update_player_assignment(player_id):
 @admin_bp.route('/player/<int:player_id>/remove', methods=['POST'])
 @admin_required
 def remove_player(player_id):
+    print(f"[ENDPOINT] /player/{player_id}/remove POST triggered")
     player = Player.query.get_or_404(player_id)
     
     try:
@@ -868,26 +888,34 @@ def create_schedules(season_id):
 @admin_bp.route('/logout')
 @login_required
 def logout():
+    print("[ENDPOINT] /logout GET triggered")
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('main.newindex'))
 
 @admin_bp.route('/schedule/<int:sched_id>/update', methods=['POST'])
 def update_schedule(sched_id):
+    print(f"[ENDPOINT] /schedule/{sched_id}/update POST triggered")
     data = request.json
+    print(f"[DEBUG] Payload: {data}")
     sched = Schedule.query.get(sched_id)
     if not sched:
+        print(f"[ERROR] Schedule not found for id={sched_id}")
         return jsonify({'status': 'error', 'message': 'Schedule not found'}), 404
     sched.score = data.get('score', sched.score)
     sched.updated_at = db.func.now()
     db.session.commit()
+    print(f"[DEBUG] Schedule updated successfully for id={sched_id}")
     return jsonify({'status': 'success'})
 
 @admin_bp.route('/pointtable/<int:team_id>/update', methods=['POST'])
 def update_pointtable(team_id):
+    print(f"[ENDPOINT] /pointtable/{team_id}/update POST triggered")
     data = request.json
+    print(f"[DEBUG] Payload: {data}")
     appoint = Appointable.query.get(team_id)
     if not appoint:
+        print(f"[ERROR] Team not found for id={team_id}")
         return jsonify({'status': 'error', 'message': 'Team not found'}), 404
     appoint.matches = int(data.get('matches', appoint.matches))
     appoint.won = int(data.get('won', appoint.won))
@@ -895,10 +923,12 @@ def update_pointtable(team_id):
     appoint.points = int(data.get('points', appoint.points))
     appoint.updated_at = db.func.now()
     db.session.commit()
+    print(f"[DEBUG] Point table updated successfully for team_id={team_id}")
     return jsonify({'status': 'success'})
 
 @admin_bp.route('/recalculate_scores', methods=['POST'])
 def recalculate_scores():
+    print("[ENDPOINT] /recalculate_scores POST triggered")
     try:
         active_season = Season.query.filter_by(is_active=True).first()
         if not active_season:

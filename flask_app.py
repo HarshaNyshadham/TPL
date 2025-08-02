@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
-#from flask_migrate import Migrate
+from flask_migrate import Migrate
 from models import db, init_db, User, Appointable
 from models.seed_data import seed_database
 from routes import init_routes
@@ -12,7 +12,7 @@ def create_app():
     print('DEBUG: __file__:', __file__)
     print('DEBUG: tpl.db expected at:', os.path.join(os.getcwd(), 'tpl.db'))
     app = Flask(__name__)
-
+    migrate = Migrate(app, db)
     app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tpl.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

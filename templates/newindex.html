@@ -67,7 +67,7 @@
                                     </thead>
                                     <tbody>
                                         {% for team in pt_data_50 %}
-                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                        <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
                                             <td>{{ team[0] }}</td>
                                             <td>{{ team[1] }}</td>
                                             <td>{{ team[2] }}</td>
@@ -121,7 +121,7 @@
                                                 <tbody>
                                                     {% for team in pt_data_50 %}
                                                         {% if team[6] == 'A' %}
-                                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                                        <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
                                                             <td>{{ team[2] }}</td>
@@ -151,7 +151,7 @@
                                                 <tbody>
                                                     {% for team in pt_data_50 %}
                                                         {% if team[6] == 'B' %}
-                                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                                        <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
                                                             <td>{{ team[2] }}</td>
@@ -194,7 +194,7 @@
                                     </thead>
                                     <tbody>
                                         {% for team in pt_data_45 %}
-                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                        <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
                                             <td>{{ team[0] }}</td>
                                             <td>{{ team[1] }}</td>
                                             <td>{{ team[2] }}</td>
@@ -245,7 +245,7 @@
                                                 <tbody>
                                                     {% for team in pt_data_45 %}
                                                         {% if team[6] == 'A' %}
-                                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                                        <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
                                                             <td>{{ team[2] }}</td>
@@ -275,7 +275,7 @@
                                                 <tbody>
                                                     {% for team in pt_data_45 %}
                                                         {% if team[6] == 'B' %}
-                                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                                        <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
                                                             <td>{{ team[2] }}</td>
@@ -318,7 +318,7 @@
                                     </thead>
                                     <tbody>
                                         {% for team in pt_data_40 %}
-                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                        <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
                                             <td>{{ team[0] }}</td>
                                             <td>{{ team[1] }}</td>
                                             <td>{{ team[2] }}</td>
@@ -369,7 +369,7 @@
                                                 <tbody>
                                                     {% for team in pt_data_40 %}
                                                         {% if team[6] == 'A' %}
-                                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                                        <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
                                                             <td>{{ team[2] }}</td>
@@ -399,7 +399,7 @@
                                                 <tbody>
                                                     {% for team in pt_data_40 %}
                                                         {% if team[6] == 'B' %}
-                                                        <tr data-team="{{ team[0] }}" onclick="showSchedule('{{ team[0] }}')">
+                                                        <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
                                                             <td>{{ team[2] }}</td>

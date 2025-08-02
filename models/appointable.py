@@ -4,6 +4,7 @@ from . import db
 class Appointable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team = db.Column(db.String(100), nullable=False)  # Team name (unique per group/division/type)
+    season_id = db.Column(db.Integer, nullable=True)  # Foreign key to Season (not enforced)
     matches = db.Column(db.Integer, default=0)  # Matches played
     won = db.Column(db.Integer, default=0)      # Matches won
     loss = db.Column(db.Integer, default=0)     # Matches lost

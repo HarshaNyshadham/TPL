@@ -4,6 +4,7 @@ from datetime import datetime
 class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team1 = db.Column(db.String(100), nullable=False)  # Team 1 name
+    season_id = db.Column(db.Integer, nullable=True)  # Foreign key to Season (not enforced)
     team2 = db.Column(db.String(100), nullable=False)  # Team 2 name
     score = db.Column(db.String(50))  # Match score
     deadline = db.Column(db.DateTime, nullable=False)

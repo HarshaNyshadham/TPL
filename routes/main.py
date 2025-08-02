@@ -13,11 +13,12 @@ def index():
 @main_bp.route('/newindex')
 def newindex():
     try:
-        # Get game type from query parameter, default to singles
+        # Get game type from query parameter, default to 'singles' (lowercase)
         game_type = request.args.get('game_type', 'singles')
-        
+        print(f"DEBUG: Game type for newindex: {game_type}")
         # Get active season
         active_season = Season.query.filter_by(is_active=True).first()
+        print(f"DEBUG: Active season for newindex: {active_season}")
         if not active_season:
             return render_template('newindex.html',
                                 game_type=game_type,
@@ -50,6 +51,7 @@ def newindex():
                 )
                 for team in teams
             ]
+        print(f"DEBUG: Standings for {game_type}: {standings}")
         # Get schedule data for all teams
         all_teams = []
         for division_teams in standings.values():
@@ -67,6 +69,7 @@ def newindex():
                         sched.deadline.strftime('%Y-%m-%d') if sched.deadline else ''
                     ])
             schedule_data[team] = team_matches
+        print(f"DEBUG: Schedule data for {game_type}: {schedule_data}")
         return render_template('newindex.html',
                              game_type=game_type,
                              pt_data_50=standings[5.0],
