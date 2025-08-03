@@ -394,24 +394,32 @@ def create_season():
             if n < 2:
                 continue
             print(f"[DEBUG] Creating schedule for game_type={gt}, division={div}, group={group}, n_players={n}")
-            # Round-robin: each player plays every other once
-            # Each match is scheduled one week apart, starting from start_date
-            matchups = []
-            for i in range(n):
-                for j in range(i+1, n):
-                    matchups.append((i, j))
-            for idx, (i, j) in enumerate(matchups):
-                deadline = start_date + timedelta(weeks=idx)
-                schedule = Schedule(
-                    team1=group_players[i].name,
-                    team2=group_players[j].name,
-                    score=None,
-                    deadline=deadline,
-                    division=div,
-                    game_type=gt,
-                    season_id=season.id
-                )
-                db.session.add(schedule)
+            # Round-robin: each player plays every other once, one match per team per week
+            # Use circle method for round-robin
+            player_names = [p.name for p in group_players]
+            is_odd = n % 2 != 0
+            if is_odd:
+                player_names.append(None)  # Add a bye
+                n += 1
+            rounds = n - 1
+            for rnd in range(rounds):
+                week_deadline = start_date + timedelta(weeks=rnd)
+                for i in range(n // 2):
+                    p1 = player_names[i]
+                    p2 = player_names[n - 1 - i]
+                    if p1 is not None and p2 is not None:
+                        schedule = Schedule(
+                            team1=p1,
+                            team2=p2,
+                            score=None,
+                            deadline=week_deadline,
+                            division=div,
+                            game_type=gt,
+                            season_id=season.id
+                        )
+                        db.session.add(schedule)
+                # Rotate for next round (keep first player fixed)
+                player_names = [player_names[0]] + [player_names[-1]] + player_names[1:-1]
             for player in group_players:
                 appointable = Appointable(
                     team=player.name,
