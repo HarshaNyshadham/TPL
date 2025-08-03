@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
@@ -23,6 +24,32 @@ def admin_required(f):
     return decorated_function
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+@admin_bp.route('/delete_season', methods=['POST'])
+@admin_required
+def delete_season():
+    print("[ENDPOINT] /delete_season POST triggered")
+    season_id = request.form.get('season_id')
+    if not season_id:
+        flash('No season selected.', 'danger')
+        return redirect(url_for('admin.admin'))
+    try:
+        season = Season.query.get(season_id)
+        if not season:
+            flash('Season not found.', 'danger')
+            return redirect(url_for('admin.admin'))
+        # Delete all schedules and appointables for this season
+        num_sched = Schedule.query.filter_by(season_id=season.id).delete()
+        num_appoint = Appointable.query.filter_by(season_id=season.id).delete()
+        db.session.delete(season)
+        db.session.commit()
+        print(f"[DEBUG] Deleted season id={season.id}, schedules={num_sched}, appointables={num_appoint}")
+        flash(f'Season "{season.name}" deleted successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] Exception in delete_season: {str(e)}")
+        flash(f'Error deleting season: {str(e)}', 'danger')
+    return redirect(url_for('admin.admin'))
 
 # --- PLAYER GROUPS VIEW FOR CREATE SEASON ---
 @admin_bp.route('/player_groups', methods=['GET'])
@@ -914,6 +941,7 @@ def update_pointtable(team_id):
     data = request.json
     print(f"[DEBUG] Payload: {data}")
     appoint = Appointable.query.get(team_id)
+    print(f"[DEBUG] Appointable found: {appoint}")
     if not appoint:
         print(f"[ERROR] Team not found for id={team_id}")
         return jsonify({'status': 'error', 'message': 'Team not found'}), 404

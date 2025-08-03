@@ -35,3 +35,48 @@
     </table>
 </div>
 {% endblock %}
+<script>
+function saveSchedule(btn, schedId) {
+    const row = btn.closest('tr');
+    const score = row.children[2].innerText.trim();
+    fetch(`/admin/schedule/${schedId}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+            btn.textContent = 'Saved';
+            setTimeout(() => {
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-success');
+                btn.textContent = 'Save';
+            }, 1200);
+        } else {
+            alert(data.message || 'Save failed');
+        }
+    })
+    .catch(() => alert('Save failed'));
+}
+</script>
+<script>
+function recalculateScores() {
+    fetch('/admin/recalculate_scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Scores recalculated successfully!');
+            location.reload();
+        } else {
+            alert(data.message || 'Recalculation failed');
+        }
+    })
+    .catch(() => alert('Recalculation failed'));
+}
+</script>

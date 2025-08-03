@@ -36,3 +36,33 @@
     </table>
 </div>
 {% endblock %}
+<script>
+function savePointTable(btn, teamId) {
+    const row = btn.closest('tr');
+    const matches = row.children[1].innerText.trim();
+    const won = row.children[2].innerText.trim();
+    const loss = row.children[3].innerText.trim();
+    const points = row.children[4].innerText.trim();
+    fetch(`/admin/pointtable/${teamId}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matches, won, loss, points })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+            btn.textContent = 'Saved';
+            setTimeout(() => {
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-success');
+                btn.textContent = 'Save';
+            }, 1200);
+        } else {
+            alert(data.message || 'Save failed');
+        }
+    })
+    .catch(() => alert('Save failed'));
+}
+</script>

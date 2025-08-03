@@ -199,7 +199,7 @@ function savePointTable(btn, teamId) {
     const won = row.children[2].innerText.trim();
     const loss = row.children[3].innerText.trim();
     const points = row.children[4].innerText.trim();
-    fetch(`/pointtable/${teamId}/update`, {
+    fetch(`/admin/pointtable/${teamId}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ matches, won, loss, points })
@@ -226,7 +226,7 @@ function savePointTable(btn, teamId) {
 function saveSchedule(btn, schedId) {
     const row = btn.closest('tr');
     const score = row.children[2].innerText.trim();
-    fetch(`/schedule/${schedId}/update`, {
+    fetch(`/admin/schedule/${schedId}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ score })
