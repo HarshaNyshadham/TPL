@@ -498,9 +498,7 @@ function showSchedule(team) {
             <td>${match[2] || '-'}</td>
             <td>${match[3] || '-'}</td>
             <td>
-                <button class="btn btn-sm btn-primary" onclick="showScoreModal('${match[0]}', '${match[1]}')">
-                    ${match[2] ? 'Edit Score' : 'Enter Score'}
-                </button>
+                ${!match[2] ? `<button class="btn btn-sm btn-primary" onclick="showScoreModal('${match[0]}', '${match[1]}')">Enter Score</button>` : ''}
             </td>
         `;
         tbody.appendChild(row);
