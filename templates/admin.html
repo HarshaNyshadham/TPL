@@ -22,6 +22,9 @@
 </style>
 <div class="container mt-4">
     <h1 class="mb-4">Admin Dashboard</h1>
+    <div class="mb-3 text-end">
+        <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
+    </div>
     <ul class="nav nav-tabs" id="adminTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="pointtable-tab" data-bs-toggle="tab" data-bs-target="#pointtable" type="button" role="tab">Point Table</button>
@@ -55,204 +58,200 @@
 
 {% block extra_js %}
 <script>
-// Players tab: fetch and render all players, allow editing, adding, deleting, and updating
-let allPlayersData = [];
-function renderPlayersTable(players) {
-    allPlayersData = players;
-    const tbody = document.getElementById('playersTableBody');
-    tbody.innerHTML = '';
-    players.forEach(player => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td contenteditable="true" class="editable-cell" data-field="name">${player.name || ''}</td>
-            <td contenteditable="true" class="editable-cell" data-field="game_type">${player.game_type || ''}</td>
-            <td contenteditable="true" class="editable-cell" data-field="division">${player.division || ''}</td>
-            <td contenteditable="true" class="editable-cell" data-field="group">${player.group || ''}</td>
+document.addEventListener('DOMContentLoaded', function() {
+    // Players tab: fetch and render all players, allow editing, adding, deleting, and updating
+    let allPlayersData = [];
+    function renderPlayersTable(players) {
+        allPlayersData = players;
+        const tbody = document.getElementById('playersTableBody');
+        tbody.innerHTML = '';
+        players.forEach(player => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td contenteditable="true" class="editable-cell" data-field="name">${player.name || ''}</td>
+                <td contenteditable="true" class="editable-cell" data-field="game_type">${player.game_type || ''}</td>
+                <td contenteditable="true" class="editable-cell" data-field="division">${player.division || ''}</td>
+                <td contenteditable="true" class="editable-cell" data-field="group">${player.group || ''}</td>
+                <td>
+                    <select class="form-select form-select-sm is-active-select">
+                        <option value="true" ${player.is_active ? 'selected' : ''}>Yes</option>
+                        <option value="false" ${!player.is_active ? 'selected' : ''}>No</option>
+                    </select>
+                </td>
+                <td>${player.created_at ? player.created_at.split('T')[0] : ''}</td>
+                <td>${player.updated_at ? player.updated_at.split('T')[0] : ''}</td>
+                <td>
+                    <button class="btn btn-sm btn-success save-player-btn" data-id="${player.id}">Save</button>
+                    <button class="btn btn-sm btn-danger delete-player-btn" data-id="${player.id}">Delete</button>
+                </td>
+            `;
+            tr.dataset.id = player.id;
+            tbody.appendChild(tr);
+        });
+        // Add row for new player
+        const addTr = document.createElement('tr');
+        addTr.innerHTML = `
+            <td contenteditable="true" class="editable-cell" data-field="name"></td>
+            <td contenteditable="true" class="editable-cell" data-field="game_type"></td>
+            <td contenteditable="true" class="editable-cell" data-field="division"></td>
+            <td contenteditable="true" class="editable-cell" data-field="group"></td>
             <td>
                 <select class="form-select form-select-sm is-active-select">
-                    <option value="true" ${player.is_active ? 'selected' : ''}>Yes</option>
-                    <option value="false" ${!player.is_active ? 'selected' : ''}>No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </td>
-            <td>${player.created_at ? player.created_at.split('T')[0] : ''}</td>
-            <td>${player.updated_at ? player.updated_at.split('T')[0] : ''}</td>
-            <td>
-                <button class="btn btn-sm btn-success save-player-btn" data-id="${player.id}">Save</button>
-                <button class="btn btn-sm btn-danger delete-player-btn" data-id="${player.id}">Delete</button>
-            </td>
+            <td></td>
+            <td></td>
+            <td><button class="btn btn-sm btn-primary add-player-btn">Add</button></td>
         `;
-        tr.dataset.id = player.id;
-        tbody.appendChild(tr);
-    });
-    // Add row for new player
-    const addTr = document.createElement('tr');
-    addTr.innerHTML = `
-        <td contenteditable="true" class="editable-cell" data-field="name"></td>
-        <td contenteditable="true" class="editable-cell" data-field="game_type"></td>
-        <td contenteditable="true" class="editable-cell" data-field="division"></td>
-        <td contenteditable="true" class="editable-cell" data-field="group"></td>
-        <td>
-            <select class="form-select form-select-sm is-active-select">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-            </select>
-        </td>
-        <td></td>
-        <td></td>
-        <td><button class="btn btn-sm btn-primary add-player-btn">Add</button></td>
-    `;
-    tbody.appendChild(addTr);
+        tbody.appendChild(addTr);
 
-    // Attach event listeners for save, delete, add
-    tbody.querySelectorAll('.save-player-btn').forEach(btn => {
-        btn.onclick = function() {
-            const row = btn.closest('tr');
-            const id = btn.dataset.id;
-            const data = getPlayerRowData(row);
-            fetch(`/admin/players/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(r => r.json())
-            .then(resp => {
-                if (resp.status === 'success') fetchAndShowPlayers();
-                else alert(resp.message || 'Update failed');
-            });
-        };
-    });
-    tbody.querySelectorAll('.delete-player-btn').forEach(btn => {
-        btn.onclick = function() {
-            if (!confirm('Delete this player?')) return;
-            const id = btn.dataset.id;
-            fetch(`/admin/players/${id}`, { method: 'DELETE' })
-            .then(r => r.json())
-            .then(resp => {
-                if (resp.status === 'success') fetchAndShowPlayers();
-                else alert(resp.message || 'Delete failed');
-            });
-        };
-    });
-    tbody.querySelectorAll('.add-player-btn').forEach(btn => {
-        btn.onclick = function() {
-            const row = btn.closest('tr');
-            const data = getPlayerRowData(row);
-            fetch('/admin/players', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(r => r.json())
-            .then(resp => {
-                if (resp.status === 'success') fetchAndShowPlayers();
-                else alert(resp.message || 'Add failed');
-            });
-        };
-    });
-}
+        // Attach event listeners for save, delete, add
+        tbody.querySelectorAll('.save-player-btn').forEach(btn => {
+            btn.onclick = function() {
+                const row = btn.closest('tr');
+                const id = btn.dataset.id;
+                const data = getPlayerRowData(row);
+                fetch(`/admin/players/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(r => r.json())
+                .then(resp => {
+                    if (resp.status === 'success') fetchAndShowPlayers();
+                    else alert(resp.message || 'Update failed');
+                });
+            };
+        });
+        tbody.querySelectorAll('.delete-player-btn').forEach(btn => {
+            btn.onclick = function() {
+                if (!confirm('Delete this player?')) return;
+                const id = btn.dataset.id;
+                fetch(`/admin/players/${id}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(resp => {
+                    if (resp.status === 'success') fetchAndShowPlayers();
+                    else alert(resp.message || 'Delete failed');
+                });
+            };
+        });
+        tbody.querySelectorAll('.add-player-btn').forEach(btn => {
+            btn.onclick = function() {
+                const row = btn.closest('tr');
+                const data = getPlayerRowData(row);
+                fetch('/admin/players', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(r => r.json())
+                .then(resp => {
+                    if (resp.status === 'success') fetchAndShowPlayers();
+                    else alert(resp.message || 'Add failed');
+                });
+            };
+        });
+    }
 
-// Helper to get player data from a row
-function getPlayerRowData(row) {
-    return {
-        name: row.querySelector('[data-field="name"]').innerText.trim(),
-        game_type: row.querySelector('[data-field="game_type"]').innerText.trim(),
-        division: row.querySelector('[data-field="division"]').innerText.trim(),
-        group: row.querySelector('[data-field="group"]').innerText.trim(),
-        is_active: row.querySelector('.is-active-select').value === 'true'
-    };
-}
+    function getPlayerRowData(row) {
+        return {
+            name: row.querySelector('[data-field="name"]').innerText.trim(),
+            game_type: row.querySelector('[data-field="game_type"]').innerText.trim(),
+            division: row.querySelector('[data-field="division"]').innerText.trim(),
+            group: row.querySelector('[data-field="group"]').innerText.trim(),
+            is_active: row.querySelector('.is-active-select').value === 'true'
+        };
+    }
 
-// Fetch and show players on page load and when switching to Players tab
-function fetchAndShowPlayers() {
-    fetch('/admin/players')
+    function fetchAndShowPlayers() {
+        fetch('/admin/players')
+            .then(r => r.json())
+            .then(data => {
+                renderPlayersTable(data);
+                allPlayersData = data;
+            });
+    }
+
+    // Dynamic search for Players tab
+    const playersTableSearch = document.getElementById('playersTableSearch');
+    if (playersTableSearch) {
+        playersTableSearch.addEventListener('input', function() {
+            const q = playersTableSearch.value.trim().toLowerCase();
+            if (!q) {
+                renderPlayersTable(allPlayersData);
+                return;
+            }
+            const filtered = allPlayersData.filter(p =>
+                (p.name && p.name.toLowerCase().includes(q)) ||
+                (p.game_type && p.game_type.toLowerCase().includes(q)) ||
+                (p.division && p.division.toLowerCase().includes(q)) ||
+                (p.group && p.group.toLowerCase().includes(q))
+            );
+            renderPlayersTable(filtered);
+        });
+    }
+
+    // --- Save Point Table Row ---
+    window.savePointTable = function(btn, teamId) {
+        const row = btn.closest('tr');
+        const matches = row.children[1].innerText.trim();
+        const won = row.children[2].innerText.trim();
+        const loss = row.children[3].innerText.trim();
+        const points = row.children[4].innerText.trim();
+        fetch(`/admin/pointtable/${teamId}/update`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matches, won, loss, points })
+        })
         .then(r => r.json())
         .then(data => {
-            renderPlayersTable(data);
-            // Save all data for search
-            allPlayersData = data;
-        });
-}
+            if (data.status === 'success') {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-secondary');
+                btn.textContent = 'Saved';
+                setTimeout(() => {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-success');
+                    btn.textContent = 'Save';
+                }, 1200);
+            } else {
+                alert(data.message || 'Save failed');
+            }
+        })
+        .catch(() => alert('Save failed'));
+    };
 
-// Dynamic search for Players tab
-const playersTableSearch = document.getElementById('playersTableSearch');
-if (playersTableSearch) {
-    playersTableSearch.addEventListener('input', function() {
-        const q = playersTableSearch.value.trim().toLowerCase();
-        if (!q) {
-            renderPlayersTable(allPlayersData);
-            return;
-        }
-        const filtered = allPlayersData.filter(p =>
-            (p.name && p.name.toLowerCase().includes(q)) ||
-            (p.game_type && p.game_type.toLowerCase().includes(q)) ||
-            (p.division && p.division.toLowerCase().includes(q)) ||
-            (p.group && p.group.toLowerCase().includes(q))
-        );
-        renderPlayersTable(filtered);
-    });
-}
+    // --- Save Schedule Row ---
+    window.saveSchedule = function(btn, schedId) {
+        const row = btn.closest('tr');
+        const score = row.children[2].innerText.trim();
+        fetch(`/admin/schedule/${schedId}/update`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-secondary');
+                btn.textContent = 'Saved';
+                setTimeout(() => {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-success');
+                    btn.textContent = 'Save';
+                }, 1200);
+            } else {
+                alert(data.message || 'Save failed');
+            }
+        })
+        .catch(() => alert('Save failed'));
+    };
 
-// --- Save Point Table Row ---
-function savePointTable(btn, teamId) {
-    const row = btn.closest('tr');
-    const matches = row.children[1].innerText.trim();
-    const won = row.children[2].innerText.trim();
-    const loss = row.children[3].innerText.trim();
-    const points = row.children[4].innerText.trim();
-    fetch(`/admin/pointtable/${teamId}/update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matches, won, loss, points })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'success') {
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-secondary');
-            btn.textContent = 'Saved';
-            setTimeout(() => {
-                btn.classList.remove('btn-secondary');
-                btn.classList.add('btn-success');
-                btn.textContent = 'Save';
-            }, 1200);
-        } else {
-            alert(data.message || 'Save failed');
-        }
-    })
-    .catch(() => alert('Save failed'));
-}
-
-// --- Save Schedule Row ---
-function saveSchedule(btn, schedId) {
-    const row = btn.closest('tr');
-    const score = row.children[2].innerText.trim();
-    fetch(`/admin/schedule/${schedId}/update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ score })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'success') {
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-secondary');
-            btn.textContent = 'Saved';
-            setTimeout(() => {
-                btn.classList.remove('btn-secondary');
-                btn.classList.add('btn-success');
-                btn.textContent = 'Save';
-            }, 1200);
-        } else {
-            alert(data.message || 'Save failed');
-        }
-    })
-    .catch(() => alert('Save failed'));
-}
-
-// On page load
-document.addEventListener('DOMContentLoaded', function() {
+    // On page load
     fetchAndShowPlayers();
-    // Show players when switching to tab
     document.getElementById('players-tab').addEventListener('click', fetchAndShowPlayers);
 
     // Attach search filter for Point Table tab
@@ -296,6 +295,78 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // --- Change Password Modal and Handler ---
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', function() {
+            let modal = document.getElementById('changePasswordModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'changePasswordModal';
+                modal.innerHTML = `
+                <div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Change Password</h5>
+                        <button type="button" class="btn-close" onclick="document.getElementById('changePasswordModal').remove()"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form id="changePasswordForm">
+                          <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                          </div>
+                          <div id="changePasswordResult"></div>
+                          <button type="submit" class="btn btn-primary">Change Password</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+                document.body.appendChild(modal);
+                document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const current = document.getElementById('currentPassword').value;
+                    const newp = document.getElementById('newPassword').value;
+                    const confirm = document.getElementById('confirmPassword').value;
+                    const resultDiv = document.getElementById('changePasswordResult');
+                    if (newp !== confirm) {
+                        resultDiv.innerHTML = '<div class="alert alert-danger">New passwords do not match.</div>';
+                        return;
+                    }
+                    fetch('/admin/change_password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ old_password: current, new_password: newp })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            resultDiv.innerHTML = '<div class="alert alert-success">Password changed successfully.</div>';
+                            setTimeout(() => { document.getElementById('changePasswordModal').remove(); }, 1200);
+                        } else {
+                            resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Change failed') + '</div>';
+                        }
+                    })
+                    .catch(() => {
+                        resultDiv.innerHTML = '<div class="alert alert-danger">Change failed</div>';
+                    });
+                });
+            }
+        });
+    }
+
+    // ...other DOMContentLoaded code for other tabs and features...
 });
 
 // --- Upload Players Excel ---
@@ -496,6 +567,72 @@ document.getElementById('confirmSeasonBtn').addEventListener('click', function()
     .catch(() => {
         document.getElementById('createSeasonResult').innerHTML = '<div class="alert alert-danger">Publish failed</div>';
     });
+});
+
+document.getElementById('changePasswordBtn').addEventListener('click', function() {
+    let modal = document.getElementById('changePasswordModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'changePasswordModal';
+        modal.innerHTML = `
+        <div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" onclick="document.getElementById('changePasswordModal').remove()"></button>
+              </div>
+              <div class="modal-body">
+                <form id="changePasswordForm">
+                  <div class="mb-3">
+                    <label for="currentPassword" class="form-label">Current Password</label>
+                    <input type="password" class="form-control" id="currentPassword" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="newPassword" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" required>
+                  </div>
+                  <div id="changePasswordResult"></div>
+                  <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        document.body.appendChild(modal);
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const current = document.getElementById('currentPassword').value;
+            const newp = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const resultDiv = document.getElementById('changePasswordResult');
+            if (newp !== confirm) {
+                resultDiv.innerHTML = '<div class="alert alert-danger">New passwords do not match.</div>';
+                return;
+            }
+            fetch('/admin/change_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_password: current, new_password: newp })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = '<div class="alert alert-success">Password changed successfully.</div>';
+                    setTimeout(() => { document.getElementById('changePasswordModal').remove(); }, 1200);
+                } else {
+                    resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Change failed') + '</div>';
+                }
+            })
+            .catch(() => {
+                resultDiv.innerHTML = '<div class="alert alert-danger">Change failed</div>';
+            });
+        });
+    }
 });
 </script>
 {% endblock %}

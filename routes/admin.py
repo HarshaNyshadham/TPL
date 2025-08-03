@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
@@ -9,6 +8,7 @@ import csv
 import io
 import itertools
 import pandas as pd
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def admin_required(f):
     """Decorator to check if user is an admin, returns JSON for AJAX/JS requests"""
@@ -24,6 +24,29 @@ def admin_required(f):
     return decorated_function
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+
+from werkzeug.security import check_password_hash, generate_password_hash
+
+# --- ADMIN ROUTES ---
+#change password endpoint
+@admin_bp.route('/change_password', methods=['POST'])
+@admin_required
+def change_password():
+    data = request.get_json()
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    print(old_password, new_password)
+    if not old_password or not new_password:
+        return jsonify({'status': 'error', 'message': 'Missing password fields'}), 400
+    user = current_user
+    # Assuming user model has password_hash field
+    if not check_password_hash(user.password_hash, old_password):
+        return jsonify({'status': 'error', 'message': 'Current password is incorrect'}), 400
+    user.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
 
 @admin_bp.route('/delete_season', methods=['POST'])
 @admin_required
