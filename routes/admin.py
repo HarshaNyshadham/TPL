@@ -191,9 +191,14 @@ def admin():
 @admin_required
 def delete_players():
     print("[ENDPOINT] /delete_players GET triggered")
-    Player.query.delete()
-    db.session.commit()
-    return jsonify({'status': 'success', 'message': 'Players deleted successfully'})
+    # Delete all Player rows using ORM bulk delete
+    try:
+        num_deleted = db.session.query(Player).delete()
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': f'Deleted {num_deleted} players successfully.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': f'Error deleting players: {str(e)}'})
 
 
 @admin_bp.route('/upload_players', methods=['POST'])
@@ -206,72 +211,76 @@ def upload_players():
     if file.filename == '' or not (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
         return jsonify({'status': 'error', 'message': 'Invalid file format. Please upload an Excel file (.xlsx, .xls).'}), 400
     try:
+        #ignore NAN rows
         df = pd.read_excel(file, engine="openpyxl")
+        df = df.dropna()
         required_columns = ['name', 'division', 'game type', 'group']
-        col_map = {c.lower(): c for c in df.columns}
+        col_map = {col.lower(): col for col in df.columns}
         missing_columns = [col for col in required_columns if col not in col_map]
         if missing_columns:
             return jsonify({'status': 'error', 'message': f"Missing required columns: {', '.join([col.title() for col in missing_columns])}"}), 400
-        df = df.rename(columns={col_map['name']: 'name',
-                                col_map['division']: 'division',
-                                col_map['game type']: 'game type',
-                                col_map['group']: 'group'})
-        # DELETE ALL EXISTING PLAYERS BEFORE ADDING NEW ONES
-        Player.query.delete()
-        db.session.commit()
-
-        # Check for duplicate names in singles and doubles
-        singles_names = set()
-        doubles_names = set()
-        duplicate_rows = []
+        df = df.rename(columns={
+            col_map['name']: 'name',
+            col_map['division']: 'division',
+            col_map['game type']: 'game type',
+            col_map['group']: 'group'
+        })
+        seen_upload_keys = set()
+        cleaned_rows = []
         for row in df.to_dict(orient='records'):
             name = str(row['name']).strip()
             game_type = str(row['game type']).strip().lower()
-            name_lower = name.lower()
-            if game_type == 'singles':
-                if name_lower in singles_names:
-                    duplicate_rows.append(row)
-                singles_names.add(name_lower)
-            elif game_type == 'doubles':
-                if name_lower in doubles_names:
-                    duplicate_rows.append(row)
-                doubles_names.add(name_lower)
-        if duplicate_rows:
-            return jsonify({'status': 'error', 'message': 'Duplicate player names found in singles or doubles. Please ensure each player name is unique within each category.', 'duplicates': duplicate_rows}), 400
-
-        # Insert players into the Player table
+            key = (name.lower(), game_type)
+            if key in seen_upload_keys:
+                continue
+            seen_upload_keys.add(key)
+            cleaned_rows.append({
+                'name': name,
+                'division': str(row['division']),
+                'game_type': game_type,
+                'group': str(row['group'])
+            })
+        existing_players = Player.query.all()
+        existing_keys = set((p.name.strip().lower(), p.game_type.strip().lower()) for p in existing_players)
         count = 0
-        for row in df.to_dict(orient='records'):
-            name = str(row['name']).strip()
-            game_type = str(row['game type']).strip()
-            division = str(row['division'])
-            group = str(row['group'])
-            try:
-                player = Player(
-                    name=name,
-                    game_type=game_type,
-                    division=division,
-                    group=group
-                )
-                db.session.add(player)
-                count += 1
-            except Exception as e:
-                db.session.rollback()
-                return jsonify({'status': 'error', 'message': f'Row error: {str(e)}'}), 400
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}'}), 400
-        # Return all players after upload
-        all_players = Player.query.all()
-        players_list = [p.to_dict() for p in all_players]
-        return jsonify({'status': 'success', 'players': players_list, 'message': f'Uploaded and added {count} players.'})
+        for row in cleaned_rows:
+            key = (row['name'].lower(), row['game_type'])
+            if key in existing_keys:
+                continue
+            player = Player(
+                name=row['name'],
+                game_type=row['game_type'],
+                division=row['division'],
+                group=row['group']
+            )
+            db.session.add(player)
+            count += 1
+        db.session.commit()
+        print(f"[DEBUG] Successfully uploaded players count={count}")
+        return jsonify({'status': 'success', 'message': f'Uploaded and added {count} new players.'}), 200
+        # Try to serialize all players
+        # try:
+        #     all_players = Player.query.all()
+        #     print(f"[DEBUG] Total players after upload: {len(all_players)}")
+        #     players_list = []
+        #     for p in all_players:
+        #         try:
+        #             players_list.append(p.to_dict())
+        #         except Exception as e:
+        #             print(f"[ERROR] to_dict failed for player id={p.id}: {str(e)}")
+        #     msg = f'Uploaded and added {count} new players.' if count > 0 else 'No new players were added.'
+        #     return jsonify({'status': 'success', 'players': players_list, 'message': msg})
+        # except Exception as e:
+        #     print(f"[ERROR] Player serialization failed: {str(e)}")
+        #     msg = f'Upload succeeded but failed to serialize player list: {str(e)}'
+        #     return jsonify({'status': 'success', 'players': [], 'message': msg})
     except Exception as e:
         import traceback
         db.session.rollback()
         tb = traceback.format_exc()
+        print(f"[ERROR] Exception in upload_players: {str(e)}\n{tb}")
         return jsonify({'status': 'error', 'message': f'Upload failed: {str(e)}', 'traceback': tb}), 400
+
 @admin_bp.route('/publish_players', methods=['POST'])
 def publish_players():
     print("[ENDPOINT] /publish_players POST triggered")

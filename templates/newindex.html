@@ -539,6 +539,37 @@ document.getElementById('scoreForm').addEventListener('submit', function(e) {
     });
 });
 
+// --- Upload Players Excel ---
+const uploadForm = document.getElementById('uploadPlayersForm');
+if (uploadForm) {
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('playerFile');
+        const resultDiv = document.getElementById('uploadResult');
+        if (!fileInput.files.length) {
+            resultDiv.innerHTML = '<div class="alert alert-danger">Please select a file.</div>';
+            return;
+        }
+        const formData = new FormData(uploadForm);
+        resultDiv.innerHTML = 'Uploading...';
+        fetch('/admin/upload_players', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                resultDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+            } else {
+                resultDiv.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Upload failed') + '</div>';
+            }
+        })
+        .catch(() => {
+            resultDiv.innerHTML = '<div class="alert alert-danger">Upload failed</div>';
+        });
+    });
+}
+
 function showScoreModal(team1, team2) {
     const modal = new bootstrap.Modal(document.getElementById('scoreModal'));
     document.getElementById('team1').value = team1;
