@@ -25,7 +25,8 @@ def newindex():
                                 pt_data_50=[],
                                 pt_data_45=[],
                                 pt_data_40=[],
-                                schedule_data={})
+                                schedule_data={},
+                                season_name=None)
 
         # Get data for each division
         divisions = [5.0, 4.5, 4.0]
@@ -75,7 +76,8 @@ def newindex():
                              pt_data_50=standings[5.0],
                              pt_data_45=standings[4.5],
                              pt_data_40=standings[4.0],
-                             schedule_data=schedule_data)
+                             schedule_data=schedule_data,
+                             season_name=active_season.name)
                              
     except Exception as e:
         print(f"Error in newindex route: {e}")
@@ -84,7 +86,8 @@ def newindex():
                              pt_data_50=[],
                              pt_data_45=[],
                              pt_data_40=[],
-                             schedule_data={})
+                             schedule_data={},
+                             season_name=None)
 
 @main_bp.route('/update_score', methods=['POST'])
 def update_score():

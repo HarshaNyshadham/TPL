@@ -5,6 +5,9 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-10 mx-auto">
+        {% if season_name %}
+        <h2 class="text-center mb-4 text-primary">{{ season_name }}</h2>
+        {% endif %}
         <!-- Game Type Selection -->
         <div class="text-center mb-4">
             <div class="btn-group" role="group" aria-label="Game Type Selection">
