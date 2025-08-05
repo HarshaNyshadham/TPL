@@ -133,21 +133,22 @@ def update_score():
 
         # Use modular point calculation
         t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, score)
-
+        total_games = team1_games + team2_games
         # Update Appointable (point table) for both teams
-        for team, points, bonus, win, loss, games, sets in [
-            (team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, team1_sets),
-            (team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, team2_sets)
+        for team, points, bonus, win, loss, games, total_games, sets in [
+            (team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, total_games, team1_sets),
+            (team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, total_games, team2_sets)
         ]:
             appoint = Appointable.query.filter_by(
                 team=team, game_type=game_type, season_id=active_season.id
             ).first()
+            print(f"DEBUG: Updating appointable for {team}, {points}, {bonus}, {win}, {loss}, {games},{team1_games} {sets}")
             if appoint:
                 appoint.matches = (appoint.matches or 0) + 1
                 appoint.points = (appoint.points or 0) + points + bonus
                 appoint.bonus = (appoint.bonus or 0) + bonus
-                appoint.games_total = (appoint.games_total or 0) + games
-                appoint.games_won = (appoint.games_won or 0) + sets
+                appoint.games_total = (appoint.games_total or 0) + total_games
+                appoint.games_won = (appoint.games_won or 0) + games
                 appoint.won = (appoint.won or 0) + win
                 appoint.loss = (appoint.loss or 0) + loss
                 appoint.calculate_games_percentage()

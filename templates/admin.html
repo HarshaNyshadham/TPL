@@ -62,6 +62,59 @@
 {% block extra_js %}
 <script>
 // --- Players Table Logic: Move to global scope ---
+// --- Filtering logic for Players tab ---
+function filterPlayersTable() {
+    const gameType = document.getElementById('filterGameType')?.value || '';
+    const division = document.getElementById('filterDivision')?.value || '';
+    const group = document.getElementById('filterGroup')?.value || '';
+    const active = document.getElementById('filterActive')?.value || '';
+    let filtered = allPlayersData;
+    if (gameType) {
+        filtered = filtered.filter(p => p.game_type === gameType);
+    }
+    if (division) {
+        filtered = filtered.filter(p => p.division === division);
+    }
+    if (group) {
+        filtered = filtered.filter(p => p.group === group);
+    }
+    if (active) {
+        filtered = filtered.filter(p => String(p.is_active) === active);
+    }
+    renderPlayersTable(filtered);
+}
+// --- Update dropdowns for Players tab ---
+function updatePlayerDropdowns(players) {
+    // Preserve selected values
+    const gameTypeDropdown = document.getElementById('filterGameType');
+    const divisionDropdown = document.getElementById('filterDivision');
+    const groupDropdown = document.getElementById('filterGroup');
+    const selectedGameType = gameTypeDropdown?.value || '';
+    const selectedDivision = divisionDropdown?.value || '';
+    const selectedGroup = groupDropdown?.value || '';
+
+    // Get unique values for each dropdown
+    const gameTypes = [...new Set(players.map(p => p.game_type).filter(Boolean))];
+    const divisions = [...new Set(players.map(p => p.division).filter(Boolean))];
+    const groups = [...new Set(players.map(p => p.group).filter(Boolean))];
+
+    // Update game type dropdown
+    if (gameTypeDropdown) {
+        gameTypeDropdown.innerHTML = '<option value="">All</option>' + gameTypes.map(gt => `<option value="${gt}">${gt}</option>`).join('');
+        gameTypeDropdown.value = selectedGameType;
+    }
+    // Update division dropdown
+    if (divisionDropdown) {
+        divisionDropdown.innerHTML = '<option value="">All</option>' + divisions.map(div => `<option value="${div}">${div}</option>`).join('');
+        divisionDropdown.value = selectedDivision;
+    }
+    // Update group dropdown
+    if (groupDropdown) {
+        groupDropdown.innerHTML = '<option value="">All</option>' + groups.map(gr => `<option value="${gr}">${gr}</option>`).join('');
+        groupDropdown.value = selectedGroup;
+    }
+    // Active dropdown is static, no need to update
+}
 let allPlayersData = [];
 function renderPlayersTable(players) {
     allPlayersData = players;
@@ -108,6 +161,9 @@ function renderPlayersTable(players) {
         <td><button class="btn btn-sm btn-primary add-player-btn">Add</button></td>
     `;
     tbody.appendChild(addTr);
+
+    // Always update dropdowns after rendering table
+    updatePlayerDropdowns(players);
 
     // Attach event listeners for save, delete, add
     tbody.querySelectorAll('.save-player-btn').forEach(btn => {
@@ -173,50 +229,79 @@ function fetchAndShowPlayers() {
         .then(data => {
             renderPlayersTable(data);
             allPlayersData = data;
+            updatePlayerDropdowns(data);
         });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Delete All Players button handler
-    const deleteBtn = document.getElementById('deleteAllPlayersBtn');
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', function() {
-            if (!confirm('Are you sure you want to delete all players? This action cannot be undone.')) return;
-            fetch('/admin/delete_players')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert(data.message);
-                        fetchAndShowPlayers();
-                    } else {
-                        alert(data.message || 'Failed to delete players');
-                    }
-                })
-                .catch(() => alert('Failed to delete players'));
-        });
+    // Setup Players tab every time it's shown
+    function setupPlayersTab() {
+        // Attach change listeners for dropdowns
+        const gameTypeDropdown = document.getElementById('filterGameType');
+        const divisionDropdown = document.getElementById('filterDivision');
+        const groupDropdown = document.getElementById('filterGroup');
+        const activeDropdown = document.getElementById('filterActive');
+        if (gameTypeDropdown) gameTypeDropdown.onchange = filterPlayersTable;
+        if (divisionDropdown) divisionDropdown.onchange = filterPlayersTable;
+        if (groupDropdown) groupDropdown.onchange = filterPlayersTable;
+        if (activeDropdown) activeDropdown.onchange = filterPlayersTable;
+        // Clear Filter button
+        const clearBtn = document.getElementById('clearFilterBtn');
+        if (clearBtn) {
+            clearBtn.onclick = function() {
+                if (gameTypeDropdown) gameTypeDropdown.value = '';
+                if (divisionDropdown) divisionDropdown.value = '';
+                if (groupDropdown) groupDropdown.value = '';
+                if (activeDropdown) activeDropdown.value = '';
+                const playersTableSearch = document.getElementById('playersTableSearch');
+                if (playersTableSearch) playersTableSearch.value = '';
+                fetchAndShowPlayers();
+            };
+        }
+        // Dynamic search for Players tab
+        const playersTableSearch = document.getElementById('playersTableSearch');
+        if (playersTableSearch) {
+            playersTableSearch.oninput = function() {
+                const q = playersTableSearch.value.trim().toLowerCase();
+                if (!q) {
+                    renderPlayersTable(allPlayersData);
+                    return;
+                }
+                const filtered = allPlayersData.filter(p =>
+                    (p.name && p.name.toLowerCase().includes(q)) ||
+                    (p.game_type && p.game_type.toLowerCase().includes(q)) ||
+                    (p.division && p.division.toLowerCase().includes(q)) ||
+                    (p.group && p.group.toLowerCase().includes(q))
+                );
+                renderPlayersTable(filtered);
+            };
+        }
+        // Delete All Players button handler
+        const deleteBtn = document.getElementById('deleteAllPlayersBtn');
+        if (deleteBtn) {
+            deleteBtn.onclick = function() {
+                if (!confirm('Are you sure you want to delete all players? This action cannot be undone.')) return;
+                fetch('/admin/delete_players')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            fetchAndShowPlayers();
+                        } else {
+                            alert(data.message || 'Failed to delete players');
+                        }
+                    })
+                    .catch(() => alert('Failed to delete players'));
+            };
+        }
     }
-    // Dynamic search for Players tab
-    const playersTableSearch = document.getElementById('playersTableSearch');
-    if (playersTableSearch) {
-        playersTableSearch.addEventListener('input', function() {
-            const q = playersTableSearch.value.trim().toLowerCase();
-            if (!q) {
-                renderPlayersTable(allPlayersData);
-                return;
-            }
-            const filtered = allPlayersData.filter(p =>
-                (p.name && p.name.toLowerCase().includes(q)) ||
-                (p.game_type && p.game_type.toLowerCase().includes(q)) ||
-                (p.division && p.division.toLowerCase().includes(q)) ||
-                (p.group && p.group.toLowerCase().includes(q))
-            );
-            renderPlayersTable(filtered);
-        });
-    }
-    // ...existing code...
     // On page load
     fetchAndShowPlayers();
-    document.getElementById('players-tab').addEventListener('click', fetchAndShowPlayers);
+    setupPlayersTab();
+    document.getElementById('players-tab').addEventListener('click', function() {
+        fetchAndShowPlayers();
+        setupPlayersTab();
+    });
     // ...existing code...
 });
 

@@ -51,32 +51,33 @@
                     <div class="col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h4 class="mb-0">Division 5.0 Standings</h4>
+<h4 class="mb-0 text-center">Division 5.0 Standings</h4>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Team</th>
-                                            <th>Matches</th>
-                                            <th>Won</th>
-                                            <th>Lost</th>
-                                            <th>Points</th>
-                                            <th>Games %</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for team in pt_data_50 %}
-                                        <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
-                                            <td>{{ team[0] }}</td>
-                                            <td>{{ team[1] }}</td>
-                                            <td>{{ team[2] }}</td>
-                                            <td>{{ team[3] }}</td>
-                                            <td>{{ team[4] }}</td>
-                                            <td>{{ "%.2f"|format(team[5]) }}%</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th class="text-center">Team</th>
+            <th class="text-center">Matches</th>
+            <th class="text-center">Won</th>
+            <th class="text-center">Lost</th>
+            <th class="text-center">Points</th>
+            <th class="text-center">Games %</th>
+        </tr>
+    </thead>
+<tbody>
+{% for team in pt_data_50|sort(attribute=4, reverse=True) %}
+<tr data-team="{{ team[0] }}" style="cursor:pointer; background-color: #e3f2fd;" onclick="showSchedule('{{ team[0] }}')">
+    <td class="text-center fw-bold text-primary">{{ team[0] }}</td>
+    <td class="text-center">{{ team[1] }}</td>
+    <td class="text-center">{{ team[2] }}</td>
+    <td class="text-center">{{ team[3] }}</td>
+    <td class="text-center">{{ team[4] }}</td>
+    <td class="text-center">{{ "%.2f"|format(team[5]) }}%</td>
+</tr>
+{% endfor %}
+</tbody>
+<caption class="text-center text-muted small pb-2">Click on player to enter score</caption>
                                 </table>
                             </div>
                         </div>
@@ -119,7 +120,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for team in pt_data_50 %}
+                                                    {% for team in pt_data_50|sort(attribute=4, reverse=True) %}
                                                         {% if team[6] == 'A' %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
@@ -149,7 +150,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for team in pt_data_50 %}
+                                                    {% for team in pt_data_50|sort(attribute=4, reverse=True) %}
                                                         {% if team[6] == 'B' %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
@@ -193,7 +194,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for team in pt_data_45 %}
+                                        {% for team in pt_data_45|sort(attribute=4, reverse=True) %}
                                         <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
                                             <td>{{ team[0] }}</td>
                                             <td>{{ team[1] }}</td>
@@ -243,7 +244,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for team in pt_data_45 %}
+                                                    {% for team in pt_data_45|sort(attribute=4, reverse=True) %}
                                                         {% if team[6] == 'A' %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
@@ -273,7 +274,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for team in pt_data_45 %}
+                                                    {% for team in pt_data_45|sort(attribute=4, reverse=True) %}
                                                         {% if team[6] == 'B' %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
@@ -317,7 +318,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for team in pt_data_40 %}
+                                        {% for team in pt_data_40|sort(attribute=4, reverse=True) %}
                                         <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
                                             <td>{{ team[0] }}</td>
                                             <td>{{ team[1] }}</td>
@@ -367,7 +368,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for team in pt_data_40 %}
+                                                    {% for team in pt_data_40|sort(attribute=4, reverse=True) %}
                                                         {% if team[6] == 'A' %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
@@ -397,7 +398,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for team in pt_data_40 %}
+                                                    {% for team in pt_data_40|sort(attribute=4, reverse=True) %}
                                                         {% if team[6] == 'B' %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>

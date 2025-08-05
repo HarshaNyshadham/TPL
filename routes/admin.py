@@ -806,75 +806,75 @@ def create_schedule():
     
     return redirect(url_for('admin.admin'))
 
-@admin_bp.route('/update_score', methods=['POST'])
-@admin_required
-def update_score():
-    print("[ENDPOINT] /update_score POST triggered")
-    schedule_id = request.form.get('schedule_id')
-    score = request.form.get('score')
+# @admin_bp.route('/update_score', methods=['POST'])
+# @admin_required
+# def update_score():
+#     print("[ENDPOINT] /update_score POST triggered")
+#     schedule_id = request.form.get('schedule_id')
+#     score = request.form.get('score')
     
-    if not all([schedule_id, score]):
-        flash('Missing required fields.', 'danger')
-        return redirect(url_for('admin.admin'))
+#     if not all([schedule_id, score]):
+#         flash('Missing required fields.', 'danger')
+#         return redirect(url_for('admin.admin'))
     
-    try:
-        schedule = Schedule.query.get_or_404(schedule_id)
+#     try:
+#         schedule = Schedule.query.get_or_404(schedule_id)
         
-        # Parse score (format: "6-4,6-3" or similar)
-        sets = score.split(',')
-        team1_sets = 0
-        team2_sets = 0
-        team1_games = 0
-        team2_games = 0
+#         # Parse score (format: "6-4,6-3" or similar)
+#         sets = score.split(',')
+#         team1_sets = 0
+#         team2_sets = 0
+#         team1_games = 0
+#         team2_games = 0
         
-        for set_score in sets:
-            t1_score, t2_score = map(int, set_score.split('-'))
-            team1_games += t1_score
-            team2_games += t2_score
-            if t1_score > t2_score:
-                team1_sets += 1
-            else:
-                team2_sets += 1
+#         for set_score in sets:
+#             t1_score, t2_score = map(int, set_score.split('-'))
+#             team1_games += t1_score
+#             team2_games += t2_score
+#             if t1_score > t2_score:
+#                 team1_sets += 1
+#             else:
+#                 team2_sets += 1
         
-        # Update schedule
-        schedule.score = score
+#         # Update schedule
+#         schedule.score = score
         
-        # Update team statistics
-        team1 = Appointable.query.filter_by(team=schedule.team1).first()
-        team2 = Appointable.query.filter_by(team=schedule.team2).first()
+#         # Update team statistics
+#         team1 = Appointable.query.filter_by(team=schedule.team1).first()
+#         team2 = Appointable.query.filter_by(team=schedule.team2).first()
         
-        # Update matches played
-        team1.matches += 1
-        team2.matches += 1
+#         # Update matches played
+#         team1.matches += 1
+#         team2.matches += 1
         
-        # Update wins/losses
-        if team1_sets > team2_sets:
-            team1.won += 1
-            team2.loss += 1
-            team1.points += 2  # 2 points for a win
-        else:
-            team2.won += 1
-            team1.loss += 1
-            team2.points += 2
+#         # Update wins/losses
+#         if team1_sets > team2_sets:
+#             team1.won += 1
+#             team2.loss += 1
+#             team1.points += 2  # 2 points for a win
+#         else:
+#             team2.won += 1
+#             team1.loss += 1
+#             team2.points += 2
         
-        # Update games statistics
-        team1.games_total += team1_games + team2_games
-        team2.games_total += team1_games + team2_games
-        team1.games_won += team1_games
-        team2.games_won += team2_games
+#         # Update games statistics
+#         team1.games_total += team1_games + team2_games
+#         team2.games_total += team1_games + team2_games
+#         team1.games_won += team1_games
+#         team2.games_won += team2_games
         
-        # Update games percentage
-        team1.games_percentage = (team1.games_won / team1.games_total * 100) if team1.games_total > 0 else 0
-        team2.games_percentage = (team2.games_won / team2.games_total * 100) if team2.games_total > 0 else 0
+#         # Update games percentage
+#         team1.games_percentage = (team1.games_won / team1.games_total * 100) if team1.games_total > 0 else 0
+#         team2.games_percentage = (team2.games_won / team2.games_total * 100) if team2.games_total > 0 else 0
         
-        db.session.commit()
-        flash('Score updated successfully.', 'success')
+#         db.session.commit()
+#         flash('Score updated successfully.', 'success')
         
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error updating score: {str(e)}', 'danger')
+#     except Exception as e:
+#         db.session.rollback()
+#         flash(f'Error updating score: {str(e)}', 'danger')
     
-    return redirect(url_for('admin.admin'))
+#     return redirect(url_for('admin.admin'))
 
 
 # Renamed to avoid endpoint conflict with RESTful /players/<int:player_id> PUT
