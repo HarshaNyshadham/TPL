@@ -95,21 +95,20 @@
                             <div class="card-body p-0">
                                 <!-- Group Tabs -->
                                 <ul class="nav nav-pills mb-3 p-3" id="div50Groups" role="tablist">
+                                    {% set groups_50 = pt_data_50 | map(attribute=6) | unique | list %}
+                                    {% for group in groups_50 %}
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#div50GroupA">
-                                            Group A
+                                        <button class="nav-link {% if loop.first %}active{% endif %}" data-bs-toggle="pill" data-bs-target="#div50Group{{ group }}">
+                                            Group {{ group }}
                                         </button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#div50GroupB">
-                                            Group B
-                                        </button>
-                                    </li>
+                                    {% endfor %}
                                 </ul>
 
                                 <!-- Group Content -->
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="div50GroupA">
+                                    {% for group in groups_50 %}
+                                    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="div50Group{{ group }}">
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead>
@@ -124,7 +123,7 @@
                                                 </thead>
                                                 <tbody>
                                                     {% for team in pt_data_50|sort(attribute=4, reverse=True) %}
-                                                        {% if team[6] == 'A' %}
+                                                        {% if team[6] == group %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
@@ -139,36 +138,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="div50GroupB">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Team</th>
-                                                        <th>Matches</th>
-                                                        <th>Won</th>
-                                                        <th>Lost</th>
-                                                        <th>Points</th>
-                                                        <th>Games %</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for team in pt_data_50|sort(attribute=4, reverse=True) %}
-                                                        {% if team[6] == 'B' %}
-                                                        <tr data-team="{{ team[0] }}">
-                                                            <td>{{ team[0] }}</td>
-                                                            <td>{{ team[1] }}</td>
-                                                            <td>{{ team[2] }}</td>
-                                                            <td>{{ team[3] }}</td>
-                                                            <td>{{ team[4] }}</td>
-                                                            <td>{{ "%.2f"|format(team[5]) }}%</td>
-                                                        </tr>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -220,20 +190,19 @@
                             </div>
                             <div class="card-body p-0">
                                 <ul class="nav nav-pills mb-3 p-3" id="div45Groups" role="tablist">
+                                    {% set groups_45 = pt_data_45 | map(attribute=6) | unique | list %}
+                                    {% for group in groups_45 %}
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#div45GroupA">
-                                            Group A
+                                        <button class="nav-link {% if loop.first %}active{% endif %}" data-bs-toggle="pill" data-bs-target="#div45Group{{ group }}">
+                                            Group {{ group }}
                                         </button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#div45GroupB">
-                                            Group B
-                                        </button>
-                                    </li>
+                                    {% endfor %}
                                 </ul>
 
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="div45GroupA">
+                                    {% for group in groups_45 %}
+                                    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="div45Group{{ group }}">
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead>
@@ -248,7 +217,7 @@
                                                 </thead>
                                                 <tbody>
                                                     {% for team in pt_data_45|sort(attribute=4, reverse=True) %}
-                                                        {% if team[6] == 'A' %}
+                                                        {% if team[6] == group %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
@@ -263,36 +232,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="div45GroupB">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Team</th>
-                                                        <th>Matches</th>
-                                                        <th>Won</th>
-                                                        <th>Lost</th>
-                                                        <th>Points</th>
-                                                        <th>Games %</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for team in pt_data_45|sort(attribute=4, reverse=True) %}
-                                                        {% if team[6] == 'B' %}
-                                                        <tr data-team="{{ team[0] }}">
-                                                            <td>{{ team[0] }}</td>
-                                                            <td>{{ team[1] }}</td>
-                                                            <td>{{ team[2] }}</td>
-                                                            <td>{{ team[3] }}</td>
-                                                            <td>{{ team[4] }}</td>
-                                                            <td>{{ "%.2f"|format(team[5]) }}%</td>
-                                                        </tr>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -344,20 +284,19 @@
                             </div>
                             <div class="card-body p-0">
                                 <ul class="nav nav-pills mb-3 p-3" id="div40Groups" role="tablist">
+                                    {% set groups_40 = pt_data_40 | map(attribute=6) | unique | list %}
+                                    {% for group in groups_40 %}
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#div40GroupA">
-                                            Group A
+                                        <button class="nav-link {% if loop.first %}active{% endif %}" data-bs-toggle="pill" data-bs-target="#div40Group{{ group }}">
+                                            Group {{ group }}
                                         </button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#div40GroupB">
-                                            Group B
-                                        </button>
-                                    </li>
+                                    {% endfor %}
                                 </ul>
 
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="div40GroupA">
+                                    {% for group in groups_40 %}
+                                    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="div40Group{{ group }}">
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead>
@@ -372,7 +311,7 @@
                                                 </thead>
                                                 <tbody>
                                                     {% for team in pt_data_40|sort(attribute=4, reverse=True) %}
-                                                        {% if team[6] == 'A' %}
+                                                        {% if team[6] == group %}
                                                         <tr data-team="{{ team[0] }}">
                                                             <td>{{ team[0] }}</td>
                                                             <td>{{ team[1] }}</td>
@@ -387,36 +326,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="div40GroupB">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Team</th>
-                                                        <th>Matches</th>
-                                                        <th>Won</th>
-                                                        <th>Lost</th>
-                                                        <th>Points</th>
-                                                        <th>Games %</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for team in pt_data_40|sort(attribute=4, reverse=True) %}
-                                                        {% if team[6] == 'B' %}
-                                                        <tr data-team="{{ team[0] }}">
-                                                            <td>{{ team[0] }}</td>
-                                                            <td>{{ team[1] }}</td>
-                                                            <td>{{ team[2] }}</td>
-                                                            <td>{{ team[3] }}</td>
-                                                            <td>{{ team[4] }}</td>
-                                                            <td>{{ "%.2f"|format(team[5]) }}%</td>
-                                                        </tr>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
