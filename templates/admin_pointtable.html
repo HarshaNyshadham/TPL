@@ -65,4 +65,24 @@ function savePointTable(btn, teamId) {
     })
     .catch(() => alert('Save failed'));
 }
+
+// Point Table Search
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('pointTableSearch');
+    const table = document.getElementById('pointTable');
+    if (searchInput && table) {
+        searchInput.addEventListener('input', function() {
+            const filter = searchInput.value.toLowerCase();
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const teamCell = row.children[0];
+                if (teamCell && teamCell.textContent.toLowerCase().includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
 </script>

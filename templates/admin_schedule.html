@@ -61,8 +61,28 @@ function saveSchedule(btn, schedId) {
     })
     .catch(() => alert('Save failed'));
 }
-</script>
-<script>
+
+// Schedule Table Search
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('scheduleTableSearch');
+    const table = document.getElementById('scheduleTable');
+    if (searchInput && table) {
+        searchInput.addEventListener('input', function() {
+            const filter = searchInput.value.toLowerCase();
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const team1 = row.children[0]?.textContent.toLowerCase() || '';
+                const team2 = row.children[1]?.textContent.toLowerCase() || '';
+                if (team1.includes(filter) || team2.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+
 function recalculateScores() {
     fetch('/admin/recalculate_scores', {
         method: 'POST',
