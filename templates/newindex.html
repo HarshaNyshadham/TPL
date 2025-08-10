@@ -58,6 +58,7 @@
                             </div>
                             <div class="table-responsive">
 <table class="table">
+                                       <div class="text-center text-danger small pb-2">Click on player to enter score</div>
     <thead>
         <tr class="text-center">
             <th class="text-center">Team</th>
@@ -80,7 +81,6 @@
 </tr>
 {% endfor %}
 </tbody>
-<caption class="text-center text-muted small pb-2">Click on player to enter score</caption>
                                 </table>
                             </div>
                         </div>
@@ -156,6 +156,7 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table">
+                                    <div class="text-center text-danger small pb-2">Click on player to enter score</div>
                                     <thead>
                                         <tr>
                                             <th>Team</th>
@@ -250,6 +251,7 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table">
+                                    <div class="text-center text-danger small pb-2">Click on player to enter score</div>
                                     <thead>
                                         <tr>
                                             <th>Team</th>
@@ -354,7 +356,6 @@
                                 <th>Team 2</th>
                                 <th>Score</th>
                                 <th>Deadline</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="scheduleTableBody"></tbody>
@@ -409,11 +410,10 @@ function showSchedule(team) {
         row.innerHTML = `
             <td>${match[0]}</td>
             <td>${match[1]}</td>
-            <td>${match[2] || '-'}</td>
-            <td>${match[3] || '-'}</td>
             <td>
-                ${!match[2] ? `<button class="btn btn-sm btn-primary" onclick="showScoreModal('${match[0]}', '${match[1]}')">Enter Score</button>` : ''}
+                ${match[2] ? match[2] : `<button class="btn btn-sm btn-primary" onclick="showScoreModal('${match[0]}', '${match[1]}')">Enter Score</button>`}
             </td>
+            <td>${match[3] || '-'}</td>
         `;
         tbody.appendChild(row);
     });
