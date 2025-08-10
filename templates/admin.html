@@ -38,6 +38,9 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="createseason-tab" data-bs-toggle="tab" data-bs-target="#createseason" type="button" role="tab">Create Season</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rules-deadline-tab" data-bs-toggle="tab" data-bs-target="#rules-deadline" type="button" role="tab">Rules & Deadline</button>
+        </li>
     </ul>
     <div class="tab-content mt-3" id="adminTabContent">
         <div class="tab-pane fade show active" id="pointtable" role="tabpanel">
@@ -54,6 +57,9 @@
         </div>
         <div class="tab-pane fade" id="createseason" role="tabpanel">
             {% include 'admin_createseason.html' %}
+        </div>
+        <div class="tab-pane fade" id="rules-deadline" role="tabpanel">
+            {% include 'admin_rules_deadline.html' %}
         </div>
     </div>
 </div>

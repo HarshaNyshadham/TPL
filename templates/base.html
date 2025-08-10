@@ -229,6 +229,11 @@
                 Deadline
               </button>
             </li>
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rulesModal">
+                Rules
+              </button>
+            </li>
             {% if current_user.is_authenticated and current_user.is_admin %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
@@ -257,6 +262,35 @@
     </nav>
 
     <!-- Main Content -->
+    <!-- Rules Modal -->
+    <div class="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rulesModalLabel">Rules</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="rulesModalBody">
+            <!-- Rules content will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deadline Modal -->
+    <div class="modal fade" id="deadlineModal" tabindex="-1" aria-labelledby="deadlineModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deadlineModalLabel">Deadline</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Deadline content will be loaded here by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="content-wrapper">
       <div class="container">
         {% block content %}{% endblock %}
@@ -270,5 +304,31 @@
     
     {% block modals %}{% endblock %}
     {% block extra_js %}{% endblock %}
+<script>
+// Load rules and deadline content into modals
+document.addEventListener('DOMContentLoaded', function() {
+  var rulesModal = document.getElementById('rulesModal');
+  if (rulesModal) {
+    rulesModal.addEventListener('show.bs.modal', function () {
+      fetch('/admin/get_rules_deadline')
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('rulesModalBody').innerHTML = data.rules ? data.rules.replace(/\n/g, '<br>') : '<em>No rules set.</em>';
+        });
+    });
+  }
+  var deadlineModal = document.getElementById('deadlineModal');
+  if (deadlineModal) {
+    deadlineModal.addEventListener('show.bs.modal', function () {
+      fetch('/admin/get_rules_deadline')
+        .then(r => r.json())
+        .then(data => {
+          var body = deadlineModal.querySelector('.modal-body');
+          if (body) body.innerHTML = data.deadline ? data.deadline.replace(/\n/g, '<br>') : '<em>No deadline set.</em>';
+        });
+    });
+  }
+});
+</script>
   </body>
 </html> 

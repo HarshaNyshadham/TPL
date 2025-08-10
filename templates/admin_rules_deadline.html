@@ -1,0 +1,51 @@
+<div class="container mt-3">
+    <h4>Update Rules & Deadline</h4>
+    <form id="rules-deadline-form">
+        <div class="mb-3">
+            <label for="rulesText" class="form-label">Rules (Markdown or Text)</label>
+            <textarea class="form-control" id="rulesText" name="rules" rows="6" placeholder="Enter rules here..."></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="deadlineText" class="form-label">Deadline Info</label>
+            <textarea class="form-control" id="deadlineText" name="deadline" rows="2" placeholder="Enter deadline info..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <span id="rules-deadline-status" class="ms-3"></span>
+    </form>
+</div>
+<script>
+// Load existing values
+fetch('/admin/get_rules_deadline')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('rulesText').value = data.rules || '';
+        document.getElementById('deadlineText').value = data.deadline || '';
+    });
+
+document.getElementById('rules-deadline-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const rules = document.getElementById('rulesText').value;
+    const deadline = document.getElementById('deadlineText').value;
+    fetch('/admin/save_rules_deadline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rules, deadline })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const status = document.getElementById('rules-deadline-status');
+        if (data.status === 'success') {
+            status.textContent = 'Saved!';
+            status.className = 'text-success ms-3';
+        } else {
+            status.textContent = 'Save failed';
+            status.className = 'text-danger ms-3';
+        }
+    })
+    .catch(() => {
+        const status = document.getElementById('rules-deadline-status');
+        status.textContent = 'Save failed';
+        status.className = 'text-danger ms-3';
+    });
+});
+</script>

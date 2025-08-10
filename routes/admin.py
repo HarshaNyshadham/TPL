@@ -9,6 +9,8 @@ import io
 import itertools
 import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
+import json
 
 def admin_required(f):
     """Decorator to check if user is an admin, returns JSON for AJAX/JS requests"""
@@ -1053,3 +1055,30 @@ def recalculate_scores():
         return jsonify({'status': 'success'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+RULES_DEADLINE_FILE = os.path.join(os.path.dirname(__file__), '..', 'rules_deadline.json')
+
+@admin_bp.route('/get_rules_deadline', methods=['GET'])
+def get_rules_deadline():
+    try:
+        if os.path.exists(RULES_DEADLINE_FILE):
+            with open(RULES_DEADLINE_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        else:
+            data = {"rules": "", "deadline": ""}
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"rules": "", "deadline": "", "error": str(e)})
+
+@admin_bp.route('/save_rules_deadline', methods=['POST'])
+@admin_required
+def save_rules_deadline():
+    data = request.get_json()
+    rules = data.get('rules', '')
+    deadline = data.get('deadline', '')
+    try:
+        with open(RULES_DEADLINE_FILE, 'w', encoding='utf-8') as f:
+            json.dump({"rules": rules, "deadline": deadline}, f)
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
