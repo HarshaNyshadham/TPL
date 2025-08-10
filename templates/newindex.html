@@ -79,6 +79,25 @@
         margin-right: 0.3em;
         vertical-align: middle;
     }
+    /* Right-positioned modal support */
+    .modal.right-modal .modal-dialog {
+        position: fixed;
+        top: var(--modal-top, 20vh);
+        left: var(--modal-left, auto);
+        right: var(--modal-right, 10vw);
+        margin: 0;
+        max-width: 420px;
+        width: 100%;
+        transition: right 0.2s ease, left 0.2s ease, top 0.2s ease;
+        z-index: 1060;
+    }
+    @media (max-width: 768px) {
+        .modal.right-modal .modal-dialog {
+            right: 0 !important;
+            left: 0 !important;
+            max-width: 100vw;
+        }
+    }
 </style>
 <div class="row">
     <div class="col-lg-10 mx-auto">
@@ -486,7 +505,7 @@
 </div>
 
 <!-- Score Modal -->
-<div class="modal fade" id="scoreModal" tabindex="-1">
+<div class="modal fade" id="scoreModal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -534,11 +553,17 @@ function showSchedule(team) {
             <td>${match[0]}</td>
             <td>${match[1]}</td>
             <td>
-                ${match[2] ? match[2] : `<button class="btn btn-sm btn-primary" onclick="showScoreModal('${match[0]}', '${match[1]}')">Enter Score</button>`}
+                ${match[2] ? match[2] : `<button class="btn btn-sm btn-primary enter-score-btn">Enter Score</button>`}
             </td>
             <td>${match[3] || '-'}</td>
         `;
         tbody.appendChild(row);
+        if (!match[2]) {
+            const btn = row.querySelector('.enter-score-btn');
+            if (btn) {
+                btn.addEventListener('click', (ev) => showScoreModal(match[0], match[1], ev));
+            }
+        }
     });
     
     const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
@@ -546,19 +571,23 @@ function showSchedule(team) {
 }
 
 // Update team names in Enter Score modal
-function showScoreModal(team1, team2) {
+function showScoreModal(team1, team2, event) {
     document.getElementById('team1').value = team1;
     document.getElementById('team2').value = team2;
-    document.getElementById('scoreTeam1').textContent = team1;
-    document.getElementById('scoreTeam2').textContent = team2;
-    // Dynamically set the order display
+    // Update labels only if present (they may be commented out)
+    var label1 = document.getElementById('scoreTeam1');
+    if (label1) label1.textContent = team1;
+    var label2 = document.getElementById('scoreTeam2');
+    if (label2) label2.textContent = team2;
     var order1 = document.getElementById('scoreOrderTeam1');
     var order2 = document.getElementById('scoreOrderTeam2');
     if (order1 && order2) {
         order1.textContent = team1;
         order2.textContent = team2;
     }
-    const modal = new bootstrap.Modal(document.getElementById('scoreModal'));
+    // Open centered (default Bootstrap positioning)
+    var modalEl = document.getElementById('scoreModal');
+    const modal = new bootstrap.Modal(modalEl, { backdrop: false });
     modal.show();
 }
 
@@ -624,11 +653,6 @@ if (uploadForm) {
     });
 }
 
-function showScoreModal(team1, team2) {
-    const modal = new bootstrap.Modal(document.getElementById('scoreModal'));
-    document.getElementById('team1').value = team1;
-    document.getElementById('team2').value = team2;
-    modal.show();
-}
+// (Duplicate showScoreModal removed; single definition above handles positioning)
 </script>
 {% endblock %}
