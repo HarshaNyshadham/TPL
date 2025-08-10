@@ -3,10 +3,80 @@
 {% block title %}TPL - Home{% endblock %}
 
 {% block content %}
+<style>
+    .tpl-season-title {
+        color: #000000;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 8px rgba(33,150,243,0.08);
+    }
+        .top1 {
+            background: linear-gradient(270deg, #ffe066, #fffbe6, #ffe066);
+            background-size: 200% 200%;
+            background-position: 0% 50%;
+            animation: bg-animate-gold 2s linear infinite alternate;
+        }
+        .top2 {
+            background: linear-gradient(270deg, #c0c0c0, #f8f9fa, #c0c0c0);
+            background-size: 200% 200%;
+            background-position: 0% 50%;
+            animation: bg-animate-silver 2s linear infinite alternate;
+        }
+        .top3 {
+            background: linear-gradient(270deg, #cd7f32, #f8f9fa, #cd7f32);
+            background-size: 200% 200%;
+            background-position: 0% 50%;
+            animation: bg-animate-bronze 2s linear infinite alternate;
+        }
+        .top8 {
+            background: linear-gradient(270deg, #e3f2fd, #f8f9fa, #e3f2fd);
+            background-size: 200% 200%;
+            background-position: 0% 50%;
+            animation: bg-animate-blue 2s linear infinite alternate;
+        }
+
+        @keyframes bg-animate-gold {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        @keyframes bg-animate-silver {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        @keyframes bg-animate-bronze {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        @keyframes bg-animate-blue {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+    .table thead th {
+        background: #f1f6fb;
+        border-top: none;
+        font-weight: 600;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #f8fafc;
+    }
+    .standings-row {
+        transition: background 0.3s, color 0.3s;
+    }
+    .top1 { background: linear-gradient(90deg, #ffe082 0%, #fffde7 100%) !important; font-weight: bold; }
+    .top2 { background: linear-gradient(90deg, #b0bec5 0%, #eceff1 100%) !important; font-weight: bold; }
+    .top3 { background: linear-gradient(90deg, #ffd180 0%, #fff3e0 100%) !important; font-weight: bold; }
+    .top8 { background: #e3f2fd !important; }
+    .standings-row:hover { background: #e1f5fe !important; }
+    .medal {
+        font-size: 1.1em;
+        margin-right: 0.3em;
+        vertical-align: middle;
+    }
+</style>
 <div class="row">
     <div class="col-lg-10 mx-auto">
         {% if season_name %}
-        <h2 class="text-center mb-4 text-primary">{{ season_name }}</h2>
+    <h2 class="text-center mb-4 tpl-season-title">{{ season_name }}</h2>
         {% endif %}
         <!-- Game Type Selection -->
         <div class="text-center mb-4">
@@ -71,14 +141,28 @@
     </thead>
 <tbody>
 {% for team in pt_data_50|sort(attribute=4, reverse=True) %}
-<tr data-team="{{ team[0] }}" style="cursor:pointer; background-color: #e3f2fd;" onclick="showSchedule('{{ team[0] }}')">
-    <td class="text-center fw-bold text-primary">{{ team[0] }}</td>
-    <td class="text-center">{{ team[1] }}</td>
-    <td class="text-center">{{ team[2] }}</td>
-    <td class="text-center">{{ team[3] }}</td>
-    <td class="text-center">{{ team[4] }}</td>
-    <td class="text-center">{{ "%.2f"|format(team[5]) }}%</td>
-</tr>
+    {% set idx = loop.index0 %}
+    {% set row_class = '' %}
+    {% if idx == 0 %}
+        {% set row_class = 'top1' %}
+    {% elif idx == 1 %}
+        {% set row_class = 'top2' %}
+    {% elif idx == 2 %}
+        {% set row_class = 'top3' %}
+    {% elif idx < 8 %}
+        {% set row_class = 'top8' %}
+    {% endif %}
+    <tr data-team="{{ team[0] }}" class="standings-row {{ row_class }}" style="cursor:pointer;" onclick="showSchedule('{{ team[0] }}')">
+        <td class="text-center fw-bold text-primary">
+            {% if idx == 0 %}<span class="medal">🥇</span>{% elif idx == 1 %}<span class="medal">🥈</span>{% elif idx == 2 %}<span class="medal">🥉</span>{% endif %}
+            {{ team[0] }}
+        </td>
+        <td class="text-center">{{ team[1] }}</td>
+        <td class="text-center">{{ team[2] }}</td>
+        <td class="text-center">{{ team[3] }}</td>
+        <td class="text-center">{{ team[4] }}</td>
+        <td class="text-center">{{ "%.2f"|format(team[5]) }}%</td>
+    </tr>
 {% endfor %}
 </tbody>
                                 </table>
@@ -169,14 +253,28 @@
                                     </thead>
                                     <tbody>
                                         {% for team in pt_data_45|sort(attribute=4, reverse=True) %}
-                                        <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
-                                            <td>{{ team[0] }}</td>
-                                            <td>{{ team[1] }}</td>
-                                            <td>{{ team[2] }}</td>
-                                            <td>{{ team[3] }}</td>
-                                            <td>{{ team[4] }}</td>
-                                            <td>{{ "%.2f"|format(team[5]) }}%</td>
-                                        </tr>
+                                            {% set idx = loop.index0 %}
+                                            {% set row_class = '' %}
+                                            {% if idx == 0 %}
+                                                {% set row_class = 'top1' %}
+                                            {% elif idx == 1 %}
+                                                {% set row_class = 'top2' %}
+                                            {% elif idx == 2 %}
+                                                {% set row_class = 'top3' %}
+                                            {% elif idx < 8 %}
+                                                {% set row_class = 'top8' %}
+                                            {% endif %}
+                                            <tr data-team="{{ team[0] }}" class="standings-row {{ row_class }}" style="cursor:pointer;" onclick="showSchedule('{{ team[0] }}')">
+                                                <td class="text-center fw-bold text-primary">
+                                                    {% if idx == 0 %}<span class="medal">🥇</span>{% elif idx == 1 %}<span class="medal">🥈</span>{% elif idx == 2 %}<span class="medal">🥉</span>{% endif %}
+                                                    {{ team[0] }}
+                                                </td>
+                                                <td class="text-center">{{ team[1] }}</td>
+                                                <td class="text-center">{{ team[2] }}</td>
+                                                <td class="text-center">{{ team[3] }}</td>
+                                                <td class="text-center">{{ team[4] }}</td>
+                                                <td class="text-center">{{ "%.2f"|format(team[5]) }}%</td>
+                                            </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -264,14 +362,28 @@
                                     </thead>
                                     <tbody>
                                         {% for team in pt_data_40|sort(attribute=4, reverse=True) %}
-                                        <tr data-team="{{ team[0] }}" style="cursor:pointer" onclick="showSchedule('{{ team[0] }}')">
-                                            <td>{{ team[0] }}</td>
-                                            <td>{{ team[1] }}</td>
-                                            <td>{{ team[2] }}</td>
-                                            <td>{{ team[3] }}</td>
-                                            <td>{{ team[4] }}</td>
-                                            <td>{{ "%.2f"|format(team[5]) }}%</td>
-                                        </tr>
+                                            {% set idx = loop.index0 %}
+                                            {% set row_class = '' %}
+                                            {% if idx == 0 %}
+                                                {% set row_class = 'top1' %}
+                                            {% elif idx == 1 %}
+                                                {% set row_class = 'top2' %}
+                                            {% elif idx == 2 %}
+                                                {% set row_class = 'top3' %}
+                                            {% elif idx < 8 %}
+                                                {% set row_class = 'top8' %}
+                                            {% endif %}
+                                            <tr data-team="{{ team[0] }}" class="standings-row {{ row_class }}" style="cursor:pointer;" onclick="showSchedule('{{ team[0] }}')">
+                                                <td class="text-center fw-bold text-primary">
+                                                    {% if idx == 0 %}<span class="medal">🥇</span>{% elif idx == 1 %}<span class="medal">🥈</span>{% elif idx == 2 %}<span class="medal">🥉</span>{% endif %}
+                                                    {{ team[0] }}
+                                                </td>
+                                                <td class="text-center">{{ team[1] }}</td>
+                                                <td class="text-center">{{ team[2] }}</td>
+                                                <td class="text-center">{{ team[3] }}</td>
+                                                <td class="text-center">{{ team[4] }}</td>
+                                                <td class="text-center">{{ "%.2f"|format(team[5]) }}%</td>
+                                            </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
