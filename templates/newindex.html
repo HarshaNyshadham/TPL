@@ -4,6 +4,13 @@
 
 {% block content %}
 <style>
+    .score-team-labels {
+        display: flex;
+        gap: 2em;
+        margin-bottom: 0.5em;
+        font-weight: 500;
+        font-size: 1.1em;
+    }
     .tpl-season-title {
         color: #000000;
         font-weight: 700;
@@ -491,10 +498,14 @@
                     <input type="hidden" id="team1" name="team1">
                     <input type="hidden" id="team2" name="team2">
                     <input type="hidden" id="gameType" name="game_type" value="{{ game_type }}">
+                    <!-- <div class="score-team-labels">
+                        <span id="scoreTeam1">Team 1</span>
+                        <span id="scoreTeam2">Team 2</span>
+                    </div> -->
                     <div class="mb-3">
                         <label class="form-label">Score (e.g., 6-4,6-3)</label>
                         <input type="text" class="form-control" name="score" required pattern="\d+-\d+(?:,\d+-\d+)*">
-                        <div class="form-text">Enter scores for each set, separated by commas.</div>
+                        <div class="form-text">Enter scores for each set, separated by commas.<br>Order: <b><span id="scoreOrderTeam1">Team 1</span> - <span id="scoreOrderTeam2">Team 2</span></b></div>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Score</button>
                 </form>
@@ -531,6 +542,23 @@ function showSchedule(team) {
     });
     
     const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+    modal.show();
+}
+
+// Update team names in Enter Score modal
+function showScoreModal(team1, team2) {
+    document.getElementById('team1').value = team1;
+    document.getElementById('team2').value = team2;
+    document.getElementById('scoreTeam1').textContent = team1;
+    document.getElementById('scoreTeam2').textContent = team2;
+    // Dynamically set the order display
+    var order1 = document.getElementById('scoreOrderTeam1');
+    var order2 = document.getElementById('scoreOrderTeam2');
+    if (order1 && order2) {
+        order1.textContent = team1;
+        order2.textContent = team2;
+    }
+    const modal = new bootstrap.Modal(document.getElementById('scoreModal'));
     modal.show();
 }
 
