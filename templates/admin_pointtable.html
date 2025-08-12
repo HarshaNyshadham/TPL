@@ -21,7 +21,7 @@
             {% for season in seasons %}
             {% for team in season.teams %}
             <tr data-id="{{ team.id }}">
-                <td>{{ team.team }}</td>
+                <td contenteditable="true" class="editable-cell">{{ team.team }}</td>
                 <td contenteditable="true" class="editable-cell">{{ team.matches }}</td>
                 <td contenteditable="true" class="editable-cell">{{ team.won }}</td>
                 <td contenteditable="true" class="editable-cell">{{ team.loss }}</td>
@@ -39,6 +39,7 @@
 <script>
 function savePointTable(btn, teamId) {
     const row = btn.closest('tr');
+    const team = row.children[0].innerText.trim();
     const matches = row.children[1].innerText.trim();
     const won = row.children[2].innerText.trim();
     const loss = row.children[3].innerText.trim();
@@ -46,7 +47,7 @@ function savePointTable(btn, teamId) {
     fetch(`/admin/pointtable/${teamId}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matches, won, loss, points })
+        body: JSON.stringify({ team, matches, won, loss, points })
     })
     .then(r => r.json())
     .then(data => {

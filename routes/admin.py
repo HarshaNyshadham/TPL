@@ -963,6 +963,7 @@ def logout():
     return redirect(url_for('main.newindex'))
 
 @admin_bp.route('/schedule/<int:sched_id>/update', methods=['POST'])
+@admin_required
 def update_schedule(sched_id):
     print(f"[ENDPOINT] /schedule/{sched_id}/update POST triggered")
     data = request.json
@@ -971,13 +972,34 @@ def update_schedule(sched_id):
     if not sched:
         print(f"[ERROR] Schedule not found for id={sched_id}")
         return jsonify({'status': 'error', 'message': 'Schedule not found'}), 404
-    sched.score = data.get('score', sched.score)
+    # Allow editing teams and score
+    new_team1 = data.get('team1')
+    new_team2 = data.get('team2')
+    new_score = data.get('score')
+    if new_team1:
+        sched.team1 = new_team1
+    if new_team2:
+        sched.team2 = new_team2
+    # Normalize score: allow clearing to NULL
+    if new_score is None:
+        sched.score = None
+    else:
+        # treat blank/whitespace/'none'/'null' as NULL
+        try:
+            s = str(new_score).strip()
+        except Exception:
+            s = ''
+        if not s or s.lower() in ('none', 'null'):
+            sched.score = None
+        else:
+            sched.score = s
     sched.updated_at = db.func.now()
     db.session.commit()
     print(f"[DEBUG] Schedule updated successfully for id={sched_id}")
     return jsonify({'status': 'success'})
 
 @admin_bp.route('/pointtable/<int:team_id>/update', methods=['POST'])
+@admin_required
 def update_pointtable(team_id):
     print(f"[ENDPOINT] /pointtable/{team_id}/update POST triggered")
     data = request.json
@@ -987,16 +1009,26 @@ def update_pointtable(team_id):
     if not appoint:
         print(f"[ERROR] Team not found for id={team_id}")
         return jsonify({'status': 'error', 'message': 'Team not found'}), 404
-    appoint.matches = int(data.get('matches', appoint.matches))
-    appoint.won = int(data.get('won', appoint.won))
-    appoint.loss = int(data.get('loss', appoint.loss))
-    appoint.points = int(data.get('points', appoint.points))
+    # Allow editing team name as well as stats
+    new_team = data.get('team')
+    if new_team:
+        appoint.team = new_team
+    def to_int(val, default):
+        try:
+            return int(val)
+        except (TypeError, ValueError):
+            return default
+    appoint.matches = to_int(data.get('matches'), appoint.matches)
+    appoint.won = to_int(data.get('won'), appoint.won)
+    appoint.loss = to_int(data.get('loss'), appoint.loss)
+    appoint.points = to_int(data.get('points'), appoint.points)
     appoint.updated_at = db.func.now()
     db.session.commit()
     print(f"[DEBUG] Point table updated successfully for team_id={team_id}")
     return jsonify({'status': 'success'})
 
 @admin_bp.route('/recalculate_scores', methods=['POST'])
+@admin_required
 def recalculate_scores():
     print("[ENDPOINT] /recalculate_scores POST triggered")
     try:

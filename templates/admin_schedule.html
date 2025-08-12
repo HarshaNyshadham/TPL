@@ -21,8 +21,8 @@
             {% for season in seasons %}
             {% for sched in season.schedules %}
             <tr data-id="{{ sched.id }}">
-                <td>{{ sched.team1 }}</td>
-                <td>{{ sched.team2 }}</td>
+                <td contenteditable="true" class="editable-cell">{{ sched.team1 }}</td>
+                <td contenteditable="true" class="editable-cell">{{ sched.team2 }}</td>
                 <td contenteditable="true" class="editable-cell">{{ sched.score }}</td>
                 <td>{{ sched.deadline.strftime('%Y-%m-%d') }}</td>
                 <td>{{ sched.division }}</td>
@@ -38,11 +38,17 @@
 <script>
 function saveSchedule(btn, schedId) {
     const row = btn.closest('tr');
-    const score = row.children[2].innerText.trim();
+    const team1 = row.children[0].innerText.trim();
+    const team2 = row.children[1].innerText.trim();
+    const rawScore = row.children[2].innerText.trim();
+    let score = rawScore;
+    if (!rawScore || rawScore.toLowerCase() === 'none' || rawScore.toLowerCase() === 'null') {
+        score = null; // send JSON null -> DB NULL
+    }
     fetch(`/admin/schedule/${schedId}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ score })
+        body: JSON.stringify({ team1, team2, score })
     })
     .then(r => r.json())
     .then(data => {
