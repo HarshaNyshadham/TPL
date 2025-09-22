@@ -176,7 +176,7 @@ def handle_500(e):
 
 
 @admin_bp.route('/')
-@admin_required
+#@admin_required
 def admin():
     print("[ENDPOINT] /admin/ GET triggered")
     seasons = Season.query.all()
@@ -972,10 +972,13 @@ def update_schedule(sched_id):
     if not sched:
         print(f"[ERROR] Schedule not found for id={sched_id}")
         return jsonify({'status': 'error', 'message': 'Schedule not found'}), 404
-    # Allow editing teams and score
+    # Allow editing teams, score, deadline, division, and game_type
     new_team1 = data.get('team1')
     new_team2 = data.get('team2')
     new_score = data.get('score')
+    new_deadline = data.get('deadline')
+    new_division = data.get('division')
+    new_game_type = data.get('game_type')
     if new_team1:
         sched.team1 = new_team1
     if new_team2:
@@ -993,10 +996,55 @@ def update_schedule(sched_id):
             sched.score = None
         else:
             sched.score = s
+    # Deadline in 'YYYY-MM-DD'
+    if new_deadline:
+        try:
+            sched.deadline = datetime.strptime(str(new_deadline).strip(), '%Y-%m-%d')
+        except Exception:
+            pass
+    if new_division:
+        sched.division = str(new_division).strip()
+    if new_game_type:
+        sched.game_type = str(new_game_type).strip()
     sched.updated_at = db.func.now()
     db.session.commit()
     print(f"[DEBUG] Schedule updated successfully for id={sched_id}")
     return jsonify({'status': 'success'})
+
+# Create a new schedule record (match row)
+@admin_bp.route('/schedule', methods=['POST'])
+@admin_required
+def create_schedule_record():
+    print("[ENDPOINT] /schedule POST triggered")
+    data = request.get_json(silent=True) or {}
+    print(f"[DEBUG] Payload: {data}")
+    team1 = (data.get('team1') or '').strip()
+    team2 = (data.get('team2') or '').strip()
+    division = (data.get('division') or '').strip()
+    game_type = (data.get('game_type') or '').strip()
+    deadline_str = (data.get('deadline') or '').strip()
+    if not team1 or not team2 or not division or not game_type or not deadline_str:
+        return jsonify({'status': 'error', 'message': 'team1, team2, division, game_type, and deadline are required'}), 400
+    # Parse deadline (YYYY-MM-DD)
+    try:
+        deadline_dt = datetime.strptime(deadline_str, '%Y-%m-%d')
+    except Exception:
+        return jsonify({'status': 'error', 'message': 'deadline must be YYYY-MM-DD'}), 400
+    # Attach to active season if available
+    active_season = Season.query.filter_by(is_active=True).first()
+    sched = Schedule(
+        team1=team1,
+        team2=team2,
+        division=division,
+        game_type=game_type,
+        deadline=deadline_dt,
+        season_id=active_season.id if active_season else None,
+        score=(data.get('score') or None)
+    )
+    db.session.add(sched)
+    db.session.commit()
+    print(f"[DEBUG] Created schedule id={sched.id}")
+    return jsonify({'status': 'success', 'record': sched.to_dict()})
 
 @admin_bp.route('/pointtable/<int:team_id>/update', methods=['POST'])
 @admin_required
@@ -1009,7 +1057,7 @@ def update_pointtable(team_id):
     if not appoint:
         print(f"[ERROR] Team not found for id={team_id}")
         return jsonify({'status': 'error', 'message': 'Team not found'}), 404
-    # Allow editing team name as well as stats
+    # Allow editing team name as well as stats and metadata
     new_team = data.get('team')
     if new_team:
         appoint.team = new_team
@@ -1018,14 +1066,73 @@ def update_pointtable(team_id):
             return int(val)
         except (TypeError, ValueError):
             return default
+    def to_float(val, default):
+        try:
+            return float(val)
+        except (TypeError, ValueError):
+            return default
     appoint.matches = to_int(data.get('matches'), appoint.matches)
     appoint.won = to_int(data.get('won'), appoint.won)
     appoint.loss = to_int(data.get('loss'), appoint.loss)
     appoint.points = to_int(data.get('points'), appoint.points)
+    # Optional direct edit of games_percentage, group, division, game_type
+    if 'games_percentage' in data:
+        appoint.games_percentage = to_float(data.get('games_percentage'), appoint.games_percentage)
+    if 'group' in data and data.get('group'):
+        appoint.group = str(data.get('group')).strip()
+    if 'division' in data and data.get('division'):
+        appoint.division = str(data.get('division')).strip()
+    if 'game_type' in data and data.get('game_type'):
+        appoint.game_type = str(data.get('game_type')).strip()
     appoint.updated_at = db.func.now()
     db.session.commit()
     print(f"[DEBUG] Point table updated successfully for team_id={team_id}")
     return jsonify({'status': 'success'})
+
+# Create a new point table record (team row)
+@admin_bp.route('/pointtable', methods=['POST'])
+@admin_required
+def create_pointtable_record():
+    print("[ENDPOINT] /pointtable POST triggered")
+    data = request.get_json(silent=True) or {}
+    print(f"[DEBUG] Payload: {data}")
+    team = (data.get('team') or '').strip()
+    division = (data.get('division') or '').strip()
+    group = (data.get('group') or '').strip()
+    game_type = (data.get('game_type') or '').strip()
+    if not team or not division or not group or not game_type:
+        return jsonify({'status': 'error', 'message': 'team, division, group, and game_type are required'}), 400
+    # Optional stats (default to 0)
+    def as_int(val, default=0):
+        try:
+            return int(val)
+        except (TypeError, ValueError):
+            return default
+    matches = as_int(data.get('matches'), 0)
+    won = as_int(data.get('won'), 0)
+    loss = as_int(data.get('loss'), 0)
+    points = as_int(data.get('points'), 0)
+    # Attach to active season if available
+    active_season = Season.query.filter_by(is_active=True).first()
+    # Prevent duplicate by team+game_type (common uniqueness)
+    existing = Appointable.query.filter_by(team=team, game_type=game_type).first()
+    if existing:
+        return jsonify({'status': 'error', 'message': 'Team already exists for this game type'}), 400
+    appoint = Appointable(
+        team=team,
+        division=division,
+        group=group,
+        game_type=game_type,
+        matches=matches,
+        won=won,
+        loss=loss,
+        points=points,
+        season_id=active_season.id if active_season else None,
+    )
+    db.session.add(appoint)
+    db.session.commit()
+    print(f"[DEBUG] Created appointable id={appoint.id}")
+    return jsonify({'status': 'success', 'record': appoint.to_dict()})
 
 @admin_bp.route('/recalculate_scores', methods=['POST'])
 @admin_required

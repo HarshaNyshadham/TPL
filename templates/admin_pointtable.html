@@ -14,20 +14,37 @@
                 <th>Points</th>
                 <th>Games %</th>
                 <th>Group</th>
+                <th>Division</th>
+                <th>Game Type</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
+            <!-- Add new record row at top -->
+            <tr id="addPointRow">
+                <td contenteditable="true" class="editable-cell" data-field="team"></td>
+                <td contenteditable="true" class="editable-cell" data-field="matches">0</td>
+                <td contenteditable="true" class="editable-cell" data-field="won">0</td>
+                <td contenteditable="true" class="editable-cell" data-field="loss">0</td>
+                <td contenteditable="true" class="editable-cell" data-field="points">0</td>
+                <td>0.00</td>
+                <td contenteditable="true" class="editable-cell" data-field="group"></td>
+                <td contenteditable="true" class="editable-cell" data-field="division"></td>
+                <td contenteditable="true" class="editable-cell" data-field="game_type"></td>
+                <td><button class="btn btn-sm btn-primary" onclick="addPointRecord(this)">Add</button></td>
+            </tr>
             {% for season in seasons %}
             {% for team in season.teams %}
             <tr data-id="{{ team.id }}">
-                <td contenteditable="true" class="editable-cell">{{ team.team }}</td>
-                <td contenteditable="true" class="editable-cell">{{ team.matches }}</td>
-                <td contenteditable="true" class="editable-cell">{{ team.won }}</td>
-                <td contenteditable="true" class="editable-cell">{{ team.loss }}</td>
-                <td contenteditable="true" class="editable-cell">{{ team.points }}</td>
-                <td>{{ '%.2f'|format(team.games_percentage) }}</td>
-                <td>{{ team.group }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="team">{{ team.team }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="matches">{{ team.matches }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="won">{{ team.won }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="loss">{{ team.loss }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="points">{{ team.points }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="games_percentage">{{ '%.2f'|format(team.games_percentage) }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="group">{{ team.group }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="division">{{ team.division }}</td>
+                <td contenteditable="true" class="editable-cell" data-field="game_type">{{ team.game_type }}</td>
                 <td><button class="btn btn-sm btn-success" onclick="savePointTable(this, '{{ team.id }}')">Save</button></td>
             </tr>
             {% endfor %}
@@ -39,15 +56,19 @@
 <script>
 function savePointTable(btn, teamId) {
     const row = btn.closest('tr');
-    const team = row.children[0].innerText.trim();
-    const matches = row.children[1].innerText.trim();
-    const won = row.children[2].innerText.trim();
-    const loss = row.children[3].innerText.trim();
-    const points = row.children[4].innerText.trim();
+    const team = row.querySelector('[data-field="team"]').innerText.trim();
+    const matches = row.querySelector('[data-field="matches"]').innerText.trim();
+    const won = row.querySelector('[data-field="won"]').innerText.trim();
+    const loss = row.querySelector('[data-field="loss"]').innerText.trim();
+    const points = row.querySelector('[data-field="points"]').innerText.trim();
+    const games_percentage = row.querySelector('[data-field="games_percentage"]').innerText.trim();
+    const group = row.querySelector('[data-field="group"]').innerText.trim();
+    const division = row.querySelector('[data-field="division"]').innerText.trim();
+    const game_type = row.querySelector('[data-field="game_type"]').innerText.trim();
     fetch(`/admin/pointtable/${teamId}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ team, matches, won, loss, points })
+        body: JSON.stringify({ team, matches, won, loss, points, games_percentage, group, division, game_type })
     })
     .then(r => r.json())
     .then(data => {
@@ -67,6 +88,38 @@ function savePointTable(btn, teamId) {
     .catch(() => alert('Save failed'));
 }
 
+function addPointRecord(btn) {
+    const row = document.getElementById('addPointRow');
+    const payload = {
+        team: row.querySelector('[data-field="team"]').innerText.trim(),
+        matches: row.querySelector('[data-field="matches"]').innerText.trim(),
+        won: row.querySelector('[data-field="won"]').innerText.trim(),
+        loss: row.querySelector('[data-field="loss"]').innerText.trim(),
+        points: row.querySelector('[data-field="points"]').innerText.trim(),
+        group: row.querySelector('[data-field="group"]').innerText.trim(),
+        division: row.querySelector('[data-field="division"]').innerText.trim(),
+        game_type: row.querySelector('[data-field="game_type"]').innerText.trim()
+    };
+    if (!payload.team || !payload.division || !payload.group || !payload.game_type) {
+        alert('Please fill team, division, group, and game type');
+        return;
+    }
+    fetch('/admin/pointtable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert(data.message || 'Add failed');
+        }
+    })
+    .catch(() => alert('Add failed'));
+}
+
 // Point Table Search
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('pointTableSearch');
@@ -76,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const filter = searchInput.value.toLowerCase();
             const rows = table.querySelectorAll('tbody tr');
             rows.forEach(row => {
+                if (row.id === 'addPointRow') { row.style.display = ''; return; }
                 const teamCell = row.children[0];
                 if (teamCell && teamCell.textContent.toLowerCase().includes(filter)) {
                     row.style.display = '';
