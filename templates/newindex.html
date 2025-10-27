@@ -529,8 +529,8 @@
                     <div class="mb-2">
                         <label><input type="checkbox" id="forfeitToggle"> Forfeit</label>
                         <div id="forfeitWho" style="display:none; margin-top:6px;">
-                            <label class="me-3"><input type="radio" name="forfeitBy" value="team1"> Team 1 forfeited</label>
-                            <label><input type="radio" name="forfeitBy" value="team2"> Team 2 forfeited</label>
+                            <label class="me-3"><input type="radio" name="forfeitBy" value="team1"> <span id="forfeitLabel1">Team 1</span> forfeited</label>
+                            <label><input type="radio" name="forfeitBy" value="team2"> <span id="forfeitLabel2">Team 2</span> forfeited</label>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Score</button>
@@ -592,6 +592,11 @@ function showScoreModal(team1, team2, event) {
         order1.textContent = team1;
         order2.textContent = team2;
     }
+    // Update forfeit labels to show actual player names
+    var ffLabel1 = document.getElementById('forfeitLabel1');
+    var ffLabel2 = document.getElementById('forfeitLabel2');
+    if (ffLabel1) ffLabel1.textContent = team1;
+    if (ffLabel2) ffLabel2.textContent = team2;
     // Open centered (default Bootstrap positioning)
     var modalEl = document.getElementById('scoreModal');
     const modal = new bootstrap.Modal(modalEl, { backdrop: false });
