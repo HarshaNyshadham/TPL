@@ -32,8 +32,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 # --- ADMIN ROUTES ---
 #change password endpoint
-@admin_bp.route('/change_password', methods=['POST'])
-@admin_required
+@admin_bp.route('/change_password', methods=['POST', 'GET'])
+#@admin_required
 def change_password():
     data = request.get_json()
     old_password = data.get('old_password')
@@ -42,12 +42,34 @@ def change_password():
     if not old_password or not new_password:
         return jsonify({'status': 'error', 'message': 'Missing password fields'}), 400
     user = current_user
-    # Assuming user model has password_hash field
+    #Assuming user model has password_hash field
     if not check_password_hash(user.password_hash, old_password):
         return jsonify({'status': 'error', 'message': 'Current password is incorrect'}), 400
     user.password_hash = generate_password_hash(new_password)
     db.session.commit()
     return jsonify({'status': 'success'})
+
+
+@admin_bp.route('/reset_admin_password', methods=['POST'])
+def reset_admin_password():
+    # One-time, token-protected reset
+    token = (request.json or {}).get('token')
+    new_password = (request.json or {}).get('new_password')
+    expected = os.environ.get('RESET_ADMIN_TOKEN')
+    if not expected or token != expected or not new_password:
+        return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
+
+    try:
+        from models.user import User
+        admin_user = User.query.filter_by(is_admin=True).first()
+        if not admin_user:
+            return jsonify({'status': 'error', 'message': 'Admin user not found'}), 404
+        admin_user.password_hash = generate_password_hash(new_password, method="pbkdf2:sha256", salt_length=16)
+        db.session.commit()
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @admin_bp.route('/delete_season', methods=['POST'])
@@ -176,7 +198,7 @@ def handle_500(e):
 
 
 @admin_bp.route('/')
-#@admin_required
+@admin_required
 def admin():
     print("[ENDPOINT] /admin/ GET triggered")
     seasons = Season.query.all()

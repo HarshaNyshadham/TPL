@@ -97,8 +97,11 @@ def update_score():
         team2 = data.get('team2')
         score = data.get('score')
         game_type = data.get('game_type', 'singles')
+        # Optional forfeit: 'team1' or 'team2'
+        forfeit_by = (data.get('forfeit_by') or '').strip().lower()
         active_season = Season.query.filter_by(is_active=True).first()
-        if not all([team1, team2, score, active_season]):
+        # Require score for normal match; if forfeit provided, score can be empty
+        if not all([team1, team2, active_season]) or (not score and forfeit_by not in ('team1','team2')):
             return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400
 
         # Find the schedule entry
@@ -113,30 +116,49 @@ def update_score():
             return jsonify({'status': 'error', 'message': 'Match not found'}), 404
 
         # Update the score in the schedule table
-        sched.score = score
+        if forfeit_by in ('team1','team2') and not score:
+            sched.score = 'FF'
+        else:
+            sched.score = score
         sched.updated_at = db.func.now()
 
-        # Parse the score string (e.g., '6-4,6-3')
-        sets = [s.strip() for s in score.split(',') if '-' in s]
-        team1_sets = 0
-        team2_sets = 0
-        team1_games = 0
-        team2_games = 0
-        for s in sets:
-            try:
-                g1, g2 = map(int, s.split('-'))
-                if g1 > g2:
-                    team1_sets += 1
-                elif g2 > g1:
-                    team2_sets += 1
-                team1_games += g1
-                team2_games += g2
-            except Exception:
-                continue
+        if forfeit_by in ('team1','team2'):
+            # Forfeit: winner gets 40, forfeiter 0; no games counted
+            team1_sets = team2_sets = 0
+            team1_games = team2_games = 0
+            if forfeit_by == 'team1':
+                t1_points, t2_points = 0, 40
+                t1_bonus, t2_bonus = 0, 0
+                t1_win, t2_win = 0, 1
+                t1_loss, t2_loss = 1, 0
+            else:
+                t1_points, t2_points = 40, 0
+                t1_bonus, t2_bonus = 0, 0
+                t1_win, t2_win = 1, 0
+                t1_loss, t2_loss = 0, 1
+            total_games = 0
+        else:
+            # Parse the score string (e.g., '6-4,6-3')
+            sets = [s.strip() for s in (score or '').split(',') if '-' in s]
+            team1_sets = 0
+            team2_sets = 0
+            team1_games = 0
+            team2_games = 0
+            for s in sets:
+                try:
+                    g1, g2 = map(int, s.split('-'))
+                    if g1 > g2:
+                        team1_sets += 1
+                    elif g2 > g1:
+                        team2_sets += 1
+                    team1_games += g1
+                    team2_games += g2
+                except Exception:
+                    continue
 
-        # Use modular point calculation
-        t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, score)
-        total_games = team1_games + team2_games
+            # Use modular point calculation
+            t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, score)
+            total_games = team1_games + team2_games
         # Update Appointable (point table) for both teams
         for team, points, bonus, win, loss, games, total_games, sets in [
             (team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, total_games, team1_sets),

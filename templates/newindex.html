@@ -523,8 +523,15 @@
                     </div> -->
                     <div class="mb-3">
                         <label class="form-label">Score (e.g., 6-4,6-3)</label>
-                        <input type="text" class="form-control" name="score" required pattern="\d+-\d+(?:,\d+-\d+)*">
+                        <input id="scoreInput" type="text" class="form-control" name="score" required pattern="\d+-\d+(?:,\d+-\d+)*">
                         <div class="form-text">Enter scores for each set, separated by commas.<br>Order: <b><span id="scoreOrderTeam1">Team 1</span> - <span id="scoreOrderTeam2">Team 2</span></b></div>
+                    </div>
+                    <div class="mb-2">
+                        <label><input type="checkbox" id="forfeitToggle"> Forfeit</label>
+                        <div id="forfeitWho" style="display:none; margin-top:6px;">
+                            <label class="me-3"><input type="radio" name="forfeitBy" value="team1"> Team 1 forfeited</label>
+                            <label><input type="radio" name="forfeitBy" value="team2"> Team 2 forfeited</label>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Score</button>
                 </form>
@@ -588,6 +595,20 @@ function showScoreModal(team1, team2, event) {
     // Open centered (default Bootstrap positioning)
     var modalEl = document.getElementById('scoreModal');
     const modal = new bootstrap.Modal(modalEl, { backdrop: false });
+    // Reset forfeit UI and score input validation each time modal opens
+    const ffToggle = document.getElementById('forfeitToggle');
+    const ffWho = document.getElementById('forfeitWho');
+    const scoreInput = document.getElementById('scoreInput');
+    if (ffToggle && ffWho) {
+        ffToggle.checked = false;
+        ffWho.style.display = 'none';
+    }
+    if (scoreInput) {
+        scoreInput.value = '';
+        scoreInput.setAttribute('required', 'required');
+        scoreInput.setAttribute('pattern', '\\d+-\\d+(?:,\\d+-\\d+)*');
+        scoreInput.placeholder = '';
+    }
     modal.show();
 }
 
@@ -600,6 +621,15 @@ document.getElementById('scoreForm').addEventListener('submit', function(e) {
         score: formData.get('score'),
         game_type: formData.get('game_type')
     };
+    const forfeitToggle = document.getElementById('forfeitToggle');
+    if (forfeitToggle && forfeitToggle.checked) {
+        const sel = document.querySelector('input[name="forfeitBy"]:checked');
+        if (!sel) {
+            alert('Select who forfeited.');
+            return;
+        }
+        data.forfeit_by = sel.value; // 'team1' or 'team2'
+    }
     
     fetch('/update_score', {
         method: 'POST',
@@ -654,5 +684,24 @@ if (uploadForm) {
 }
 
 // (Duplicate showScoreModal removed; single definition above handles positioning)
+// Forfeit toggle show/hide
+const forfeitToggle = document.getElementById('forfeitToggle');
+const forfeitWho = document.getElementById('forfeitWho');
+if (forfeitToggle && forfeitWho) {
+    forfeitToggle.addEventListener('change', () => {
+        forfeitWho.style.display = forfeitToggle.checked ? 'block' : 'none';
+        const scoreInput = document.getElementById('scoreInput');
+        if (!scoreInput) return;
+        if (forfeitToggle.checked) {
+            scoreInput.removeAttribute('required');
+            scoreInput.removeAttribute('pattern');
+            scoreInput.placeholder = 'Not required for forfeit';
+        } else {
+            scoreInput.setAttribute('required', 'required');
+            scoreInput.setAttribute('pattern', '\\d+-\\d+(?:,\\d+-\\d+)*');
+            scoreInput.placeholder = '';
+        }
+    });
+}
 </script>
 {% endblock %}
