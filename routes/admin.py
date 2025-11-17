@@ -1180,7 +1180,40 @@ def recalculate_scores():
         for sched in schedules:
             if not sched.score:
                 continue
-            sets = [s.strip() for s in sched.score.split(',') if '-' in s]
+            score_str = str(sched.score).strip()
+            # --- Forfeit handling ---
+            if score_str.startswith("FF - "):
+                # Find forfeiter and winner
+                forfeiter = None
+                winner = None
+                if score_str[6:] == sched.team1:
+                    forfeiter = sched.team1
+                    winner = sched.team2
+                elif score_str[6:] == sched.team2:
+                    forfeiter = sched.team2
+                    winner = sched.team1
+                else:
+                    # fallback: if not matching, skip
+                    continue
+                # Update appointables
+                for team, points, win, loss in [
+                    (winner, 40, 1, 0),
+                    (forfeiter, 0, 0, 1)
+                ]:
+                    appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type).first()
+                    if appoint:
+                        appoint.matches = (appoint.matches or 0) + 1
+                        appoint.points = (appoint.points or 0) + points
+                        appoint.won = (appoint.won or 0) + win
+                        appoint.loss = (appoint.loss or 0) + loss
+                        appoint.bonus = appoint.bonus or 0
+                        appoint.games_total = appoint.games_total or 0
+                        appoint.games_won = appoint.games_won or 0
+                        appoint.calculate_games_percentage()
+                        appoint.updated_at = db.func.now()
+                continue
+            # --- Normal match handling ---
+            sets = [s.strip() for s in score_str.split(',') if '-' in s]
             team1_sets = 0
             team2_sets = 0
             team1_games = 0
@@ -1196,21 +1229,24 @@ def recalculate_scores():
                     team2_games += g2
                 except Exception:
                     continue
-            t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, sched.score)
-            for team, points, bonus, win, loss, games, sets in [
-                (sched.team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, team1_sets),
-                (sched.team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, team2_sets)
+            t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, score_str)
+            for team, points, bonus, win, loss, games_won, games_total in [
+                (sched.team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, team1_games + team2_games),
+                (sched.team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, team1_games + team2_games)
             ]:
                 appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type).first()
                 if appoint:
                     appoint.matches = (appoint.matches or 0) + 1
                     appoint.points = (appoint.points or 0) + points + bonus
                     appoint.bonus = (appoint.bonus or 0) + bonus
-                    appoint.games_total = (appoint.games_total or 0) + games
-                    appoint.games_won = (appoint.games_won or 0) + sets
+                    appoint.games_total = (appoint.games_total or 0) + games_total
+                    appoint.games_won = (appoint.games_won or 0) + games_won
                     appoint.won = (appoint.won or 0) + win
                     appoint.loss = (appoint.loss or 0) + loss
-                    appoint.calculate_games_percentage()
+                    # Correct games percentage calculation
+                    appoint.games_percentage = (
+                        appoint.games_won / appoint.games_total * 100 if appoint.games_total > 0 else 0
+                    )
                     appoint.updated_at = db.func.now()
         db.session.commit()
         return jsonify({'status': 'success'})

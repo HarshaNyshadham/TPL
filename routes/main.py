@@ -177,7 +177,9 @@ def update_score():
                 appoint.games_won = (appoint.games_won or 0) + games
                 appoint.won = (appoint.won or 0) + win
                 appoint.loss = (appoint.loss or 0) + loss
-                appoint.calculate_games_percentage()
+                appoint.games_percentage = (
+    appoint.games_won / appoint.games_total * 100 if appoint.games_total > 0 else 0
+)
                 appoint.updated_at = db.func.now()
         db.session.commit()
 
