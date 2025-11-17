@@ -117,7 +117,8 @@ def update_score():
 
         # Update the score in the schedule table
         if forfeit_by in ('team1','team2') and not score:
-            sched.score = 'FF'
+            forfeiter_name = team1 if forfeit_by == 'team1' else team2
+            sched.score = f'FF - {forfeiter_name}'
         else:
             sched.score = score
         sched.updated_at = db.func.now()
