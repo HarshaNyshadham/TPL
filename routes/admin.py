@@ -1226,7 +1226,7 @@ def recalculate_scores():
         if not active_season:
             return jsonify({'status': 'error', 'message': 'No active season'}), 400
         # Reset all appointables
-        appoints = Appointable.query.all()
+        appoints = Appointable.query.filter_by(season_id=active_season.id).all()
         for appoint in appoints:
             appoint.matches = 0
             appoint.won = 0
@@ -1237,36 +1237,35 @@ def recalculate_scores():
             appoint.games_won = 0
             appoint.games_percentage = 0.0
         # Recalculate from all schedules
-        schedules = Schedule.query.all()
+        schedules = Schedule.query.filter_by(season_id=active_season.id).all()
         for sched in schedules:
             if not sched.score:
                 continue
             score_str = str(sched.score).strip()
             # --- Forfeit handling ---
-            if score_str.startswith("FF - "):
-                # Find forfeiter and winner
-                forfeiter = None
-                winner = None
-                if score_str[6:] == sched.team1:
-                    forfeiter = sched.team1
+            if score_str.upper().startswith("FF -"):
+                parts = score_str.split('FF -', 1)
+                forfeiter_name = parts[1].strip() if len(parts) == 2 else ''
+                # If forfeiter is team1, team2 wins; if forfeiter is team2, team1 wins
+                if forfeiter_name == sched.team1:
                     winner = sched.team2
-                elif score_str[6:] == sched.team2:
-                    forfeiter = sched.team2
+                    forfeiter = sched.team1
+                elif forfeiter_name == sched.team2:
                     winner = sched.team1
+                    forfeiter = sched.team2
                 else:
                     # fallback: if not matching, skip
                     continue
-                # Update appointables
-                for team, points, win, loss in [
-                    (winner, 40, 1, 0),
-                    (forfeiter, 0, 0, 1)
-                ]:
-                    appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type).first()
+                for team, is_winner in [(winner, True), (forfeiter, False)]:
+                    appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type, season_id=active_season.id).first()
                     if appoint:
                         appoint.matches = (appoint.matches or 0) + 1
-                        appoint.points = (appoint.points or 0) + points
-                        appoint.won = (appoint.won or 0) + win
-                        appoint.loss = (appoint.loss or 0) + loss
+                        if is_winner:
+                            appoint.points = (appoint.points or 0) + 40
+                            appoint.won = (appoint.won or 0) + 1
+                        else:
+                            appoint.points = appoint.points or 0
+                            appoint.loss = (appoint.loss or 0) + 1
                         appoint.bonus = appoint.bonus or 0
                         appoint.games_total = appoint.games_total or 0
                         appoint.games_won = appoint.games_won or 0
@@ -1291,19 +1290,23 @@ def recalculate_scores():
                 except Exception:
                     continue
             t1_points, t2_points, t1_bonus, t2_bonus, t1_win, t2_win, t1_loss, t2_loss = calculate_points(team1_sets, team2_sets, score_str)
-            for team, points, bonus, win, loss, games_won, games_total in [
-                (sched.team1, t1_points, t1_bonus, t1_win, t1_loss, team1_games, team1_games + team2_games),
-                (sched.team2, t2_points, t2_bonus, t2_win, t2_loss, team2_games, team1_games + team2_games)
+            for team, is_winner, bonus, win, loss, games_won, games_total in [
+                (sched.team1, t1_win == 1, t1_bonus, t1_win, t1_loss, team1_games, team1_games + team2_games),
+                (sched.team2, t2_win == 1, t2_bonus, t2_win, t2_loss, team2_games, team1_games + team2_games)
             ]:
-                appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type).first()
+                appoint = Appointable.query.filter_by(team=team, game_type=sched.game_type, season_id=active_season.id).first()
                 if appoint:
                     appoint.matches = (appoint.matches or 0) + 1
-                    appoint.points = (appoint.points or 0) + points + bonus
-                    appoint.bonus = (appoint.bonus or 0) + bonus
+                    if is_winner:
+                        appoint.points = (appoint.points or 0) + 40
+                        appoint.won = (appoint.won or 0) + 1
+                    else:
+                        loss_bonus = bonus or 0
+                        appoint.points = (appoint.points or 0) + 10 + loss_bonus
+                        appoint.loss = (appoint.loss or 0) + 1
+                        appoint.bonus = (appoint.bonus or 0) + loss_bonus
                     appoint.games_total = (appoint.games_total or 0) + games_total
                     appoint.games_won = (appoint.games_won or 0) + games_won
-                    appoint.won = (appoint.won or 0) + win
-                    appoint.loss = (appoint.loss or 0) + loss
                     # Correct games percentage calculation
                     appoint.games_percentage = (
                         appoint.games_won / appoint.games_total * 100 if appoint.games_total > 0 else 0
