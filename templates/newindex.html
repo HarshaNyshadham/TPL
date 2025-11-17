@@ -474,6 +474,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- Playoff Information Blocks -->
+        <div class="mb-4">
+            {% for division in [5.0, 4.5, 4.0] %}
+              {% for game_type in ['singles', 'doubles', 'mixed_doubles'] %}
+                {% if playoff_data.get((division, game_type)) %}
+                  <div class="playoff-block mb-4">
+                    <h4>Playoff - Division {{ division }} {{ game_type|capitalize }}</h4>
+                    <div>{{ playoff_data.get((division, game_type))|safe }}</div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 

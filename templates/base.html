@@ -217,6 +217,9 @@
             <li class="nav-item">
               <a class="nav-link {% if request.endpoint == 'main.history' %}active{% endif %}" href="/history">History</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main.playoffs') }}">Playoffs</a>
+            </li>
             {% if current_user.is_authenticated and current_user.is_admin %}
             <li class="nav-item">
               <a class="nav-link {% if request.endpoint == 'admin.index' %}active{% endif %}" href="{{ url_for('admin.admin') }}">Admin</a>
@@ -331,4 +334,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
   </body>
-</html> 
+</html>

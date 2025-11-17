@@ -1,4 +1,7 @@
+from models.playoff_match import PlayoffMatch
+
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
+from models.playoff import Playoff
 # Removed unused service imports
 from models import Season, Appointable, db, Schedule
 from services.point_calculation import calculate_points
@@ -9,7 +12,22 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/index')
 def index():
     return redirect(url_for('main.newindex'))
-
+@main_bp.route('/playoffs')
+def playoffs():
+    divisions = [5.0, 4.5, 4.0]
+    game_types = ['singles', 'doubles', 'mixed_doubles']
+    rounds = ['RO16', 'QF', 'SF', 'F']
+    playoff_data = {}
+    for division in divisions:
+        for game_type in game_types:
+            playoff_data[(division, game_type)] = {}
+            for round_name in rounds:
+                matches = PlayoffMatch.query.filter_by(
+                    division=division, game_type=game_type, round=round_name
+                ).order_by(PlayoffMatch.position).all()
+                playoff_data[(division, game_type)][round_name] = matches
+    return render_template('playoffs.html', divisions=divisions, game_types=game_types, playoff_data=playoff_data)
+# Add Playoff import
 @main_bp.route('/newindex')
 def newindex():
     try:
@@ -26,34 +44,31 @@ def newindex():
                                 pt_data_45=[],
                                 pt_data_40=[],
                                 schedule_data={},
-                                season_name=None)
+                                season_name=None,
+                                playoff_data={})
 
         # Get data for each division
         divisions = [5.0, 4.5, 4.0]
         standings = {}
         for division in divisions:
-            # Get teams for this division and game type
             teams = Appointable.query.filter_by(
                 division=division,
                 game_type=game_type,
                 season_id=active_season.id
             ).all()
-            
-            # Convert to list of tuples for template
             standings[division] = [
                 (
-                    team.team,           # [0] Team name
-                    team.matches,        # [1] Matches played
-                    team.won,           # [2] Matches won
-                    team.loss,          # [3] Matches lost
-                    team.points,        # [4] Total points
-                    team.games_percentage, # [5] Games percentage
-                    team.group          # [6] Group (A or B)
+                    team.team,
+                    team.matches,
+                    team.won,
+                    team.loss,
+                    team.points,
+                    team.games_percentage,
+                    team.group
                 )
                 for team in teams
             ]
         print(f"DEBUG: Standings for {game_type}: {standings}")
-        # Get schedule data for all teams
         all_teams = []
         for division_teams in standings.values():
             all_teams.extend(team[0] for team in division_teams)
@@ -71,14 +86,19 @@ def newindex():
                     ])
             schedule_data[team] = team_matches
         print(f"DEBUG: Schedule data for {game_type}: {schedule_data}")
+        # Add published playoff info
+        playoffs = Playoff.query.filter_by(published=True).all()
+        playoff_data = {}
+        for p in playoffs:
+            playoff_data[(p.division, p.game_type)] = p.content
         return render_template('newindex.html',
                              game_type=game_type,
                              pt_data_50=standings[5.0],
                              pt_data_45=standings[4.5],
                              pt_data_40=standings[4.0],
                              schedule_data=schedule_data,
-                             season_name=active_season.name)
-                             
+                             season_name=active_season.name,
+                             playoff_data=playoff_data)
     except Exception as e:
         print(f"Error in newindex route: {e}")
         return render_template('newindex.html',
@@ -87,7 +107,8 @@ def newindex():
                              pt_data_45=[],
                              pt_data_40=[],
                              schedule_data={},
-                             season_name=None)
+                             season_name=None,
+                             playoff_data={})
 
 @main_bp.route('/update_score', methods=['POST'])
 def update_score():

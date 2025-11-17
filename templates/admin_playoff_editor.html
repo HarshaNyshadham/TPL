@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Playoff Pills Navigation -->
+<ul class="nav nav-pills mb-4" style="font-size:1.1em;">
+  <li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('admin.playoff_editor') }}">Playoff Editor</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('admin.playoff_bracket_editor') }}">Playoff Bracket</a>
+  </li>
+</ul>
+<h2>Edit Playoff Info</h2>
+<form method="post">
+  {% for division in divisions %}
+    {% for game_type in game_types %}
+      <h4>Division {{ division }} - {{ game_type|capitalize }}</h4>
+      <textarea name="playoff_{{ division }}_{{ game_type }}" rows="4" cols="60">{{ playoffs.get((division, game_type)).content if playoffs.get((division, game_type)) else '' }}</textarea>
+      <br>
+      <label>
+        <input type="checkbox" name="publish_{{ division }}_{{ game_type }}"
+          {% if playoffs.get((division, game_type)) and playoffs.get((division, game_type)).published %}checked{% endif %}>
+        Publish
+      </label>
+      <hr>
+    {% endfor %}
+  {% endfor %}
+  <button type="submit">Save Playoff Info</button>
+</form>
+{% endblock %}

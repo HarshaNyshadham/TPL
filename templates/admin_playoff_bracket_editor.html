@@ -1,0 +1,66 @@
+
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Playoff Bracket</h2>
+<!-- Division Pills -->
+<ul class="nav nav-pills mb-3" id="divisionTabs" role="tablist">
+  {% for division in divisions %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if loop.first %}active{% endif %}" data-bs-toggle="pill" data-bs-target="#divTab{{ division }}">
+        {{ division }}
+      </button>
+    </li>
+  {% endfor %}
+</ul>
+<div class="tab-content">
+  {% for division in divisions %}
+    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="divTab{{ division }}">
+      <!-- Game Type Pills -->
+      <ul class="nav nav-pills mb-3" id="gameTypeTabs{{ division }}" role="tablist">
+        {% for game_type in game_types %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {% if loop.first %}active{% endif %}" data-bs-toggle="pill" data-bs-target="#gameTab{{ division }}{{ game_type }}">
+              {{ game_type|capitalize }}
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content">
+        {% for game_type in game_types %}
+          <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="gameTab{{ division }}{{ game_type }}">
+            <form method="post">
+              <input type="hidden" name="division" value="{{ division }}">
+              <input type="hidden" name="game_type" value="{{ game_type }}">
+              <div class="row">
+                {% for round in rounds %}
+                  <div class="col-md-3">
+                    <h5>{{ round }}</h5>
+                    {% for pos in bracket_positions[round] %}
+                      {% set match = bracket[(division, game_type)][round][loop.index0] %}
+                      <div class="mb-3 p-2 border rounded">
+                        <label>Player 1:
+                          <input type="text" class="form-control" name="{{ division }}_{{ game_type }}_{{ round }}_{{ pos }}_player1" value="{{ match.player1 if match else '' }}">
+                        </label>
+                        <label>Player 2:
+                          <input type="text" class="form-control" name="{{ division }}_{{ game_type }}_{{ round }}_{{ pos }}_player2" value="{{ match.player2 if match else '' }}">
+                        </label>
+                        <label>Score:
+                          <input type="text" class="form-control" name="{{ division }}_{{ game_type }}_{{ round }}_{{ pos }}_score" value="{{ match.score if match else '' }}">
+                        </label>
+                        <label>Winner:
+                          <input type="text" class="form-control" name="{{ division }}_{{ game_type }}_{{ round }}_{{ pos }}_winner" value="{{ match.winner if match else '' }}">
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endfor %}
+              </div>
+              <button type="submit" class="btn btn-primary mt-3">Save Bracket</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

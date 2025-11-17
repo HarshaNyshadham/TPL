@@ -1,3 +1,5 @@
+
+
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user, logout_user
 from models import Appointable, Schedule, db, Player, Season
@@ -27,8 +29,67 @@ def admin_required(f):
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
+from models.playoff_match import PlayoffMatch
+# Bracket-style playoff editor for admins
+@admin_bp.route('/playoff_bracket_editor', methods=['GET', 'POST'])
+@admin_required
+def playoff_bracket_editor():
+    divisions = [5.0, 4.5, 4.0]
+    game_types = ['singles', 'doubles', 'mixed_doubles']
+    rounds = ['RO16', 'QF', 'SF', 'F']
+    bracket_positions = {
+        'RO16': range(1, 9),
+        'QF': range(1, 5),
+        'SF': range(1, 3),
+        'F': [1],
+    }
+    if request.method == 'POST':
+        for division in divisions:
+            for game_type in game_types:
+                for round_name in rounds:
+                    for pos in bracket_positions[round_name]:
+                        prefix = f'{division}_{game_type}_{round_name}_{pos}'
+                        player1 = request.form.get(f'{prefix}_player1', '').strip()
+                        player2 = request.form.get(f'{prefix}_player2', '').strip()
+                        score = request.form.get(f'{prefix}_score', '').strip()
+                        winner = request.form.get(f'{prefix}_winner', '').strip()
+                        match = PlayoffMatch.query.filter_by(
+                            division=division, game_type=game_type,
+                            round=round_name, position=pos
+                        ).first()
+                        if match:
+                            match.player1 = player1
+                            match.player2 = player2
+                            match.score = score
+                            match.winner = winner
+                        else:
+                            match = PlayoffMatch(
+                                division=division, game_type=game_type,
+                                round=round_name, position=pos,
+                                player1=player1, player2=player2,
+                                score=score, winner=winner
+                            )
+                            db.session.add(match)
+        db.session.commit()
+        flash('Playoff bracket updated!', 'success')
+        return redirect(url_for('admin.playoff_bracket_editor'))
+    # Build bracket data for template
+    bracket = {}
+    for division in divisions:
+        for game_type in game_types:
+            bracket[(division, game_type)] = {}
+            for round_name in rounds:
+                bracket[(division, game_type)][round_name] = []
+                for pos in bracket_positions[round_name]:
+                    match = PlayoffMatch.query.filter_by(
+                        division=division, game_type=game_type,
+                        round=round_name, position=pos
+                    ).first()
+                    bracket[(division, game_type)][round_name].append(match)
+    return render_template('admin_playoff_bracket_editor.html',
+        divisions=divisions, game_types=game_types, rounds=rounds,
+        bracket_positions=bracket_positions, bracket=bracket)
 
-from werkzeug.security import check_password_hash, generate_password_hash
 
 # --- ADMIN ROUTES ---
 #change password endpoint
