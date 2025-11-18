@@ -55,7 +55,7 @@ def newindex():
                 division=division,
                 game_type=game_type,
                 season_id=active_season.id
-            ).all()
+            ).order_by(Appointable.points.desc(), Appointable.games_percentage.desc()).all()
             standings[division] = [
                 (
                     team.team,
